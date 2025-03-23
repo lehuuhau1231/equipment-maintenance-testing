@@ -4,6 +4,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -71,7 +72,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="11.0" layoutY="118.0" text="Thời gian bảo trì : ">
+                  <Label layoutX="10.0" layoutY="105.0" text="Thời gian bảo trì : ">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -81,21 +82,27 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="307.0" layoutY="118.0" text="Nhân viên :">
+                  <Label layoutX="13.0" layoutY="143.0" text="Nhân viên :">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <DatePicker layoutX="136.0" layoutY="115.0" prefHeight="26.0" prefWidth="150.0" />
+                  <DatePicker layoutX="409.0" layoutY="102.0" prefHeight="26.0" prefWidth="150.0" />
                   <TextField layoutX="137.0" layoutY="63.0" />
-                  <TextField layoutX="399.0" layoutY="63.0" />
+                  <TextField layoutX="410.0" layoutY="63.0" />
                   <TableView layoutX="18.0" layoutY="187.0" prefHeight="242.0" prefWidth="642.0" />
                   <Button layoutX="619.0" layoutY="445.0" mnemonicParsing="false" text="Lưu">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <ComboBox layoutX="399.0" layoutY="115.0" prefWidth="150.0" />
+                  <ComboBox layoutX="136.0" layoutY="140.0" prefWidth="150.0" />
+                  <Label layoutX="308.0" layoutY="105.0" text="Ngày bảo trì : ">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Spinner layoutX="138.0" layoutY="103.0" />
                </children>
             </AnchorPane>
          </children>
