@@ -8,7 +8,9 @@ import com.qhuong.pojo.Admin;
 import com.qhuong.pojo.JdbcUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -17,13 +19,30 @@ import java.sql.SQLException;
 public class AdminServices {
     public boolean getAdmin(String username,String password) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=? AND password=?");
+            PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=?");
             stm.setString(1, username);
-            stm.setString(2, password);
-            System.out.println("Test");
-            System.out.println(stm);
+            ResultSet rs = stm.executeQuery();
+            if(rs.next()) {
+                System.out.println("vo");
+                return BCrypt.checkpw(password, rs.getString("password"));
+            }
+        }
+        return false;
+    }
+    
+    public void addAdmin(String username, String password, String ho, String ten, String email) throws SQLException {
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        String sql = "INSERT INTO admin (username, password, ho, ten, email) VALUE(?, ?, ?, ?, ?)";
+        try(Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, username);
+            stm.setString(2, hashedPassword);
+            stm.setString(3, ho);
+            stm.setString(4, ten);
+            stm.setString(5, email);
+            stm.executeUpdate();
+            conn.commit();
         }
         
-        return true;
     }
 }
