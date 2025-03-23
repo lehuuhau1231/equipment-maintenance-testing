@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
 --
--- Host: localhost    Database: thietbi
+-- Host: localhost    Database: thietbi2
 -- ------------------------------------------------------
 -- Server version	9.1.0
 
@@ -23,16 +23,16 @@ DROP TABLE IF EXISTS `admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin` (
-  `id` int NOT NULL,
-  `usename` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `password` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `ho` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `ten` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `email` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `usename_UNIQUE` (`usename`),
+  UNIQUE KEY `username_UNIQUE` (`username`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,13 +53,13 @@ DROP TABLE IF EXISTS `baotri`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `baotri` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `ngayBaoTri` datetime NOT NULL,
   `idThietBi` int NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `thietbi_baotri_idx` (`idThietBi`),
+  KEY `thietbi_baotri_fk_idx` (`idThietBi`),
   CONSTRAINT `thietbi_baotri` FOREIGN KEY (`idThietBi`) REFERENCES `thietbi` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,19 +80,19 @@ DROP TABLE IF EXISTS `nhanviensuachua`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nhanviensuachua` (
-  `id` int NOT NULL,
-  `tenNV` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tenNV` varchar(50) NOT NULL,
   `ngaySinh` date NOT NULL,
-  `CCCD` char(12) NOT NULL,
-  `SoDT` char(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `CCCD` char(12) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `soDT` char(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `diaChi` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `email` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `email` varchar(50) NOT NULL,
   `idadmin` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
   KEY `admin_NVSuaChua_idx` (`idadmin`),
   CONSTRAINT `admin_NVSuaChua` FOREIGN KEY (`idadmin`) REFERENCES `admin` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -113,16 +113,17 @@ DROP TABLE IF EXISTS `nhanviensuathietbi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nhanviensuathietbi` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `ngaySua` datetime NOT NULL,
   `idThietBi` int NOT NULL,
   `idNhanVien` int NOT NULL,
   `chiPhi` double NOT NULL,
-  PRIMARY KEY (`ngaySua`),
-  KEY `thietbi_nvsuathietbii_idx` (`idThietBi`),
+  PRIMARY KEY (`id`),
   KEY `nvsuachua_nvsuathietbii_idx` (`idNhanVien`),
+  KEY `thietbi_nvsuathietbii_idx` (`idThietBi`),
   CONSTRAINT `nvsuachua_nvsuathietbii` FOREIGN KEY (`idNhanVien`) REFERENCES `nhanviensuachua` (`id`),
   CONSTRAINT `thietbi_nvsuathietbii` FOREIGN KEY (`idThietBi`) REFERENCES `thietbi` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,7 +132,7 @@ CREATE TABLE `nhanviensuathietbi` (
 
 LOCK TABLES `nhanviensuathietbi` WRITE;
 /*!40000 ALTER TABLE `nhanviensuathietbi` DISABLE KEYS */;
-INSERT INTO `nhanviensuathietbi` VALUES ('2024-02-12 12:00:00',3,1,500000),('2024-03-22 11:00:00',4,4,100000),('2024-05-06 09:00:00',2,3,1000000),('2024-08-29 20:00:00',3,1,200000),('2024-10-05 15:00:00',2,3,1000000);
+INSERT INTO `nhanviensuathietbi` VALUES (1,'2024-02-12 12:00:00',3,1,500000),(2,'2024-03-22 11:00:00',4,4,100000),(3,'2024-05-06 09:00:00',2,3,1000000),(4,'2024-08-29 20:00:00',3,1,200000),(5,'2024-10-05 15:00:00',2,3,1000000);
 /*!40000 ALTER TABLE `nhanviensuathietbi` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,7 +144,7 @@ DROP TABLE IF EXISTS `thietbi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `thietbi` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `tenThietBi` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `trangThai` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `thanhLy` tinyint NOT NULL,
@@ -151,7 +152,7 @@ CREATE TABLE `thietbi` (
   PRIMARY KEY (`id`),
   KEY `thietbi_admin_fk_idx` (`idadmin`),
   CONSTRAINT `thietbi_admin_fk` FOREIGN KEY (`idadmin`) REFERENCES `admin` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -173,4 +174,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-22 19:18:26
+-- Dump completed on 2025-03-23 16:05:47
