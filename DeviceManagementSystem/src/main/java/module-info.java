@@ -6,5 +6,6 @@ module com.qhuong.devicemanagementsystem {
 
     opens com.qhuong.devicemanagementsystem to javafx.fxml;
     exports com.qhuong.devicemanagementsystem;
+    exports com.qhuong.pojo;
     requires jbcrypt;
 }
