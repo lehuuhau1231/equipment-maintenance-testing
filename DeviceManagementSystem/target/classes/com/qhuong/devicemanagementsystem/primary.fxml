@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="483.0" prefWidth="599.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="483.0" prefWidth="599.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.PrimaryController">
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="300.0">
          <children>
@@ -34,9 +34,9 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="40.0" layoutY="154.0" prefHeight="30.0" prefWidth="220.0" promptText="Username" />
-                  <PasswordField layoutX="40.0" layoutY="215.0" prefHeight="30.0" prefWidth="220.0" promptText="Password" />
-                  <Button layoutX="40.0" layoutY="284.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="LOGIN">
+                  <TextField fx:id="txtUsername" layoutX="40.0" layoutY="154.0" prefHeight="30.0" prefWidth="220.0" promptText="Username" />
+                  <PasswordField fx:id="txtPassword" layoutX="40.0" layoutY="215.0" prefHeight="30.0" prefWidth="220.0" promptText="Password" />
+                  <Button layoutX="40.0" layoutY="284.0" mnemonicParsing="false" onAction="#loginHandler" prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="LOGIN">
                      <font>
                         <Font size="14.0" />
                      </font>
