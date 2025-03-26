@@ -89,7 +89,7 @@
                      </font>
                   </Button>
                   <ComboBox fx:id="cbStatus" layoutX="474.0" layoutY="73.0" prefHeight="26.0" prefWidth="178.0" />
-                  <Button layoutX="596.0" layoutY="445.0" mnemonicParsing="false" text="Cập nhật">
+                  <Button layoutX="596.0" layoutY="445.0" mnemonicParsing="false" onAction="#updateEquipment" text="Cập nhật">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
