@@ -10,6 +10,7 @@ import com.qhuong.services.ThietBiServices;
 import com.qhuong.services.TrangThaiServices;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -48,8 +49,11 @@ public class DanhSachThietBiController implements Initializable {
     private DatePicker disposalDate;
 
     private Map<Integer, String> statusMap;
-    private TrangThaiServices status = new TrangThaiServices();
+    private static TrangThaiServices status = new TrangThaiServices();
+    private static ThietBiServices equipment = new ThietBiServices();
     private static Utils alert = new Utils();
+    private String tenTrangThaiDaThanhLy;
+    private int idEquipment;
 
     /**
      * Initializes the controller class.
@@ -57,18 +61,24 @@ public class DanhSachThietBiController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
+            tenTrangThaiDaThanhLy = status.getTrangThaiDaThanhLy();
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
             statusMap = status.getStatusMap();
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        loadStatus();
+        loadStatus(false);
         loadColumn();
         loadData();
+        selectItemTableView();
+        comboBoxChange();
     }
 
     public void loadData() {
-        ThietBiServices equipment = new ThietBiServices();
         try {
             tbEquipment.setItems(FXCollections.observableList(equipment.getThietBi()));
         } catch (SQLException ex) {
@@ -76,9 +86,9 @@ public class DanhSachThietBiController implements Initializable {
         }
     }
 
-    public void loadStatus() {
+    public void loadStatus(boolean getFull) {
         try {
-            cbStatus.setItems(FXCollections.observableList(status.getTrangThai()));
+            cbStatus.setItems(FXCollections.observableList(status.getTrangThai(getFull)));
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -138,16 +148,8 @@ public class DanhSachThietBiController implements Initializable {
         if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
         } else {
-            ThietBiServices equipment = new ThietBiServices();
             try {
-                int idTrangThai = 0;
-                for (Integer i : statusMap.keySet()) {
-                    if (statusMap.get(i).trim().equals(String.valueOf(cbStatus.getValue()).trim())) {
-                        idTrangThai = i;
-                        break;
-                    }
-                }
-
+                int idTrangThai = getValueStatusMap();
                 equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
                 alert.getAlert("Thêm thiết bị thành công!").show();
                 txtName.clear();
@@ -158,6 +160,66 @@ public class DanhSachThietBiController implements Initializable {
                 Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public void selectItemTableView() {
+        tbEquipment.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                ThietBi selectedItem = tbEquipment.getSelectionModel().getSelectedItem();
+                if (selectedItem.getNgayThanhLy() != null) {
+                    alert.getAlert("Không được cập nhật thiết bị ĐÃ THANH LÝ!").show();
+                    return;
+                } else if (selectedItem != null) {
+                    idEquipment = selectedItem.getId();
+                    txtName.setText(selectedItem.getTenThietBi());
+                    TrangThai t = new TrangThai(statusMap.get(selectedItem.getIdTrangThai()));
+                    cbStatus.setValue(t);
+                    LocalDate ngayNhap = new java.sql.Date(selectedItem.getNgayNhap().getTime()).toLocalDate();
+                    importDate.setValue(ngayNhap);
+                    loadStatus(true);
+                }
+            }
+        });
+    }
+
+    public void updateEquipment(ActionEvent e) {
+        if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
+            alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
+        } else {
+            if (disposalDate.getValue() == null || disposalDate.getValue().isAfter(importDate.getValue())) {
+                int idTrangThai = getValueStatusMap();
+                try {
+                    equipment.updateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
+                    alert.getAlert("Cập nhật thông tin thành công").show();
+                    loadData();
+                } catch (SQLException ex) {
+                    Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                alert.getAlert("Ngày thanh lý phải lớn hơn ngày nhập").show();
+            }
+        }
+    }
+
+    public void comboBoxChange() {
+        cbStatus.setOnAction(event -> {
+            if (cbStatus.getValue() != null && cbStatus.getValue().toString().equals(tenTrangThaiDaThanhLy)) {
+                disposalDate.setDisable(false);
+            } else {
+                disposalDate.setDisable(true);
+            }
+        });
+    }
+
+    public int getValueStatusMap() {
+        int idTrangThai = 0;
+        for (Integer i : statusMap.keySet()) {
+            if (statusMap.get(i).trim().equals(String.valueOf(cbStatus.getValue()).trim())) {
+                idTrangThai = i;
+                break;
+            }
+        }
+        return idTrangThai;
     }
 
 }

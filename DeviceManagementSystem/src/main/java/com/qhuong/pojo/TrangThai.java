@@ -17,6 +17,11 @@ public class TrangThai {
         this.id = id;
         this.tenTrangThai = trangThai;
     };
+    
+    public TrangThai( String trangThai){
+        this.tenTrangThai = trangThai;
+    };
+
 
     @Override
     public String toString() {

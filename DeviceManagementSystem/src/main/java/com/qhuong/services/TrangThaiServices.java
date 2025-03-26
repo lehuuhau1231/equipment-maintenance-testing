@@ -20,10 +20,14 @@ import java.util.Map;
  * @author lehuu
  */
 public class TrangThaiServices {
-    public List<TrangThai> getTrangThai() throws SQLException {
+    public List<TrangThai> getTrangThai(boolean getFull) throws SQLException {
         List<TrangThai> status = new ArrayList<>();
         try(Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT * FROM trangthai WHERE id<>1");
+            PreparedStatement stm;
+            if(getFull == true)
+                stm = conn.prepareCall("SELECT * FROM trangthai");
+            else
+                stm = conn.prepareCall("SELECT * FROM trangthai WHERE id<>1");
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 TrangThai t = new TrangThai(rs.getInt("id"), rs.getString("tenTrangThai"));
@@ -31,6 +35,17 @@ public class TrangThaiServices {
             }
         }
         return status;
+    }
+    
+    public String getTrangThaiDaThanhLy() throws SQLException {
+        try(Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT tenTrangThai FROM trangthai WHERE tenTrangThai=?");
+            stm.setString(1, "Đã thanh lý");
+            ResultSet rs = stm.executeQuery();
+            if(rs.next())
+                return rs.getString("tenTrangThai");
+        }
+        return null;
     }
     
     public Map<Integer, String> getStatusMap() throws SQLException {

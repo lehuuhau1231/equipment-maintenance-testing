@@ -73,7 +73,7 @@ public class ThietBi {
     /**
      * @return the thanhLy
      */
-    public Date isNgayThanhLy() {
+    public Date getNgayThanhLy() {
         return ngayThanhLy;
     }
 
