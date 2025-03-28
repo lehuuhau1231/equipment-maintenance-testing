@@ -1,8 +1,8 @@
 Test
 Các ràng buộc: 
-1. thiết bị đang có trạng thái là đang sửa/bảo trì chuyển sang đang hoạt động thì tg tối thiểu là bnhiu (gợi ý: tối thiểu 1 ngày )
-2. qui định tg lập lịch bảo trì lần 2 cách làn 1 là bnhiu tháng (gợi ý: từ 3 đền 6 tháng )
-3. ngày bảo trì và ngày sửa chữa không được quá bao nhiêu ngày so với thời gian lập lịch (gợi ý: bảo trì thì có thể lập lịch trc ko qá 30 ngày, sửa chữa thì ko qá 7 ngày)
-4. qui định thời gian được phép cập nhật lịch bảo trì là trước ngày bảo trì là bnhiu ( gọi ý: trc ngày bảo trì 3 ngày )
+1. thiết bị đang có trạng thái là đang sửa/bảo trì chuyển sang đang hoạt động thì tg tối thiểu là bnhiu ( tối thiểu 1 ngày )
+2. qui định tg lập lịch bảo trì lần 2 cách làn 1 là bnhiu tháng ( từ 3 đền 6 tháng )
+3. ngày sửa chữa không được quá bao nhiêu ngày so với thời gian lập lịch ( sửa chữa thì ko qá 7 ngày)
+4. qui định thời gian được phép cập nhật lịch bảo trì là trước ngày bảo trì là bnhiu ( trước ngày bảo trì 2 ngày )
 5. những thiết bị có lịch bảo trì / sửa chửa mà chuyển sang trạng thái "đang hoạt động" hoặc "đã thanh lý" trc khi đến ngày bảo trì / sửa thì lịch bảo trì/ sửa chữa phải được HỦY 
 6. lịch bảo trì chỉ được cập nhật tối đa 2 lần 
