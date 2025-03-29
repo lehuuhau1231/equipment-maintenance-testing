@@ -8,6 +8,7 @@ import com.qhuong.pojo.ThietBi;
 import com.qhuong.pojo.TrangThai;
 import com.qhuong.services.ThietBiServices;
 import com.qhuong.services.TrangThaiServices;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -19,7 +20,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -29,6 +34,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -124,19 +130,53 @@ public class DanhSachThietBiController implements Initializable {
             Button btnMaintenance = new Button("Bảo trì");
             Button btnFix = new Button("Sửa chữa");
             HBox hbox = new HBox(10, btnMaintenance, btnFix);
-
-            TableCell cell = new TableCell();
-
-//            cell.setGraphic(hbox);
-//            
-//            
-//            return cell;
+            {
+                btnMaintenance.setOnAction(evt -> {
+                    try {
+                        ThietBi t = getTableView().getItems().get(getIndex());
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("LichBaoTri.fxml"));
+                        Parent maintenance = loader.load();
+                    
+                        LichBaoTriController controller = loader.getController();
+                        controller.setDeviceData(t);
+                        
+                        Stage stage = (Stage) ((Node) evt.getSource()).getScene().getWindow();
+                        Scene maintenanceScene = new Scene(maintenance);
+                        stage.setScene(maintenanceScene);
+                        stage.show();
+                    } catch (IOException ex) {
+                        Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                
+                btnFix.setOnAction(evt -> {
+                    try {
+                        ThietBi t = getTableView().getItems().get(getIndex());
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("LichSuaChua.fxml"));
+                        Parent fix = loader.load();
+                        
+                        LichSuaChuaController controller = loader.getController();
+                        controller.setDeviceData(t);
+                        
+                        Scene fixScene = new Scene(fix);
+                        Stage stage = (Stage) ((Node) evt.getSource()).getScene().getWindow();
+                        stage.setScene(fixScene);
+                        stage.show();
+                    } catch (IOException ex) {
+                        Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+            }
+            
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || getIndex() >= getTableView().getItems().size()) {
                     setGraphic(null); // Ẩn nút nếu dòng trống
                 } else {
+                    ThietBi t = getTableView().getItems().get(getIndex());
+                    String trangThai = statusMap.get(t.getIdTrangThai());
+                    btnMaintenance.setDisable(!"Đang hoạt động".equals(trangThai));
                     setGraphic(hbox); // Hiển thị nếu có dữ liệu
                 }
             }

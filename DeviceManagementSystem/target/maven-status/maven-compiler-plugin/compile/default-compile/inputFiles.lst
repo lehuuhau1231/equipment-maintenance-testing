@@ -6,9 +6,11 @@ D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\pojo\Admin.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\pojo\NhanVienSuaThietBi.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\devicemanagementsystem\SecondaryController.java
+D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\services\BaoTriServices.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\pojo\BaoTri.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\services\AdminServices.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\pojo\TrangThai.java
+D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\services\NhanVienSuaChuaServices.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\devicemanagementsystem\DanhSachThietBiController.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\devicemanagementsystem\LichSuaChuaController.java
 D:\equipment-maintenance-testing\DeviceManagementSystem\src\main\java\com\qhuong\devicemanagementsystem\Utils.java
