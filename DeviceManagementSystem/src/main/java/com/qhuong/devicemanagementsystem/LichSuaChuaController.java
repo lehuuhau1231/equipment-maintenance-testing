@@ -4,6 +4,7 @@
  */
 package com.qhuong.devicemanagementsystem;
 
+import com.qhuong.pojo.ThietBi;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
@@ -23,4 +24,5 @@ public class LichSuaChuaController implements Initializable {
         // TODO
     }    
     
+    public void setDeviceData(ThietBi t) {}
 }

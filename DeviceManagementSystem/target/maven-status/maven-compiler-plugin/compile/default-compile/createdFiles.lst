@@ -6,10 +6,12 @@ com\qhuong\devicemanagementsystem\PrimaryController.class
 com\qhuong\services\ThietBiServices.class
 com\qhuong\devicemanagementsystem\DanhSachThietBiController.class
 module-info.class
+com\qhuong\services\BaoTriServices.class
 com\qhuong\devicemanagementsystem\DanhSachThietBiController$1.class
 com\qhuong\devicemanagementsystem\DanhSachNhanVienController.class
 com\qhuong\devicemanagementsystem\LichSuaChuaController.class
 com\qhuong\pojo\TrangThai.class
+com\qhuong\services\NhanVienSuaChuaServices.class
 com\qhuong\pojo\ThietBi.class
 com\qhuong\pojo\NhanVienSuaThietBi.class
 com\qhuong\devicemanagementsystem\App.class

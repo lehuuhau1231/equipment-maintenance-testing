@@ -83,4 +83,14 @@ public class ThietBiServices {
         }
     }
 
+    public int getIdEquipment(String name) throws SQLException {
+        try(Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT id FROM thietbi WHERE tenThietBi=?");
+            stm.setString(1, name);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next())
+                return rs.getInt("id");
+        }
+        return -1;
+    }
 }
