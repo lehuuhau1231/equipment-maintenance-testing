@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +36,9 @@ public class BaoTriServices {
         }
         return maintenance;
     }
-    
+
     public void addMaintenanceSchedule(LocalDateTime ngayBaoTri, int idThietBi, int idNhanVien) throws SQLException {
-        try(Connection conn = JdbcUtils.getConn()) {
+        try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("INSERT INTO baotri(ngayBaoTri, idThietBi, idNhanVien) VALUE(?, ?, ?)");
             stm.setTimestamp(1, Timestamp.valueOf(ngayBaoTri));
             stm.setInt(2, idThietBi);
@@ -47,5 +46,42 @@ public class BaoTriServices {
             stm.executeUpdate();
             conn.commit();
         }
+    }
+
+    public List<LocalDateTime> getListDateTime(int idNhanVien) throws SQLException {
+        List<LocalDateTime> dates = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri FROM baotri WHERE idNhanVien=?");
+            stm.setInt(1, idNhanVien);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                dates.add(rs.getTimestamp("ngayBaoTri").toLocalDateTime());
+            }
+        }
+        return dates;
+    }
+
+    public int getMaintenanceCount(int idThietBi) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idThietBi=?");
+            stm.setInt(1, idThietBi);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+    
+    public LocalDateTime getDateTime(int idThietBi) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri FROM baotri WHERE idThietBi=?");
+            stm.setInt(1, idThietBi);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                return rs.getTimestamp("ngayBaoTri").toLocalDateTime();
+            }
+        }
+        return null;
     }
 }

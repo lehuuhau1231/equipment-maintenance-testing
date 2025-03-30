@@ -14,6 +14,8 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +65,6 @@ public class LichBaoTriController implements Initializable {
         loadDataMaintenance();
         loadDataEmployee();
         loadColumn();
-
     }
 
     public void setDeviceData(ThietBi t) {
@@ -89,19 +90,39 @@ public class LichBaoTriController implements Initializable {
     }
 
     public void createSchedule(ActionEvent e) {
-        if (maintenanceDate.getValue() != null || cbEmployee.getValue() != null) {
-            if (maintenanceDate.getValue().isAfter(LocalDate.now().plusMonths(6)) && maintenanceDate.getValue().isBefore(LocalDate.now().plusYears(1))) {
+        if (maintenanceDate.getValue() != null && cbEmployee.getValue() != null && txtDeviceCode.getText().equals("") == false && txtName.getText().equals("") == false) {
+            LocalDate d = null;
+            try {
+                d = maintenanceService.getDateTime(Integer.parseInt(txtDeviceCode.getText())).toLocalDate();
+            } catch (SQLException ex) {
+                Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            LocalDate dateNow = (d != null) ? d : LocalDate.now();
+            System.out.println(dateNow);
+            if (maintenanceDate.getValue().isAfter(dateNow.plusMonths(6)) && maintenanceDate.getValue().isBefore(dateNow.plusYears(1))) {
                 LocalDate date = maintenanceDate.getValue();
                 LocalDateTime ngayBaoTri = date.atTime(hourSpinner.getValue(), 0);
-
+                int idNhanVien = -1;
                 try {
-                    int idThietBi = equipmentService.getIdEquipment(txtName.getText());
-                    int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
-                    maintenanceService.addMaintenanceSchedule(ngayBaoTri, idThietBi, idNhanVien);
-                    alert.getAlert("Lưu thành công!").show();
-                    loadDataMaintenance();
+                    idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
                 } catch (SQLException ex) {
                     Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (checkEmployeeWorkload(idNhanVien, date, LocalTime.of(hourSpinner.getValue(), 0)) == true) {
+                    if (checkSameTime(idNhanVien, date, LocalTime.of(hourSpinner.getValue(), 0)) == true) {
+                        try {
+                            int idThietBi = equipmentService.getIdEquipment(txtName.getText());
+                            maintenanceService.addMaintenanceSchedule(ngayBaoTri, idThietBi, idNhanVien);
+                            alert.getAlert("Lưu thành công!").show();
+                            loadDataMaintenance();
+                        } catch (SQLException ex) {
+                            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        alert.getAlert("Lỗi! Nhân viên làm trùng giờ").show();
+                    }
+                } else {
+                    alert.getAlert("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày").show();
                 }
             } else {
                 alert.getAlert("Vui lòng nhập ngày bảo trì trong khoảng 6 đến 12 tháng").show();
@@ -129,6 +150,47 @@ public class LichBaoTriController implements Initializable {
         colEmployee.setPrefWidth(130);
 
         tbMaintenance.getColumns().addAll(colDeviceCode, colName, colMaintenanceDate, colEmployee);
+    }
+
+    public boolean checkEmployeeWorkload(int id, LocalDate date, LocalTime time) {
+        if (id > 0) {
+            try {
+                List<LocalDateTime> dateTime = maintenanceService.getListDateTime(id);
+                long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date) && t.toLocalTime().equals(time)).count();
+                return count <= 2;
+            } catch (SQLException ex) {
+                Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkSameTime(int id, LocalDate date, LocalTime time) {
+        List<LocalDateTime> dateTime;
+        try {
+            dateTime = maintenanceService.getListDateTime(id);
+            long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date) && t.toLocalTime().equals(time)).count();
+            return count == 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public void switchTabEquipment(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "DanhSachThietBi.fxml");
+    }
+
+    public void switchTabFix(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "LichSuaChua.fxml");
+    }
+
+    public void switchTabEmployee(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "DanhSachNhanVien.fxml");
     }
 
 }

@@ -4,7 +4,6 @@
  */
 package com.qhuong.services;
 
-import com.qhuong.pojo.Admin;
 import com.qhuong.pojo.JdbcUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +16,7 @@ import org.mindrot.jbcrypt.BCrypt;
  * @author lehuu
  */
 public class AdminServices {
-    public static int idAdmin = 4;
+    public static int idAdmin = 1;
     
     public boolean getAdmin(String username,String password) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {

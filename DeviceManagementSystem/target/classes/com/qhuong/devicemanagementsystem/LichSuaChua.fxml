@@ -30,12 +30,12 @@
                      </font>
                   </Label>
                   <Line endX="91.39999389648438" layoutX="111.0" layoutY="140.0" startX="-85.39999389648438" stroke="WHITE" />
-                  <Button layoutX="15.0" layoutY="180.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách thiết bị">
+                  <Button layoutX="15.0" layoutY="180.0" mnemonicParsing="false" onAction="#switchTabEquipmnt" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách thiết bị">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="232.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch bảo trì">
+                  <Button layoutX="15.0" layoutY="232.0" mnemonicParsing="false" onAction="#switchTabMaintenance" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch bảo trì">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -45,7 +45,7 @@
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="340.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách nhân viên">
+                  <Button layoutX="15.0" layoutY="340.0" mnemonicParsing="false" onAction="#switchTabEmployee" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách nhân viên">
                      <font>
                         <Font size="14.0" />
                      </font>
