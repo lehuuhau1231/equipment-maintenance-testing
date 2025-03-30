@@ -33,12 +33,12 @@
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="232.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch bảo trì">
+                  <Button layoutX="15.0" layoutY="232.0" mnemonicParsing="false" onAction="#switchTabMaintenance" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch bảo trì">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="288.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch sửa chữa">
+                  <Button layoutX="15.0" layoutY="288.0" mnemonicParsing="false" onAction="#switchTabFix" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch sửa chữa">
                      <font>
                         <Font size="14.0" />
                      </font>

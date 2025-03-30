@@ -6,6 +6,7 @@ package com.qhuong.devicemanagementsystem;
 
 import com.qhuong.pojo.ThietBi;
 import com.qhuong.pojo.TrangThai;
+import com.qhuong.services.BaoTriServices;
 import com.qhuong.services.ThietBiServices;
 import com.qhuong.services.TrangThaiServices;
 import java.io.IOException;
@@ -60,6 +61,7 @@ public class DanhSachThietBiController implements Initializable {
     private static Utils alert = new Utils();
     private String tenTrangThaiDaThanhLy;
     private int idEquipment;
+    private BaoTriServices maintenanceServices = new BaoTriServices();
 
     /**
      * Initializes the controller class.
@@ -130,16 +132,17 @@ public class DanhSachThietBiController implements Initializable {
             Button btnMaintenance = new Button("Bảo trì");
             Button btnFix = new Button("Sửa chữa");
             HBox hbox = new HBox(10, btnMaintenance, btnFix);
+
             {
                 btnMaintenance.setOnAction(evt -> {
                     try {
                         ThietBi t = getTableView().getItems().get(getIndex());
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("LichBaoTri.fxml"));
                         Parent maintenance = loader.load();
-                    
+
                         LichBaoTriController controller = loader.getController();
                         controller.setDeviceData(t);
-                        
+
                         Stage stage = (Stage) ((Node) evt.getSource()).getScene().getWindow();
                         Scene maintenanceScene = new Scene(maintenance);
                         stage.setScene(maintenanceScene);
@@ -148,16 +151,16 @@ public class DanhSachThietBiController implements Initializable {
                         Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
-                
+
                 btnFix.setOnAction(evt -> {
                     try {
                         ThietBi t = getTableView().getItems().get(getIndex());
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("LichSuaChua.fxml"));
                         Parent fix = loader.load();
-                        
+
                         LichSuaChuaController controller = loader.getController();
                         controller.setDeviceData(t);
-                        
+
                         Scene fixScene = new Scene(fix);
                         Stage stage = (Stage) ((Node) evt.getSource()).getScene().getWindow();
                         stage.setScene(fixScene);
@@ -167,17 +170,23 @@ public class DanhSachThietBiController implements Initializable {
                     }
                 });
             }
-            
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || getIndex() >= getTableView().getItems().size()) {
                     setGraphic(null); // Ẩn nút nếu dòng trống
                 } else {
-                    ThietBi t = getTableView().getItems().get(getIndex());
-                    String trangThai = statusMap.get(t.getIdTrangThai());
-                    btnMaintenance.setDisable(!"Đang hoạt động".equals(trangThai));
-                    setGraphic(hbox); // Hiển thị nếu có dữ liệu
+                    try {
+                        ThietBi t = getTableView().getItems().get(getIndex());
+                        String trangThai = statusMap.get(t.getIdTrangThai());
+                        if("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceCount(t.getId()) == 2) {
+                            btnMaintenance.setDisable(true);
+                        }
+                        setGraphic(hbox); // Hiển thị nếu có dữ liệu
+                    } catch (SQLException ex) {
+                        Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -261,5 +270,19 @@ public class DanhSachThietBiController implements Initializable {
         }
         return idTrangThai;
     }
-
+    
+    public void switchTabMaintenance(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "LichBaoTri.fxml");
+    }
+    
+    public void switchTabFix(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "LichSuaChua.fxml");
+    }
+    
+    public void switchTabEmployee(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
 }
