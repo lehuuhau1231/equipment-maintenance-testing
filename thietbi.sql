@@ -54,12 +54,16 @@ DROP TABLE IF EXISTS `baotri`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `baotri` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `ngayLapLich` datetime NOT NULL,
   `ngayBaoTri` datetime NOT NULL,
   `idThietBi` int NOT NULL,
+  `idNhanVien` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `thietbi_baotri_fk_idx` (`idThietBi`),
+  KEY `nhanvien_baotri_idx` (`idNhanVien`),
+  CONSTRAINT `nhanvien_baotri` FOREIGN KEY (`idNhanVien`) REFERENCES `nhanviensuachua` (`id`),
   CONSTRAINT `thietbi_baotri` FOREIGN KEY (`idThietBi`) REFERENCES `thietbi` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,7 +72,6 @@ CREATE TABLE `baotri` (
 
 LOCK TABLES `baotri` WRITE;
 /*!40000 ALTER TABLE `baotri` DISABLE KEYS */;
-INSERT INTO `baotri` VALUES (1,'2024-03-22 10:30:00',2),(2,'2024-02-10 11:30:00',2),(3,'2024-09-22 14:00:00',3),(4,'2025-03-01 09:45:00',4),(5,'2024-12-01 20:30:00',5);
 /*!40000 ALTER TABLE `baotri` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,4 +206,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-24 19:31:04
+-- Dump completed on 2025-03-27 15:42:40

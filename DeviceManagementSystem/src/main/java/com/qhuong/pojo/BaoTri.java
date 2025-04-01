@@ -12,12 +12,14 @@ import java.time.LocalDateTime;
  */
 public class BaoTri {
     private int id;
+    private LocalDateTime ngayLapLich;
     private LocalDateTime ngayBaoTri;
     private String tenThietBi;
     private String tenNV;
     
-    public BaoTri(int id, LocalDateTime ngayBaoTri, String idThietBi, String idNhanVien){
+    public BaoTri(int id, LocalDateTime ngayLapLich, LocalDateTime ngayBaoTri, String idThietBi, String idNhanVien){
         this.id = id;
+        this.ngayLapLich = ngayLapLich;
         this.ngayBaoTri = ngayBaoTri;
         this.tenThietBi = idThietBi;
         this.tenNV = idNhanVien;
@@ -77,6 +79,20 @@ public class BaoTri {
      */
     public void setIdNhanVien(String tenNV) {
         this.tenNV = tenNV;
+    }
+
+    /**
+     * @return the ngayLapLich
+     */
+    public LocalDateTime getNgayLapLich() {
+        return ngayLapLich;
+    }
+
+    /**
+     * @param ngayLapLich the ngayLapLich to set
+     */
+    public void setNgayLapLich(LocalDateTime ngayLapLich) {
+        this.ngayLapLich = ngayLapLich;
     }
     
 }

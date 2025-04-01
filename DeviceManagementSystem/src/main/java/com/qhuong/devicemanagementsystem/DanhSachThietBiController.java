@@ -182,7 +182,8 @@ public class DanhSachThietBiController implements Initializable {
                         String trangThai = statusMap.get(t.getIdTrangThai());
                         if("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceCount(t.getId()) == 2) {
                             btnMaintenance.setDisable(true);
-                        }
+                        } else
+                            btnMaintenance.setDisable(false);
                         setGraphic(hbox); // Hiển thị nếu có dữ liệu
                     } catch (SQLException ex) {
                         Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
