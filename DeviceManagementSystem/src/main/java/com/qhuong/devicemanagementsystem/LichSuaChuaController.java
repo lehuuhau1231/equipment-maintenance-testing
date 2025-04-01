@@ -4,8 +4,10 @@
  */
 package com.qhuong.devicemanagementsystem;
 
+import com.qhuong.pojo.ThietBi;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 
 /**
@@ -23,4 +25,20 @@ public class LichSuaChuaController implements Initializable {
         // TODO
     }    
     
+    public void setDeviceData(ThietBi t) {}
+    
+    public void switchTabMaintenance(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "LichBaoTri.fxml");
+    }
+    
+    public void switchTabEquipmnt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "DanhSachThietBi.fxml");
+    }
+    
+    public void switchTabEmployee(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
 }

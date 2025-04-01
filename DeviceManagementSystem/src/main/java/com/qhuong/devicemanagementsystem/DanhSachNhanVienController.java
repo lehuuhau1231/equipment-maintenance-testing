@@ -6,6 +6,7 @@ package com.qhuong.devicemanagementsystem;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 
 /**
@@ -23,4 +24,18 @@ public class DanhSachNhanVienController implements Initializable {
         // TODO
     }    
     
+    public void switchTabMaintenance(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "LichBaoTri.fxml");
+    }
+    
+    public void switchTabFix(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "LichSuaChua.fxml");
+    }
+    
+    public void switchTabEquipment(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "DanhSachThietBi.fxml");
+    }
 }
