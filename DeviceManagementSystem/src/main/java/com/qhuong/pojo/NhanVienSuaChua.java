@@ -29,6 +29,10 @@ public class NhanVienSuaChua {
         this.diaChi = diaChi;
         this.email = email;
     };
+    
+    public NhanVienSuaChua(String tenNV) {
+        this.tenNV = tenNV;
+    };
 
     @Override
     public String toString() {
