@@ -5,4 +5,4 @@ Các ràng buộc:
 3. qui định thời gian được phép cập nhật lịch bảo trì là trước ngày bảo trì là bnhiu ( trước ngày bảo trì 2 ngày )
 4. những thiết bị có lịch bảo trì / sửa chửa mà chuyển sang trạng thái "đang hoạt động" hoặc "đã thanh lý" trc khi đến ngày bảo trì / sửa thì lịch bảo trì/ sửa chữa phải được HỦY 
 5. số lần lập lịch bảo trì cho 1 thiết bị là 2 lần
-6. ô nhập tên thiết bị , mô tả, chi phí không được nhập các ký tự đặc biệt
+6. ô nhập tên thiết bị, tên nhân viên, mô tả, chi phí không được nhập các ký tự đặc biệt
