@@ -14,13 +14,30 @@ public class NhanVienSuaChua {
     private int id;
     private String tenNV;
     private Date ngaySinh;
-    private int cccd;
-    private int soDt;
+    private String CCCD;
+    private String soDT;
     private String diaChi;
     private String email;
     private int idAdmin;
     
-    public NhanVienSuaChua() {};
+    public NhanVienSuaChua(int id, String tenNV, Date ngaySinh, String CCCD, String SoDT, String diaChi, String email) {
+        this.id = id;
+        this.tenNV = tenNV;
+        this.ngaySinh = ngaySinh;
+        this.CCCD = CCCD;
+        this.soDT = soDT;
+        this.diaChi = diaChi;
+        this.email = email;
+    };
+    
+    public NhanVienSuaChua(String tenNV) {
+        this.tenNV = tenNV;
+    };
+
+    @Override
+    public String toString() {
+        return tenNV;
+    }
 
     /**
      * @return the id
@@ -67,29 +84,29 @@ public class NhanVienSuaChua {
     /**
      * @return the cccd
      */
-    public int getCccd() {
-        return cccd;
+    public String getCCCD() {
+        return CCCD;
     }
 
     /**
      * @param cccd the cccd to set
      */
-    public void setCccd(int cccd) {
-        this.cccd = cccd;
+    public void setCCCD(String CCCD) {
+        this.CCCD = CCCD;
     }
 
     /**
      * @return the soDt
      */
-    public int getSoDt() {
-        return soDt;
+    public String getSoDt() {
+        return soDT;
     }
 
     /**
      * @param soDt the soDt to set
      */
-    public void setSoDt(int soDt) {
-        this.soDt = soDt;
+    public void setSoDT(String soDT) {
+        this.soDT = soDT;
     }
 
     /**

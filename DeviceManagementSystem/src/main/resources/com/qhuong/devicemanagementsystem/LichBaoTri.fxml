@@ -31,7 +31,7 @@
                      </font>
                   </Label>
                   <Line endX="91.39999389648438" layoutX="111.0" layoutY="140.0" startX="-85.39999389648438" stroke="WHITE" />
-                  <Button layoutX="15.0" layoutY="180.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách thiết bị">
+                  <Button layoutX="15.0" layoutY="180.0" mnemonicParsing="false" onAction="#switchTabEquipment" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách thiết bị">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -41,12 +41,12 @@
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="288.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch sửa chữa">
+                  <Button layoutX="15.0" layoutY="288.0" mnemonicParsing="false" onAction="#switchTabFix" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch sửa chữa">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="340.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách nhân viên">
+                  <Button layoutX="15.0" layoutY="340.0" mnemonicParsing="false" onAction="#switchTabEmployee" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách nhân viên">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -87,22 +87,27 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <DatePicker layoutX="409.0" layoutY="102.0" prefHeight="26.0" prefWidth="150.0" />
-                  <TextField layoutX="137.0" layoutY="63.0" />
-                  <TextField layoutX="410.0" layoutY="63.0" />
-                  <TableView layoutX="18.0" layoutY="187.0" prefHeight="242.0" prefWidth="642.0" />
-                  <Button layoutX="619.0" layoutY="445.0" mnemonicParsing="false" text="Lưu">
+                  <DatePicker fx:id="maintenanceDate" editable="false" layoutX="409.0" layoutY="102.0" prefHeight="26.0" prefWidth="150.0" />
+                  <TextField fx:id="txtDeviceCode" editable="false" layoutX="137.0" layoutY="63.0" />
+                  <TextField fx:id="txtName" editable="false" layoutX="410.0" layoutY="63.0" />
+                  <TableView fx:id="tbMaintenance" layoutX="18.0" layoutY="187.0" prefHeight="242.0" prefWidth="642.0" />
+                  <Button fx:id="createSchedule" layoutX="591.0" layoutY="445.0" mnemonicParsing="false" onAction="#createSchedule" text="Lập lịch">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <ComboBox layoutX="136.0" layoutY="140.0" prefWidth="150.0" />
+                  <ComboBox fx:id="cbEmployee" layoutX="136.0" layoutY="140.0" prefWidth="150.0" />
                   <Label layoutX="308.0" layoutY="105.0" text="Ngày bảo trì : ">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Spinner layoutX="138.0" layoutY="103.0" />
+                  <Spinner fx:id="hourSpinner" layoutX="138.0" layoutY="103.0" />
+                  <Button fx:id="updateSchedule" layoutX="494.0" layoutY="445.0" mnemonicParsing="false" onAction="#updateScheduleMaintenance" text="Cập nhật">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
                </children>
             </AnchorPane>
          </children>

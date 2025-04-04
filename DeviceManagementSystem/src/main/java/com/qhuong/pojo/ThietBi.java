@@ -4,6 +4,8 @@
  */
 package com.qhuong.pojo;
 
+import java.util.Date;
+
 /**
  *
  * @author lehuu
@@ -11,11 +13,20 @@ package com.qhuong.pojo;
 public class ThietBi {
     private int id;
     private String tenThietBi;
-    private String trangThai;
-    private boolean thanhLy;
+    private Date ngayNhap;
+    private int idTrangThai;
+    private Date ngayThanhLy;
     private int idAdmin;
     
     public ThietBi() {};
+    
+    public ThietBi(int id, String tenThietBi, Date ngayNhap, int idTrangThai, Date ngayThanhLy) {
+        this.id = id;
+        this.tenThietBi = tenThietBi;
+        this.idTrangThai = idTrangThai;
+        this.ngayNhap = ngayNhap;
+        this.ngayThanhLy = ngayThanhLy;
+    }
 
     /**
      * @return the id
@@ -46,30 +57,58 @@ public class ThietBi {
     }
 
     /**
-     * @return the trangThai
+     * @return the idTrangThai
      */
-    public String getTrangThai() {
-        return trangThai;
+    public int getIdTrangThai() {
+        return idTrangThai;
     }
 
     /**
-     * @param trangThai the trangThai to set
+     * @param idTrangThai the idTrangThai to set
      */
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
+    public void setIdTrangThai(int idTrangThai) {
+        this.idTrangThai = idTrangThai;
     }
 
     /**
      * @return the thanhLy
      */
-    public boolean isThanhLy() {
-        return thanhLy;
+    public Date getNgayThanhLy() {
+        return ngayThanhLy;
     }
 
     /**
-     * @param thanhLy the thanhLy to set
+     * @param ngayThanhLy the thanhLy to set
      */
-    public void setThanhLy(boolean thanhLy) {
-        this.thanhLy = thanhLy;
+    public void setNgayThanhLy(Date ngayThanhLy) {
+        this.ngayThanhLy = ngayThanhLy;
+    }
+
+    /**
+     * @return the ngayNhap
+     */
+    public Date getNgayNhap() {
+        return ngayNhap;
+    }
+
+    /**
+     * @param ngayNhap the ngayNhap to set
+     */
+    public void setNgayNhap(Date ngayNhap) {
+        this.ngayNhap = ngayNhap;
+    }
+
+    /**
+     * @return the idAdmin
+     */
+    public int getIdAdmin() {
+        return idAdmin;
+    }
+
+    /**
+     * @param idAdmin the idAdmin to set
+     */
+    public void setIdAdmin(int idAdmin) {
+        this.idAdmin = idAdmin;
     }
 }

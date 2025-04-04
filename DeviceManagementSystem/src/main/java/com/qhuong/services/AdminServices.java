@@ -4,7 +4,6 @@
  */
 package com.qhuong.services;
 
-import com.qhuong.pojo.Admin;
 import com.qhuong.pojo.JdbcUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,14 +16,19 @@ import org.mindrot.jbcrypt.BCrypt;
  * @author lehuu
  */
 public class AdminServices {
+    public static int idAdmin = 1;
+    
     public boolean getAdmin(String username,String password) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=?");
             stm.setString(1, username);
             ResultSet rs = stm.executeQuery();
             if(rs.next()) {
-                System.out.println("vo");
-                return BCrypt.checkpw(password, rs.getString("password"));
+//                return BCrypt.checkpw(password, rs.getString("password"));
+                if(BCrypt.checkpw(password, rs.getString("password")) == true) {
+                    this.idAdmin = rs.getInt("id");
+                    return true;
+                }
             }
         }
         return false;
