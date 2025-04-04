@@ -7,6 +7,7 @@ package com.qhuong.devicemanagementsystem;
 import com.qhuong.pojo.ThietBi;
 import com.qhuong.pojo.TrangThai;
 import com.qhuong.services.BaoTriServices;
+import com.qhuong.services.NhanVienSuaThietBiServices;
 import com.qhuong.services.ThietBiServices;
 import com.qhuong.services.TrangThaiServices;
 import java.io.IOException;
@@ -184,6 +185,13 @@ public class DanhSachThietBiController implements Initializable {
                             btnMaintenance.setDisable(true);
                         } else
                             btnMaintenance.setDisable(false);
+                        NhanVienSuaThietBiServices repairService = new NhanVienSuaThietBiServices();
+                        if(repairService.checkIdEquipment(t.getId()) == true)
+                            btnFix.setDisable(true);
+                        else if("Hỏng hóc".equals(trangThai))
+                            btnFix.setDisable(false);
+                        else
+                            btnFix.setDisable(true);
                         setGraphic(hbox); // Hiển thị nếu có dữ liệu
                     } catch (SQLException ex) {
                         Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);

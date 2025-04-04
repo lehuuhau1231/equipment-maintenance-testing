@@ -122,13 +122,14 @@ CREATE TABLE `nhanviensuathietbi` (
   `ngaySua` datetime NOT NULL,
   `idThietBi` int NOT NULL,
   `idNhanVien` int NOT NULL,
-  `chiPhi` double NOT NULL,
+  `chiPhi` double DEFAULT NULL,
+  `moTa` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `nvsuachua_nvsuathietbii_idx` (`idNhanVien`),
   KEY `thietbi_nvsuathietbii_idx` (`idThietBi`),
   CONSTRAINT `nvsuachua_nvsuathietbii` FOREIGN KEY (`idNhanVien`) REFERENCES `nhanviensuachua` (`id`),
   CONSTRAINT `thietbi_nvsuathietbii` FOREIGN KEY (`idThietBi`) REFERENCES `thietbi` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -137,7 +138,6 @@ CREATE TABLE `nhanviensuathietbi` (
 
 LOCK TABLES `nhanviensuathietbi` WRITE;
 /*!40000 ALTER TABLE `nhanviensuathietbi` DISABLE KEYS */;
-INSERT INTO `nhanviensuathietbi` VALUES (1,'2024-02-12 12:00:00',3,1,500000),(2,'2024-03-22 11:00:00',4,4,100000),(3,'2024-05-06 09:00:00',2,3,1000000),(4,'2024-08-29 20:00:00',3,1,200000),(5,'2024-10-05 15:00:00',2,3,1000000);
 /*!40000 ALTER TABLE `nhanviensuathietbi` ENABLE KEYS */;
 UNLOCK TABLES;
 
