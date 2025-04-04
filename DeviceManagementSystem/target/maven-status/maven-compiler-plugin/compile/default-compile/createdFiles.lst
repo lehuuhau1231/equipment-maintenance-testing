@@ -1,5 +1,6 @@
 com\qhuong\pojo\Admin.class
 com\qhuong\pojo\JdbcUtils.class
+com\qhuong\services\NhanVienSuaThietBiServices.class
 com\qhuong\services\AdminServices.class
 com\qhuong\devicemanagementsystem\SecondaryController.class
 com\qhuong\devicemanagementsystem\PrimaryController.class
@@ -9,9 +10,11 @@ module-info.class
 com\qhuong\services\BaoTriServices.class
 com\qhuong\devicemanagementsystem\DanhSachThietBiController$1.class
 com\qhuong\devicemanagementsystem\DanhSachNhanVienController.class
+com\qhuong\devicemanagementsystem\LichSuaChuaController$1.class
 com\qhuong\devicemanagementsystem\LichSuaChuaController.class
 com\qhuong\pojo\TrangThai.class
 com\qhuong\services\NhanVienSuaChuaServices.class
+com\qhuong\devicemanagementsystem\ThanhToanController.class
 com\qhuong\pojo\ThietBi.class
 com\qhuong\pojo\NhanVienSuaThietBi.class
 com\qhuong\devicemanagementsystem\App.class

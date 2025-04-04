@@ -24,9 +24,9 @@ public class PrimaryController implements Initializable{
     Utils alert = new Utils();
     
     @FXML
-    private void switchToSecondary() throws IOException {
-        App.setRoot("secondary");
-    }
+        private void switchToSecondary() throws IOException {
+            App.setRoot("secondary");
+        }
     
     public void loginHandler(ActionEvent e) throws SQLException, IOException {
         if (txtUsername.getText().isEmpty()) {

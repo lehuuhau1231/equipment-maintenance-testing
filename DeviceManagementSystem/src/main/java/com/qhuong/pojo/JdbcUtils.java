@@ -22,7 +22,7 @@ public class JdbcUtils {
     }
     
     public static Connection getConn() throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/thietbi", "root", "1234");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/equipmentdb", "root", "123456");
         conn.setAutoCommit(false);
         return conn;
     }

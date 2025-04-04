@@ -164,7 +164,7 @@ public class LichBaoTriController implements Initializable {
         if (id > 0) {
             try {
                 List<LocalDateTime> dateTime = maintenanceService.getListDateTime(id);
-                long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date) && t.toLocalTime().equals(time)).count();
+                long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date)).count();
                 return count <= 2;
             } catch (SQLException ex) {
                 Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
@@ -195,7 +195,7 @@ public class LichBaoTriController implements Initializable {
         try {
             LocalDateTime d = maintenanceService.getMaintenanceDate(idThietBi);
             LocalDate dateNow = (d != null) ? d.toLocalDate() : LocalDate.now();
-            return (maintenanceDate.getValue().isAfter(dateNow.plusMonths(6)) && maintenanceDate.getValue().isBefore(dateNow.plusYears(1)));
+            return (maintenanceDate.getValue().isAfter(dateNow.plusMonths(3)) && maintenanceDate.getValue().isBefore(dateNow.plusMonths(6)));
         } catch (SQLException ex) {
             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -212,7 +212,7 @@ public class LichBaoTriController implements Initializable {
                 d = maintenanceService.getScheduleDate(idThietBi).toLocalDate();
             else if (maintenanceTimes == 2)
                 d = maintenanceService.getMaintenanceDate(idThietBi).toLocalDate();
-            return (maintenanceDate.getValue().isAfter(d.plusMonths(6)) && maintenanceDate.getValue().isBefore(d.plusYears(1)));
+            return (maintenanceDate.getValue().isAfter(d.plusMonths(3)) && maintenanceDate.getValue().isBefore(d.plusMonths(6)));
         } catch (SQLException ex) {
             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
         }
