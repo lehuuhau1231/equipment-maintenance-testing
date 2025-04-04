@@ -4,6 +4,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -56,6 +57,11 @@
                      </image>
                   </ImageView>
                   <Button layoutX="49.0" layoutY="462.0" mnemonicParsing="false" styleClass="login-btn" stylesheets="@Styles.css" text="LogOut" />
+                  <Button layoutX="11.0" layoutY="384.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Hóa đơn">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
                </children>
             </AnchorPane>
             <AnchorPane layoutX="217.0" prefHeight="500.0" prefWidth="697.0" styleClass="right-form" stylesheets="@Styles.css">
@@ -66,42 +72,42 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label layoutX="11.0" layoutY="66.0" text="Mã thiết bị :">
+                  <Label layoutX="48.0" layoutY="66.0" text="Mã thiết bị :">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="12.0" layoutY="108.0" text="Thời gian sửa chữa : ">
+                  <Label layoutX="338.0" layoutY="107.0" text="Ngày sửa chữa : ">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="313.0" layoutY="66.0" text="Tên thiết bị : ">
+                  <Label layoutX="374.0" layoutY="69.0" text="Tên thiết bị : ">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="313.0" layoutY="108.0" text="Nhân viên :">
+                  <Label layoutX="48.0" layoutY="149.0" text="Nhân viên :">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <DatePicker layoutX="136.0" layoutY="105.0" prefHeight="26.0" prefWidth="150.0" />
-                  <TextField layoutX="137.0" layoutY="63.0" />
-                  <TextField layoutX="399.0" layoutY="63.0" />
-                  <TableView layoutX="18.0" layoutY="187.0" prefHeight="242.0" prefWidth="642.0" />
-                  <Button layoutX="615.0" layoutY="445.0" mnemonicParsing="false" text="Lưu">
+                  <DatePicker fx:id="repairDate" editable="false" layoutX="462.0" layoutY="104.0" prefHeight="26.0" prefWidth="150.0" />
+                  <TextField fx:id="txtDeviceCode" editable="false" layoutX="137.0" layoutY="63.0" />
+                  <TextField fx:id="txtName" editable="false" layoutX="460.0" layoutY="66.0" />
+                  <TableView fx:id="tbRepair" layoutX="18.0" layoutY="187.0" prefHeight="242.0" prefWidth="642.0" />
+                  <Button layoutX="615.0" layoutY="445.0" mnemonicParsing="false" onAction="#saveRepairSchedule" text="Lưu">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <ComboBox layoutX="398.0" layoutY="105.0" prefWidth="150.0" />
-                  <Label layoutX="14.0" layoutY="148.0" text="Mô tả :">
+                  <ComboBox fx:id="cbEmployee" layoutX="136.0" layoutY="146.0" prefWidth="150.0" />
+                  <Spinner fx:id="hourSpinner" layoutX="134.0" layoutY="105.0" />
+                  <Label layoutX="48.0" layoutY="107.0" text="Thời gian:">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField layoutX="76.0" layoutY="146.0" prefHeight="26.0" prefWidth="216.0" />
                </children>
             </AnchorPane>
          </children>
