@@ -4,7 +4,6 @@
  */
 package com.qhuong.devicemanagementsystem;
 
-import com.qhuong.pojo.BaoTri;
 import com.qhuong.pojo.NhanVienSuaChua;
 import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.pojo.ThietBi;
@@ -83,7 +82,7 @@ public class LichSuaChuaController implements Initializable {
 
     public void loadDataRepair() {
         try {
-            tbRepair.setItems(FXCollections.observableList(repairService.getNhanVienSuaThietBi()));
+            tbRepair.setItems(FXCollections.observableList(repairService.getNhanVienSuaThietBi(false)));
         } catch (SQLException ex) {
             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -242,5 +241,10 @@ public class LichSuaChuaController implements Initializable {
     public void switchTabEmployee(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
+    
+    public void switchTabReceipt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "ThanhToan.fxml");
     }
 }
