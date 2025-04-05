@@ -82,14 +82,14 @@ public class NhanVienSuaChua {
     }
 
     /**
-     * @return the cccd
+     * @return the CCCD
      */
     public String getCCCD() {
         return CCCD;
     }
 
     /**
-     * @param cccd the cccd to set
+     * @param CCCD the CCCD to set
      */
     public void setCCCD(String CCCD) {
         this.CCCD = CCCD;
@@ -103,7 +103,7 @@ public class NhanVienSuaChua {
     }
 
     /**
-     * @param soDt the soDt to set
+     * @param soDT the soDt to set
      */
     public void setSoDT(String soDT) {
         this.soDT = soDT;

@@ -324,5 +324,10 @@ public class LichBaoTriController implements Initializable {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
     }
+    
+    public void switchTabReceipt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "ThanhToan.fxml");
+    }
 
 }

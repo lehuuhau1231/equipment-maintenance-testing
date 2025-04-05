@@ -79,6 +79,11 @@ public class DanhSachThietBiController implements Initializable {
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        txtName.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("[\\p{L}\\p{N} ]*")) {
+                txtName.setText(oldValue);
+            }
+        });
 
         loadStatus(false);
         loadColumn();
@@ -181,17 +186,19 @@ public class DanhSachThietBiController implements Initializable {
                     try {
                         ThietBi t = getTableView().getItems().get(getIndex());
                         String trangThai = statusMap.get(t.getIdTrangThai());
-                        if("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceCount(t.getId()) == 2) {
+                        if ("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceCount(t.getId()) == 2) {
                             btnMaintenance.setDisable(true);
-                        } else
+                        } else {
                             btnMaintenance.setDisable(false);
+                        }
                         NhanVienSuaThietBiServices repairService = new NhanVienSuaThietBiServices();
-                        if(repairService.checkIdEquipment(t.getId()) == true)
+                        if (repairService.checkIdEquipment(t.getId()) == true) {
                             btnFix.setDisable(true);
-                        else if("Hỏng hóc".equals(trangThai))
+                        } else if ("Hỏng hóc".equals(trangThai)) {
                             btnFix.setDisable(false);
-                        else
+                        } else {
                             btnFix.setDisable(true);
+                        }
                         setGraphic(hbox); // Hiển thị nếu có dữ liệu
                     } catch (SQLException ex) {
                         Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
@@ -205,18 +212,24 @@ public class DanhSachThietBiController implements Initializable {
     public void addEquipment(ActionEvent e) {
         if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
-        } else {
-            try {
-                int idTrangThai = getValueStatusMap();
-                equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
-                alert.getAlert("Thêm thiết bị thành công!").show();
-                txtName.clear();
-                importDate.setValue(null);
-                cbStatus.setValue(null);
-                loadData();
-            } catch (SQLException ex) {
-                Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            return;
+        }
+        
+        if(importDate.getValue().equals(LocalDate.now()) == false) {
+            alert.getAlert("Vui lòng điền ngày nhập là ngày hiện tại").show();
+            return;
+        }
+        
+        try {
+            int idTrangThai = getValueStatusMap();
+            equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
+            alert.getAlert("Thêm thiết bị thành công!").show();
+            txtName.clear();
+            importDate.setValue(null);
+            cbStatus.setValue(null);
+            loadData();
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -279,19 +292,24 @@ public class DanhSachThietBiController implements Initializable {
         }
         return idTrangThai;
     }
-    
+
     public void switchTabMaintenance(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "LichBaoTri.fxml");
     }
-    
+
     public void switchTabFix(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "LichSuaChua.fxml");
     }
-    
+
     public void switchTabEmployee(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
+
+    public void switchTabReceipt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "ThanhToan.fxml");
     }
 }
