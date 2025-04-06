@@ -44,6 +44,18 @@ public class ThietBiServices {
         }
         return false;
     }
+    
+    public List<String> getEquipmentName() throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            List<String> names = new ArrayList<>();
+            PreparedStatement stm = conn.prepareCall("SELECT tenThietBi FROM thietbi");
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                names.add(rs.getString("tenThietBi"));
+            }
+            return names;
+        }
+    }
 
     public void addThietBi(String tenThietBi, LocalDate ngayNhap, int idTrangThai) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
@@ -91,5 +103,15 @@ public class ThietBiServices {
                 return rs.getInt("id");
         }
         return -1;
+    }
+    
+    public void updateStatus(int idThietbi, int idTrangThai) throws SQLException {
+        try(Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("UPDATE thietbi SET idTrangThai=? WHERE id=?");
+            stm.setInt(1, idTrangThai);
+            stm.setInt(2, idThietbi);
+            stm.executeUpdate();
+            conn.commit();
+        }
     }
 }

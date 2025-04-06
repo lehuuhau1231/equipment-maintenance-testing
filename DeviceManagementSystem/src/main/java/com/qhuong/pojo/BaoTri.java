@@ -24,6 +24,11 @@ public class BaoTri {
         this.tenThietBi = idThietBi;
         this.tenNV = idNhanVien;
     };
+    
+    public BaoTri(LocalDateTime ngayBaotri, String tenThietBi) {
+        this.ngayBaoTri = ngayBaotri;
+        this.tenThietBi = tenThietBi;
+    }
 
     /**
      * @return the id

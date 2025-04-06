@@ -8,10 +8,9 @@ import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.services.NhanVienSuaChuaServices;
 import com.qhuong.services.NhanVienSuaThietBiServices;
 import com.qhuong.services.ThietBiServices;
+import com.qhuong.services.TrangThaiServices;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,8 +19,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -51,6 +48,7 @@ public class ThanhToanController implements Initializable {
     private TextField txtHour;
 
     private int idReceipt;
+    private int idThietBi;
     private static final Utils alert = new Utils();
     private static final ThietBiServices equipmentService = new ThietBiServices();
     private static final NhanVienSuaChuaServices employeeService = new NhanVienSuaChuaServices();
@@ -73,12 +71,17 @@ public class ThanhToanController implements Initializable {
     }
 
     public void setDeviceData(NhanVienSuaThietBi t) {
-        txtDeviceCode.setText(String.valueOf(t.getId()));
+        try {
+            idThietBi = equipmentService.getIdEquipment(txtName.getText().trim());
+        } catch (SQLException ex) {
+            Logger.getLogger(ThanhToanController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        txtDeviceCode.setText(String.valueOf(idThietBi));
         txtName.setText(t.getTenThietBi());
         txtEmployee.setText(t.getTenNV());
         repairDate.setValue(t.getNgaySua().toLocalDate());
         txtHour.setText(String.valueOf(t.getNgaySua().toLocalTime().getHour()));
-        
+
         idReceipt = t.getId();
     }
 
@@ -128,6 +131,11 @@ public class ThanhToanController implements Initializable {
                 int idNhanVien = employeeService.getIdEmployee(txtEmployee.getText());
                 repairService.updateReceipt(idReceipt, Double.parseDouble(txtPrice.getText()), txtDescription.getText());
                 alert.getAlert("Thanh toán thành công!").show();
+
+                TrangThaiServices statusService = new TrangThaiServices();
+                int idTrangThai = statusService.getIdStatus("Đang hoạt động");
+                equipmentService.updateStatus(idThietBi, idTrangThai);
+
                 loadData();
                 txtDeviceCode.setText("");
                 txtName.setText("");
@@ -160,5 +168,10 @@ public class ThanhToanController implements Initializable {
     public void switchTabEquipment(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachThietBi.fxml");
+    }
+    
+    public void switchTabLogin(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "primary.fxml");
     }
 }

@@ -10,6 +10,7 @@ import com.qhuong.pojo.ThietBi;
 import com.qhuong.services.NhanVienSuaChuaServices;
 import com.qhuong.services.NhanVienSuaThietBiServices;
 import com.qhuong.services.ThietBiServices;
+import com.qhuong.services.TrangThaiServices;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -187,6 +188,11 @@ public class LichSuaChuaController implements Initializable {
                 LocalDateTime ngaySua = repairValue.atTime(hourValue);
                 repairService.updateRepairSchedule(ngaySua, idThietBi, idNhanVien);
                 alert.getAlert("Lập lịch sửa chữa thành công!").show();
+                
+                TrangThaiServices statusService = new TrangThaiServices();
+                int idTrangThai = statusService.getIdStatus("Đang sửa");
+                equipmentService.updateStatus(Integer.parseInt(txtDeviceCode.getText()), idTrangThai);
+                
                 loadDataRepair();
                 txtDeviceCode.setText("");
                 txtName.setText("");
@@ -246,5 +252,10 @@ public class LichSuaChuaController implements Initializable {
     public void switchTabReceipt(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "ThanhToan.fxml");
+    }
+    
+    public void switchTabLogin(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "primary.fxml");
     }
 }

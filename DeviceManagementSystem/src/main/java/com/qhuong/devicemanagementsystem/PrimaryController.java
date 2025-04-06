@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,41 +15,64 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
-public class PrimaryController implements Initializable{
-    @FXML TextField txtUsername;
-    @FXML PasswordField txtPassword;
-    Utils alert = new Utils();
+public class PrimaryController implements Initializable {
+
+    @FXML
+    TextField txtUsername;
+    @FXML
+    PasswordField txtPassword;
+    @FXML Button btnLogin;
+    private Utils alert = new Utils();
+    private int countPassError;
     
     @FXML
-        private void switchToSecondary() throws IOException {
-            App.setRoot("secondary");
-        }
+    private void switchToSecondary() throws IOException {
+        App.setRoot("secondary");
+    }
     
     public void loginHandler(ActionEvent e) throws SQLException, IOException {
         if (txtUsername.getText().isEmpty()) {
             alert.getAlert("Chưa điền username").show();
-            return;
         } else if (txtPassword.getText().isEmpty()) {
             alert.getAlert("Chưa điền password").show();
-            return;
         } else {
             AdminServices admin = new AdminServices();
-            if(admin.getAdmin(txtUsername.getText(), txtPassword.getText()) == true) {
+            int result = admin.getAdmin(txtUsername.getText(), txtPassword.getText());
+            if (result == 1) {
                 Parent listEquipment = FXMLLoader.load(getClass().getResource("DanhSachThietBi.fxml"));
                 Scene listEquipmentScene = new Scene(listEquipment);
                 Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 window.setScene(listEquipmentScene);
                 window.show();
+            } else if(result == -1) {
+                alert.getAlert("Sai tài khoản").show();
             } else {
-                alert.getAlert("Sai tài khoản hoặc mật khẩu").show();
+                countPassError++;
+                if (countPassError >= 2) {
+                    alert.getAlert("Vui lòng chờ sau 5 phút để đăng nhập").show();
+                    btnLogin.setDisable(true);
+                    countPassError = 0;
+                    delay();
+                } else
+                    alert.getAlert("Sai mật khẩu").show();
             }
         }
     }
-
+    
+    public void delay() {
+        PauseTransition delay = new PauseTransition(Duration.seconds(10));
+        delay.setOnFinished(e -> {
+            btnLogin.setDisable(false);
+        });
+        delay.play();
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 //        AdminServices admin = new AdminServices();
