@@ -21,6 +21,7 @@ com\qhuong\pojo\NhanVienSuaThietBi.class
 com\qhuong\devicemanagementsystem\App.class
 com\qhuong\pojo\NhanVienSuaChua.class
 com\qhuong\pojo\BaoTri.class
+com\qhuong\devicemanagementsystem\OTPController.class
 com\qhuong\services\TrangThaiServices.class
 com\qhuong\devicemanagementsystem\LichBaoTriController.class
 com\qhuong\devicemanagementsystem\Utils.class
