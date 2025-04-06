@@ -122,8 +122,8 @@ CREATE TABLE `nhanviensuathietbi` (
   `ngaySua` datetime NOT NULL,
   `idThietBi` int NOT NULL,
   `idNhanVien` int NOT NULL,
-  `chiPhi` double DEFAULT NULL,
-  `moTa` double DEFAULT NULL,
+  `chiPhi` BIGINT DEFAULT NULL,
+  `moTa` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `nvsuachua_nvsuathietbii_idx` (`idNhanVien`),
   KEY `thietbi_nvsuathietbii_idx` (`idThietBi`),
@@ -153,6 +153,7 @@ CREATE TABLE `thietbi` (
   `tenThietBi` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `thanhLy` date DEFAULT NULL,
   `ngayNhap` date NOT NULL,
+  `thongBao` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `idTrangThai` int NOT NULL,
   `idadmin` int NOT NULL,
   PRIMARY KEY (`id`),
@@ -193,7 +194,7 @@ CREATE TABLE `trangthai` (
 
 LOCK TABLES `trangthai` WRITE;
 /*!40000 ALTER TABLE `trangthai` DISABLE KEYS */;
-INSERT INTO `trangthai` VALUES (1,'Đã thanh lý'),(2,'Đang hoạt động'),(3,'Đang sửa'),(4,'Hỏng hóc');
+INSERT INTO `trangthai` VALUES (1,'Đã thanh lý'),(2,'Đang hoạt động'),(3,'Đang sửa'),(4,'Hỏng hóc'),(5,'Bảo trì');
 /*!40000 ALTER TABLE `trangthai` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

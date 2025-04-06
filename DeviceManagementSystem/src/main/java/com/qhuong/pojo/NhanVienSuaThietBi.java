@@ -5,7 +5,6 @@
 package com.qhuong.pojo;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  *
@@ -14,9 +13,10 @@ import java.util.Date;
 public class NhanVienSuaThietBi {
     private int id;
     private LocalDateTime ngaySua;
-    private double chiPhi;
+    private long chiPhi;
     private String tenThietBi;
     private String tenNV;
+    private String moTa;
     
     public NhanVienSuaThietBi(int id, LocalDateTime ngaySua, String tenThietBi, String tenNV) {
         this.id = id;
@@ -24,17 +24,26 @@ public class NhanVienSuaThietBi {
         this.tenThietBi = tenThietBi;
         this.tenNV = tenNV;
     };
+    
+    public NhanVienSuaThietBi(int id, LocalDateTime ngaySua, String tenThietBi, String tenNV, long chiPhi, String moTa) {
+        this.id = id;
+        this.ngaySua = ngaySua;
+        this.tenThietBi = tenThietBi;
+        this.tenNV = tenNV;
+        this.chiPhi = chiPhi;
+        this.moTa = moTa;
+    }
     /**
      * @return the chiPhi
      */
-    public double getChiPhi() {
+    public long getChiPhi() {
         return chiPhi;
     }
 
     /**
      * @param chiPhi the chiPhi to set
      */
-    public void setChiPhi(double chiPhi) {
+    public void setChiPhi(long chiPhi) {
         this.chiPhi = chiPhi;
     }
 
@@ -92,5 +101,19 @@ public class NhanVienSuaThietBi {
      */
     public void setTenNV(String tenNV) {
         this.tenNV = tenNV;
+    }
+
+    /**
+     * @return the moTa
+     */
+    public String getMoTa() {
+        return moTa;
+    }
+
+    /**
+     * @param moTa the moTa to set
+     */
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
     }
 }

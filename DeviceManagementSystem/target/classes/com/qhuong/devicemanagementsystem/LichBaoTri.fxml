@@ -56,8 +56,8 @@
                         <Image url="@../image/logout-box-line.png" />
                      </image>
                   </ImageView>
-                  <Button layoutX="49.0" layoutY="462.0" mnemonicParsing="false" styleClass="login-btn" stylesheets="@Styles.css" text="LogOut" />
-                  <Button layoutX="13.0" layoutY="384.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Hóa đơn">
+                  <Button layoutX="49.0" layoutY="462.0" mnemonicParsing="false" onAction="#switchTabLogin" styleClass="login-btn" stylesheets="@Styles.css" text="LogOut" />
+                  <Button layoutX="13.0" layoutY="384.0" mnemonicParsing="false" onAction="#switchTabReceipt" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Hóa đơn">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -96,7 +96,7 @@
                   <TextField fx:id="txtDeviceCode" editable="false" layoutX="137.0" layoutY="63.0" />
                   <TextField fx:id="txtName" editable="false" layoutX="410.0" layoutY="63.0" />
                   <TableView fx:id="tbMaintenance" layoutX="18.0" layoutY="187.0" prefHeight="242.0" prefWidth="642.0" />
-                  <Button fx:id="createSchedule" layoutX="591.0" layoutY="445.0" mnemonicParsing="false" onAction="#createSchedule" text="Lập lịch">
+                  <Button fx:id="btnCreateSchedule" layoutX="591.0" layoutY="445.0" mnemonicParsing="false" onAction="#createSchedule" text="Lập lịch">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -108,7 +108,7 @@
                      </font>
                   </Label>
                   <Spinner fx:id="hourSpinner" layoutX="138.0" layoutY="103.0" />
-                  <Button fx:id="updateSchedule" layoutX="494.0" layoutY="445.0" mnemonicParsing="false" onAction="#updateScheduleMaintenance" text="Cập nhật">
+                  <Button fx:id="btnUpdateSchedule" layoutX="494.0" layoutY="445.0" mnemonicParsing="false" onAction="#updateScheduleMaintenance" text="Cập nhật">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>

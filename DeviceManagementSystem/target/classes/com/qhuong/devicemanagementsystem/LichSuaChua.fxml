@@ -56,8 +56,8 @@
                         <Image url="@../image/logout-box-line.png" />
                      </image>
                   </ImageView>
-                  <Button layoutX="49.0" layoutY="462.0" mnemonicParsing="false" styleClass="login-btn" stylesheets="@Styles.css" text="LogOut" />
-                  <Button layoutX="11.0" layoutY="384.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Hóa đơn">
+                  <Button layoutX="49.0" layoutY="462.0" mnemonicParsing="false" onAction="#switchTabLogin" styleClass="login-btn" stylesheets="@Styles.css" text="LogOut" />
+                  <Button layoutX="11.0" layoutY="384.0" mnemonicParsing="false" onAction="#switchTabReceipt" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Hóa đơn">
                      <font>
                         <Font size="14.0" />
                      </font>

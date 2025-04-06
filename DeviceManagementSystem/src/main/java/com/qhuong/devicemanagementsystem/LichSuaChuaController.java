@@ -4,13 +4,13 @@
  */
 package com.qhuong.devicemanagementsystem;
 
-import com.qhuong.pojo.BaoTri;
 import com.qhuong.pojo.NhanVienSuaChua;
 import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.pojo.ThietBi;
 import com.qhuong.services.NhanVienSuaChuaServices;
 import com.qhuong.services.NhanVienSuaThietBiServices;
 import com.qhuong.services.ThietBiServices;
+import com.qhuong.services.TrangThaiServices;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -83,7 +83,7 @@ public class LichSuaChuaController implements Initializable {
 
     public void loadDataRepair() {
         try {
-            tbRepair.setItems(FXCollections.observableList(repairService.getNhanVienSuaThietBi()));
+            tbRepair.setItems(FXCollections.observableList(repairService.getNhanVienSuaThietBi(false)));
         } catch (SQLException ex) {
             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -188,6 +188,11 @@ public class LichSuaChuaController implements Initializable {
                 LocalDateTime ngaySua = repairValue.atTime(hourValue);
                 repairService.updateRepairSchedule(ngaySua, idThietBi, idNhanVien);
                 alert.getAlert("Lập lịch sửa chữa thành công!").show();
+                
+                TrangThaiServices statusService = new TrangThaiServices();
+                int idTrangThai = statusService.getIdStatus("Đang sửa");
+                equipmentService.updateStatus(Integer.parseInt(txtDeviceCode.getText()), idTrangThai);
+                
                 loadDataRepair();
                 txtDeviceCode.setText("");
                 txtName.setText("");
@@ -242,5 +247,15 @@ public class LichSuaChuaController implements Initializable {
     public void switchTabEmployee(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
+    
+    public void switchTabReceipt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "ThanhToan.fxml");
+    }
+    
+    public void switchTabLogin(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "primary.fxml");
     }
 }

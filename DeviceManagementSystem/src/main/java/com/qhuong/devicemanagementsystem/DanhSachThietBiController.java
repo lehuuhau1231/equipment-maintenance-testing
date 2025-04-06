@@ -4,6 +4,7 @@
  */
 package com.qhuong.devicemanagementsystem;
 
+import com.qhuong.pojo.BaoTri;
 import com.qhuong.pojo.ThietBi;
 import com.qhuong.pojo.TrangThai;
 import com.qhuong.services.BaoTriServices;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -55,6 +57,10 @@ public class DanhSachThietBiController implements Initializable {
     private DatePicker importDate;
     @FXML
     private DatePicker disposalDate;
+    @FXML
+    Button btnAddEquipment;
+    @FXML
+    Button btnUpdateEquipment;
 
     private Map<Integer, String> statusMap;
     private static TrangThaiServices status = new TrangThaiServices();
@@ -80,7 +86,23 @@ public class DanhSachThietBiController implements Initializable {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        loadStatus(false);
+        txtName.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("[\\p{L}\\p{N} ]*")) {
+                txtName.setText(oldValue);
+            }
+        });
+        btnUpdateEquipment.setDisable(true);
+        LocalDate nowDate = LocalDate.now();
+        try {
+            List<BaoTri> list = maintenanceServices.getMaintenanceDate();
+            for(BaoTri b : list) {
+                if(b.getNgayBaoTri().toLocalDate().equals(nowDate))
+                    equipment.updateStatus(b.getId(), status.getIdStatus("Bảo trì"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        loadStatus(false, false);
         loadColumn();
         loadData();
         selectItemTableView();
@@ -95,9 +117,9 @@ public class DanhSachThietBiController implements Initializable {
         }
     }
 
-    public void loadStatus(boolean getFull) {
+    public void loadStatus(boolean getFull, boolean getDamageStatus) {
         try {
-            cbStatus.setItems(FXCollections.observableList(status.getTrangThai(getFull)));
+            cbStatus.setItems(FXCollections.observableList(status.getTrangThai(getFull, getDamageStatus)));
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -126,6 +148,10 @@ public class DanhSachThietBiController implements Initializable {
             String trangThai = statusMap.get(idThietBi);
             return new SimpleStringProperty(trangThai);
         });
+        
+        TableColumn colNotification = new TableColumn("Thông báo");
+        colNotification.setPrefWidth(130);
+        colNotification.setCellValueFactory(new PropertyValueFactory("notification"));
 
         TableColumn colAction = new TableColumn("Lập lịch");
         colAction.setPrefWidth(180);
@@ -181,17 +207,18 @@ public class DanhSachThietBiController implements Initializable {
                     try {
                         ThietBi t = getTableView().getItems().get(getIndex());
                         String trangThai = statusMap.get(t.getIdTrangThai());
-                        if("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceCount(t.getId()) == 2) {
+                        if ("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceCount(t.getId()) == 2) {
                             btnMaintenance.setDisable(true);
-                        } else
+                        } else {
                             btnMaintenance.setDisable(false);
+                        }
+                        
                         NhanVienSuaThietBiServices repairService = new NhanVienSuaThietBiServices();
-                        if(repairService.checkIdEquipment(t.getId()) == true)
-                            btnFix.setDisable(true);
-                        else if("Hỏng hóc".equals(trangThai))
+                        if ("Hỏng hóc".equals(trangThai)) {
                             btnFix.setDisable(false);
-                        else
+                        } else {
                             btnFix.setDisable(true);
+                        }
                         setGraphic(hbox); // Hiển thị nếu có dữ liệu
                     } catch (SQLException ex) {
                         Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
@@ -205,37 +232,66 @@ public class DanhSachThietBiController implements Initializable {
     public void addEquipment(ActionEvent e) {
         if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
-        } else {
-            try {
-                int idTrangThai = getValueStatusMap();
-                equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
-                alert.getAlert("Thêm thiết bị thành công!").show();
-                txtName.clear();
-                importDate.setValue(null);
-                cbStatus.setValue(null);
-                loadData();
-            } catch (SQLException ex) {
-                Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            return;
+        }
+
+        if (importDate.getValue().equals(LocalDate.now()) == false) {
+            alert.getAlert("Vui lòng điền ngày nhập là ngày hiện tại").show();
+            return;
+        }
+        
+        if(checkNameExist()) {
+            alert.getAlert("Tên thiết bị này đã tồn tại!").show();
+            return;
+        }
+
+        try {
+            int idTrangThai = getValueStatusMap();
+            equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
+            alert.getAlert("Thêm thiết bị thành công!").show();
+            resetInputData();
+            loadData();
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void selectItemTableView() {
         tbEquipment.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
+            if (e.getClickCount() >= 2) {
                 ThietBi selectedItem = tbEquipment.getSelectionModel().getSelectedItem();
                 if (selectedItem.getNgayThanhLy() != null) {
                     alert.getAlert("Không được cập nhật thiết bị ĐÃ THANH LÝ!").show();
                     return;
+                } else if(selectedItem.getIdTrangThai() == 3) {
+                    alert.getAlert("Không được cập nhật thiết bị ĐANG SỬA!").show();
+                    return;
                 } else if (selectedItem != null) {
+                    btnAddEquipment.setDisable(true);
+                    btnUpdateEquipment.setDisable(false);
                     idEquipment = selectedItem.getId();
                     txtName.setText(selectedItem.getTenThietBi());
                     TrangThai t = new TrangThai(statusMap.get(selectedItem.getIdTrangThai()));
                     cbStatus.setValue(t);
                     LocalDate ngayNhap = new java.sql.Date(selectedItem.getNgayNhap().getTime()).toLocalDate();
                     importDate.setValue(ngayNhap);
-                    loadStatus(true);
+                    if(selectedItem.getIdTrangThai() == 4)
+                        loadStatus(true, true);
+                    else
+                        loadStatus(true, false);
                 }
+            } else {
+                btnUpdateEquipment.setDisable(true);
+                btnAddEquipment.setDisable(false);
+            }
+        });
+
+        tbEquipment.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || oldValue != newValue) {
+                resetInputData();
+                loadStatus(false, false);
+                btnAddEquipment.setDisable(false);
+                btnUpdateEquipment.setDisable(true);
             }
         });
     }
@@ -243,20 +299,51 @@ public class DanhSachThietBiController implements Initializable {
     public void updateEquipment(ActionEvent e) {
         if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
-        } else {
-            if (disposalDate.getValue() == null || disposalDate.getValue().isAfter(importDate.getValue())) {
-                int idTrangThai = getValueStatusMap();
-                try {
-                    equipment.updateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
-                    alert.getAlert("Cập nhật thông tin thành công").show();
-                    loadData();
-                } catch (SQLException ex) {
-                    Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
-                alert.getAlert("Ngày thanh lý phải lớn hơn ngày nhập").show();
-            }
+            return;
         }
+        if (cbStatus.getValue().getTenTrangThai().equals("Đã thanh lý") && disposalDate.getValue() == null) {
+            alert.getAlert("Vui lòng điền ngày thanh lý").show();
+            return;
+        }
+
+        if (disposalDate.getValue() != null && disposalDate.getValue().isBefore(importDate.getValue())) {
+            alert.getAlert("Ngày thanh lý phải lớn hơn ngày nhập").show();
+            return;
+        }
+        
+        if(checkNameExist() == false) {
+            alert.getAlert("Tên thiết bị này đã tồn tại!").show();
+            return;
+        }
+
+        int idTrangThai = getValueStatusMap();
+        try {
+            equipment.updateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
+            alert.getAlert("Cập nhật thông tin thành công").show();
+            resetInputData();
+            loadData();
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void resetInputData() {
+        txtName.clear();
+        importDate.setValue(null);
+        cbStatus.setValue(null);
+        if (disposalDate.getValue() != null) {
+            disposalDate.setValue(null);
+        }
+    }
+    
+    public boolean checkNameExist() {
+        try {
+            String name = txtName.getText().trim();
+            return equipment.getEquipmentName().stream().anyMatch(item -> item.equalsIgnoreCase(name));
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     public void comboBoxChange() {
@@ -279,19 +366,29 @@ public class DanhSachThietBiController implements Initializable {
         }
         return idTrangThai;
     }
-    
+
     public void switchTabMaintenance(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "LichBaoTri.fxml");
     }
-    
+
     public void switchTabFix(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "LichSuaChua.fxml");
     }
-    
+
     public void switchTabEmployee(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
+
+    public void switchTabReceipt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "ThanhToan.fxml");
+    }
+    
+    public void switchTabLogin(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "primary.fxml");
     }
 }

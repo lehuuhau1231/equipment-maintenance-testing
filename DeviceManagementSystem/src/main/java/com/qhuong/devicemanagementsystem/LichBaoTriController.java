@@ -52,8 +52,10 @@ public class LichBaoTriController implements Initializable {
     private DatePicker maintenanceDate;
     @FXML
     Spinner<Integer> hourSpinner;
-    @FXML Button createSchedule;
-    @FXML Button updateSchedule;
+    @FXML
+    Button btnCreateSchedule;
+    @FXML
+    Button btnUpdateSchedule;
     private static final NhanVienSuaChuaServices employeeService = new NhanVienSuaChuaServices();
     private static final ThietBiServices equipmentService = new ThietBiServices();
     private static final Utils alert = null;
@@ -67,7 +69,7 @@ public class LichBaoTriController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         hourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(9, 17, 9));
-        createSchedule.setDisable(false);
+        btnUpdateSchedule.setDisable(true);
         loadDataMaintenance();
         loadDataEmployee();
         loadColumn();
@@ -114,11 +116,9 @@ public class LichBaoTriController implements Initializable {
                             int idThietBi = equipmentService.getIdEquipment(txtName.getText());
                             maintenanceService.addMaintenanceSchedule(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien);
                             alert.getAlert("Lưu thành công!").show();
+
                             loadDataMaintenance();
-                            txtDeviceCode.setText("");
-                            txtName.setText("");
-                            maintenanceDate.setValue(null);
-                            cbEmployee.setValue(null);
+                            resetInputData();
                         } catch (SQLException ex) {
                             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -134,6 +134,13 @@ public class LichBaoTriController implements Initializable {
         } else {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
         }
+    }
+
+    public void resetInputData() {
+        txtDeviceCode.setText("");
+        txtName.setText("");
+        maintenanceDate.setValue(null);
+        cbEmployee.setValue(null);
     }
 
     public void loadColumn() {
@@ -208,10 +215,11 @@ public class LichBaoTriController implements Initializable {
         int maintenanceTimes = getMaintenanceTimes();
         LocalDate d = null;
         try {
-            if(maintenanceTimes == 1)
+            if (maintenanceTimes == 1) {
                 d = maintenanceService.getScheduleDate(idThietBi).toLocalDate();
-            else if (maintenanceTimes == 2)
+            } else if (maintenanceTimes == 2) {
                 d = maintenanceService.getMaintenanceDate(idThietBi).toLocalDate();
+            }
             return (maintenanceDate.getValue().isAfter(d.plusMonths(3)) && maintenanceDate.getValue().isBefore(d.plusMonths(6)));
         } catch (SQLException ex) {
             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
@@ -221,7 +229,7 @@ public class LichBaoTriController implements Initializable {
 
     public void selectItemTableView() {
         tbMaintenance.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
+            if (e.getClickCount() >= 2) {
                 BaoTri selectedItem = tbMaintenance.getSelectionModel().getSelectedItem();
                 selectedDate = selectedItem.getNgayBaoTri().toLocalDate();
                 LocalDate date = null;
@@ -231,7 +239,8 @@ public class LichBaoTriController implements Initializable {
                     Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 if (date != null && LocalDate.now().isBefore(date)) {
-                    createSchedule.setDisable(true);
+                    btnCreateSchedule.setDisable(true);
+                    btnUpdateSchedule.setDisable(false);
                     idMaintenance = selectedItem.getId();
                     LocalDate storeDate = selectedItem.getNgayBaoTri().toLocalDate();
                     LocalTime storeTime = selectedItem.getNgayBaoTri().toLocalTime();
@@ -249,6 +258,18 @@ public class LichBaoTriController implements Initializable {
                 } else {
                     alert.getAlert("Không được cập nhật lịch trong 2 ngày cuối").show();
                 }
+            } else {
+                resetInputData();
+                btnUpdateSchedule.setDisable(true);
+                btnCreateSchedule.setDisable(false);
+            }
+        });
+
+        tbMaintenance.getSelectionModel().selectionModeProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || oldValue != newValue) {
+                resetInputData();
+                btnUpdateSchedule.setDisable(false);
+                btnCreateSchedule.setDisable(true);
             }
         });
     }
@@ -256,7 +277,7 @@ public class LichBaoTriController implements Initializable {
     public int getMaintenanceTimes() {
         int idThietBi = Integer.parseInt(txtDeviceCode.getText());
         List<LocalDate> date;
-        
+
         try {
             date = maintenanceService.getLocalDate(idThietBi);
             for (int i = 0; i < date.size(); i++) {
@@ -288,11 +309,10 @@ public class LichBaoTriController implements Initializable {
                         try {
                             maintenanceService.updateScheduleMaintenance(idMaintenance, dateTime, idThietBi, idNhanVien);
                             alert.getAlert("Cập nhật thành công!").show();
+                            btnUpdateSchedule.setDisable(true);
+                            btnCreateSchedule.setDisable(false);
                             loadDataMaintenance();
-                            txtDeviceCode.setText("");
-                            txtName.setText("");
-                            maintenanceDate.setValue(null);
-                            cbEmployee.setValue(null);
+                            resetInputData();
                         } catch (SQLException ex) {
                             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -323,6 +343,16 @@ public class LichBaoTriController implements Initializable {
     public void switchTabEmployee(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
+
+    public void switchTabReceipt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "ThanhToan.fxml");
+    }
+    
+    public void switchTabLogin(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "primary.fxml");
     }
 
 }
