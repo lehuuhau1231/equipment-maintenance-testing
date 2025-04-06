@@ -25,7 +25,7 @@ public class TrangThai {
 
     @Override
     public String toString() {
-        return this.tenTrangThai;
+        return this.getTenTrangThai();
     }
     
     
@@ -45,20 +45,6 @@ public class TrangThai {
     }
 
     /**
-     * @return the trangThai
-     */
-    public String gettenTrangThai() {
-        return tenTrangThai;
-    }
-
-    /**
-     * @param tenTrangThai the trangThai to set
-     */
-    public void settenTrangThai(String tenTrangThai) {
-        this.tenTrangThai = tenTrangThai;
-    }
-
-    /**
      * @return the idThietBi
      */
     public ThietBi getIdThietBi() {
@@ -70,5 +56,19 @@ public class TrangThai {
      */
     public void setIdThietBi(ThietBi idThietBi) {
         this.idThietBi = idThietBi;
+    }
+
+    /**
+     * @return the tenTrangThai
+     */
+    public String getTenTrangThai() {
+        return tenTrangThai;
+    }
+
+    /**
+     * @param tenTrangThai the tenTrangThai to set
+     */
+    public void setTenTrangThai(String tenTrangThai) {
+        this.tenTrangThai = tenTrangThai;
     }
 }

@@ -16,22 +16,22 @@ import org.mindrot.jbcrypt.BCrypt;
  * @author lehuu
  */
 public class AdminServices {
-    public static int idAdmin = 1;
+    public static int idAdmin;
     
-    public boolean getAdmin(String username,String password) throws SQLException {
+    public int getAdmin(String username,String password) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=?");
             stm.setString(1, username);
             ResultSet rs = stm.executeQuery();
             if(rs.next()) {
-//                return BCrypt.checkpw(password, rs.getString("password"));
                 if(BCrypt.checkpw(password, rs.getString("password")) == true) {
                     this.idAdmin = rs.getInt("id");
-                    return true;
+                    return 1;
                 }
-            }
+            } else
+                return -1;
         }
-        return false;
+        return 0;
     }
     
     public void addAdmin(String username, String password, String ho, String ten, String email) throws SQLException {

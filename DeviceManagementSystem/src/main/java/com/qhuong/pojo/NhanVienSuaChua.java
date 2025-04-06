@@ -4,7 +4,7 @@
  */
 package com.qhuong.pojo;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  *
@@ -13,14 +13,14 @@ import java.util.Date;
 public class NhanVienSuaChua {
     private int id;
     private String tenNV;
-    private Date ngaySinh;
+    private LocalDate ngaySinh;
     private String CCCD;
     private String soDT;
     private String diaChi;
     private String email;
     private int idAdmin;
     
-    public NhanVienSuaChua(int id, String tenNV, Date ngaySinh, String CCCD, String SoDT, String diaChi, String email) {
+    public NhanVienSuaChua(int id, String tenNV, LocalDate ngaySinh, String CCCD, String soDT, String diaChi, String email) {
         this.id = id;
         this.tenNV = tenNV;
         this.ngaySinh = ngaySinh;
@@ -68,20 +68,6 @@ public class NhanVienSuaChua {
     }
 
     /**
-     * @return the ngaySinh
-     */
-    public Date getNgaySinh() {
-        return ngaySinh;
-    }
-
-    /**
-     * @param ngaySinh the ngaySinh to set
-     */
-    public void setNgaySinh(Date ngaySinh) {
-        this.ngaySinh = ngaySinh;
-    }
-
-    /**
      * @return the CCCD
      */
     public String getCCCD() {
@@ -95,19 +81,7 @@ public class NhanVienSuaChua {
         this.CCCD = CCCD;
     }
 
-    /**
-     * @return the soDt
-     */
-    public String getSoDt() {
-        return soDT;
-    }
-
-    /**
-     * @param soDT the soDt to set
-     */
-    public void setSoDT(String soDT) {
-        this.soDT = soDT;
-    }
+    
 
     /**
      * @return the diaChi
@@ -135,6 +109,34 @@ public class NhanVienSuaChua {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    /**
+     * @return the soDT
+     */
+    public String getSoDT() {
+        return soDT;
+    }
+
+    /**
+     * @param soDT the soDT to set
+     */
+    public void setSoDT(String soDT) {
+        this.soDT = soDT;
+    }
+
+    /**
+     * @return the ngaySinh
+     */
+    public LocalDate getNgaySinh() {
+        return ngaySinh;
+    }
+
+    /**
+     * @param ngaySinh the ngaySinh to set
+     */
+    public void setNgaySinh(LocalDate ngaySinh) {
+        this.ngaySinh = ngaySinh;
     }
     
 }
