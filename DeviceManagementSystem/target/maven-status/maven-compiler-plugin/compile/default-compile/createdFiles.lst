@@ -1,4 +1,5 @@
 com\qhuong\pojo\Admin.class
+com\qhuong\devicemanagementsystem\QuenMatKhauController.class
 com\qhuong\pojo\JdbcUtils.class
 com\qhuong\services\NhanVienSuaThietBiServices.class
 com\qhuong\services\AdminServices.class

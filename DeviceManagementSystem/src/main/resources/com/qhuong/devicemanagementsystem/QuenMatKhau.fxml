@@ -14,14 +14,14 @@
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="300.0">
          <children>
-            <AnchorPane layoutY="-1.0" prefHeight="500.0" prefWidth="450.0" styleClass="left-form" stylesheets="@Styles.css">
+            <AnchorPane layoutY="-1.0" prefHeight="502.0" prefWidth="450.0" styleClass="left-form" stylesheets="@Styles.css">
                <children>
-                  <Label layoutX="71.0" layoutY="250.0" text="Device Management System" textFill="WHITE">
+                  <Label layoutX="56.0" layoutY="251.0" text="Device Management System" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <ImageView fitHeight="167.0" fitWidth="212.0" layoutX="119.0" layoutY="67.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="165.0" fitWidth="220.0" layoutX="106.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/Group%201.png" />
                      </image>
@@ -29,19 +29,14 @@
                </children></AnchorPane>
             <AnchorPane layoutX="450.0" prefHeight="500.0" prefWidth="450.0">
                <children>
-                  <Label layoutX="98.0" layoutY="113.0" text="Welcome back Admin!">
+                  <Label layoutX="131.0" layoutY="124.0" text="Forgot password">
                      <font>
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="txtUsername" layoutX="115.0" layoutY="167.0" prefHeight="30.0" prefWidth="220.0" promptText="Username" />
-                  <PasswordField fx:id="txtPassword" layoutX="115.0" layoutY="219.0" prefHeight="30.0" prefWidth="220.0" promptText="Password" />
-                  <Button layoutX="115.0" layoutY="294.0" mnemonicParsing="false" onAction="#loginHandler" prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="LOGIN">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Button>
-                  <Button layoutX="115.0" layoutY="349.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="220.0" styleClass="forgotpass-btn" stylesheets="@Styles.css" text="Forgot Password?">
+                  <TextField fx:id="txtUsername" layoutX="115.0" layoutY="219.0" prefHeight="30.0" prefWidth="220.0" promptText="Confirm password" />
+                  <PasswordField fx:id="txtPassword" layoutX="115.0" layoutY="172.0" prefHeight="30.0" prefWidth="220.0" promptText="New password" />
+                  <Button layoutX="116.0" layoutY="302.0" mnemonicParsing="false" onAction="#loginHandler" prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="Send OTP">
                      <font>
                         <Font size="14.0" />
                      </font>
