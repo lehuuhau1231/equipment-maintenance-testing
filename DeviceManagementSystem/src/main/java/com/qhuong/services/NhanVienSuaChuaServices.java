@@ -45,6 +45,17 @@ public class NhanVienSuaChuaServices {
         return -1;
     }
     
+    public String getEmail(int idNhanVien) throws SQLException {
+        try(Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT email FROM nhanviensuachua WHERE id=?");
+            stm.setInt(1, idNhanVien);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next())
+                return rs.getString("email");
+        }
+        return null;
+    }
+    
     public void addEmployee(String tenNV, LocalDate ngaySinh, String CCCD, String soDT, String diaChi, String email) throws SQLException {
         try(Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("INSERT INTO nhanviensuachua(tenNV, ngaySinh, CCCD, soDT, diaChi, email, idadmin) VALUE(?, ?, ?, ?, ?, ?, ?)");

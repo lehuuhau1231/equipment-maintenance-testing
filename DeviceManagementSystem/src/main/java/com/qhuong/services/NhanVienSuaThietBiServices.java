@@ -61,11 +61,27 @@ public class NhanVienSuaThietBiServices {
             stm.setInt(1, idNhanVien);
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                if(rs.getLong("chiPhi") == 0)
+                if (rs.getLong("chiPhi") == 0) {
                     dates.add(rs.getTimestamp("ngaySua").toLocalDateTime());
+                }
             }
         }
         return dates;
+    }
+    
+    public List<NhanVienSuaThietBi> getListNotRepair() throws SQLException {
+        List<NhanVienSuaThietBi> repairs = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT ngaySua, chiPhi, idThietBi, idNhanVien FROM nhanviensuathietbi");
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                if (rs.getLong("chiPhi") == 0) {
+                    NhanVienSuaThietBi nv = new NhanVienSuaThietBi(rs.getTimestamp("ngaySua").toLocalDateTime(), rs.getInt("idThietBi"), rs.getInt("idNhanVien"));
+                    repairs.add(nv);
+                }
+            }
+        }
+        return repairs;
     }
 
     public void updateRepairSchedule(LocalDateTime ngaySua, int idThietBi, int idNhanVien) throws SQLException {

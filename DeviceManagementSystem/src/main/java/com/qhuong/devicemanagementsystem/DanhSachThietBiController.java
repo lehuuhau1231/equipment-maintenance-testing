@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -95,18 +96,47 @@ public class DanhSachThietBiController implements Initializable {
         LocalDate nowDate = LocalDate.now();
         try {
             List<BaoTri> list = maintenanceServices.getMaintenanceDate();
-            for(BaoTri b : list) {
-                if(b.getNgayBaoTri().toLocalDate().equals(nowDate))
-                    equipment.updateStatus(b.getId(), status.getIdStatus("Bảo trì"));
+            for (BaoTri b : list) {
+                if (b.getNgayBaoTri().toLocalDate().equals(nowDate)) {
+                    equipment.updateStatus(b.getIdThietbi(), status.getIdStatus("Bảo trì"));
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        updateMantenanceNotification();
         loadStatus(false, false);
         loadColumn();
         loadData();
         selectItemTableView();
         comboBoxChange();
+    }
+
+    public void updateMantenanceNotification() {
+        List<ThietBi> devices;
+        try {
+            devices = equipment.getImportDateEquipment();
+            for (ThietBi t : devices) {
+                int maintenanceCount = maintenanceServices.getMaintenanceCount(t.getId());
+                LocalDate nowDate = LocalDate.now();
+                if (maintenanceCount == 0) {
+                    LocalDate threeMonthsAfterImport = t.getNgayNhap().toLocalDate().plusMonths(3);
+                    if (nowDate.isAfter(threeMonthsAfterImport.minusDays(3)) && nowDate.isBefore(threeMonthsAfterImport)) {
+                        equipment.addNotification(t.getId(), "Lập lịch bảo trì lần 1");
+                    }
+                } else if (maintenanceCount == 1) {
+                    LocalDateTime firstMaintenanceDate = maintenanceServices.getMaintenanceDate(t.getId());
+                    if (firstMaintenanceDate != null) {
+                        LocalDate threeMonthsAfterFirst = firstMaintenanceDate.toLocalDate().plusMonths(3);
+                        if (nowDate.isAfter(threeMonthsAfterFirst.minusDays(3)) && nowDate.isBefore(threeMonthsAfterFirst)) {
+                            equipment.addNotification(t.getId(), "Lập lịch bảo trì lần 2");
+                        }
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void loadData() {
@@ -148,10 +178,10 @@ public class DanhSachThietBiController implements Initializable {
             String trangThai = statusMap.get(idThietBi);
             return new SimpleStringProperty(trangThai);
         });
-        
+
         TableColumn colNotification = new TableColumn("Thông báo");
         colNotification.setPrefWidth(130);
-        colNotification.setCellValueFactory(new PropertyValueFactory("notification"));
+        colNotification.setCellValueFactory(new PropertyValueFactory("thongBao"));
 
         TableColumn colAction = new TableColumn("Lập lịch");
         colAction.setPrefWidth(180);
@@ -212,7 +242,7 @@ public class DanhSachThietBiController implements Initializable {
                         } else {
                             btnMaintenance.setDisable(false);
                         }
-                        
+
                         NhanVienSuaThietBiServices repairService = new NhanVienSuaThietBiServices();
                         if ("Hỏng hóc".equals(trangThai)) {
                             btnFix.setDisable(false);
@@ -226,7 +256,7 @@ public class DanhSachThietBiController implements Initializable {
                 }
             }
         });
-        tbEquipment.getColumns().addAll(colDeviceCode, colName, colImportDate, colDisposalDate, colStatus, colAction);
+        tbEquipment.getColumns().addAll(colDeviceCode, colName, colImportDate, colDisposalDate, colStatus, colAction, colNotification);
     }
 
     public void addEquipment(ActionEvent e) {
@@ -239,8 +269,8 @@ public class DanhSachThietBiController implements Initializable {
             alert.getAlert("Vui lòng điền ngày nhập là ngày hiện tại").show();
             return;
         }
-        
-        if(checkNameExist()) {
+
+        if (checkNameExist()) {
             alert.getAlert("Tên thiết bị này đã tồn tại!").show();
             return;
         }
@@ -263,7 +293,7 @@ public class DanhSachThietBiController implements Initializable {
                 if (selectedItem.getNgayThanhLy() != null) {
                     alert.getAlert("Không được cập nhật thiết bị ĐÃ THANH LÝ!").show();
                     return;
-                } else if(selectedItem.getIdTrangThai() == 3) {
+                } else if (selectedItem.getIdTrangThai() == 3) {
                     alert.getAlert("Không được cập nhật thiết bị ĐANG SỬA!").show();
                     return;
                 } else if (selectedItem != null) {
@@ -273,12 +303,13 @@ public class DanhSachThietBiController implements Initializable {
                     txtName.setText(selectedItem.getTenThietBi());
                     TrangThai t = new TrangThai(statusMap.get(selectedItem.getIdTrangThai()));
                     cbStatus.setValue(t);
-                    LocalDate ngayNhap = new java.sql.Date(selectedItem.getNgayNhap().getTime()).toLocalDate();
+                    LocalDate ngayNhap = selectedItem.getNgayNhap().toLocalDate();
                     importDate.setValue(ngayNhap);
-                    if(selectedItem.getIdTrangThai() == 4)
+                    if (selectedItem.getIdTrangThai() == 4) {
                         loadStatus(true, true);
-                    else
+                    } else {
                         loadStatus(true, false);
+                    }
                 }
             } else {
                 btnUpdateEquipment.setDisable(true);
@@ -310,8 +341,8 @@ public class DanhSachThietBiController implements Initializable {
             alert.getAlert("Ngày thanh lý phải lớn hơn ngày nhập").show();
             return;
         }
-        
-        if(checkNameExist() == false) {
+
+        if (checkNameExist() == false) {
             alert.getAlert("Tên thiết bị này đã tồn tại!").show();
             return;
         }
@@ -335,7 +366,7 @@ public class DanhSachThietBiController implements Initializable {
             disposalDate.setValue(null);
         }
     }
-    
+
     public boolean checkNameExist() {
         try {
             String name = txtName.getText().trim();
@@ -386,7 +417,7 @@ public class DanhSachThietBiController implements Initializable {
         Utils a = new Utils();
         a.switchTab(e, "ThanhToan.fxml");
     }
-    
+
     public void switchTabLogin(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "primary.fxml");

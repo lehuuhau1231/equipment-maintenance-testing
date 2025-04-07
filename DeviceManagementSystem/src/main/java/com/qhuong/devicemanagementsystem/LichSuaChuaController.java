@@ -4,6 +4,7 @@
  */
 package com.qhuong.devicemanagementsystem;
 
+import com.qhuong.pojo.Email;
 import com.qhuong.pojo.NhanVienSuaChua;
 import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.pojo.ThietBi;
@@ -13,6 +14,7 @@ import com.qhuong.services.ThietBiServices;
 import com.qhuong.services.TrangThaiServices;
 import java.io.IOException;
 import java.net.URL;
+import java.security.interfaces.RSAKey;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,6 +76,22 @@ public class LichSuaChuaController implements Initializable {
         loadColumn();
         loadDataRepair();
         loadEmployee();
+        
+        try {
+            List<NhanVienSuaThietBi> repair = repairService.getListNotRepair();
+            LocalDate nowDate = LocalDate.now();
+            for(NhanVienSuaThietBi r : repair) {
+                if(nowDate.equals(r.getNgaySua().toLocalDate().minusDays(1))) {
+                    String name = equipmentService.getNameById(r.getIdThietBi());
+                    String toEmail = employeeService.getEmail(r.getIdNhanVien());
+                    String subject = "Thông báo sửa chữa thiết bị " + name;
+                    String body = "Thiết bị " + name + " cần sử vào ngày mai(" + r.getNgaySua().toLocalDate() + ") vào lúc " + r.getNgaySua().toLocalTime();
+                    Email.sendEmail(toEmail, subject, body);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LichSuaChuaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setDeviceData(ThietBi t) {
