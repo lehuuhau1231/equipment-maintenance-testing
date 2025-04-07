@@ -2,15 +2,24 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<<<<<<< HEAD
 <?import javafx.scene.control.PasswordField?>
+=======
+>>>>>>> 90cb312424423b2496f3a8991d88053304d680c7
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
+<<<<<<< HEAD
 
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.PrimaryController">
+=======
+<?import javafx.scene.text.Text?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.QuenMatKhauController">
+>>>>>>> 90cb312424423b2496f3a8991d88053304d680c7
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="300.0">
          <children>
@@ -26,21 +35,44 @@
                         <Image url="@../image/Group%201.png" />
                      </image>
                   </ImageView>
+<<<<<<< HEAD
                </children></AnchorPane>
             <AnchorPane layoutX="450.0" prefHeight="500.0" prefWidth="450.0">
                <children>
                   <Label layoutX="131.0" layoutY="124.0" text="Forgot password">
+=======
+                  <ImageView fitHeight="30.0" fitWidth="32.0" layoutX="33.0" layoutY="442.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../image/logout-box-line.png" />
+                     </image>
+                  </ImageView>
+                  <Button layoutX="67.0" layoutY="444.0" mnemonicParsing="false" onAction="#switchTabLogin" styleClass="login-btn" stylesheets="@Styles.css" text="Home" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="450.0" prefHeight="500.0" prefWidth="450.0">
+               <children>
+                  <Label layoutX="130.0" layoutY="169.0" text="Forgot password">
+>>>>>>> 90cb312424423b2496f3a8991d88053304d680c7
                      <font>
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
+<<<<<<< HEAD
                   <TextField fx:id="txtUsername" layoutX="115.0" layoutY="219.0" prefHeight="30.0" prefWidth="220.0" promptText="Confirm password" />
                   <PasswordField fx:id="txtPassword" layoutX="115.0" layoutY="172.0" prefHeight="30.0" prefWidth="220.0" promptText="New password" />
                   <Button layoutX="116.0" layoutY="302.0" mnemonicParsing="false" onAction="#loginHandler" prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="Send OTP">
+=======
+                  <TextField fx:id="txtUsername" layoutX="115.0" layoutY="235.0" prefHeight="30.0" prefWidth="220.0" promptText="Enter username" />
+                  <Button layoutX="115.0" layoutY="279.0" mnemonicParsing="false" onAction="#checkUsernameHandler" prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="Check">
+>>>>>>> 90cb312424423b2496f3a8991d88053304d680c7
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
+<<<<<<< HEAD
+=======
+                  <Text layoutX="115.0" layoutY="224.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username" />
+>>>>>>> 90cb312424423b2496f3a8991d88053304d680c7
                </children>
             </AnchorPane>
          </children>

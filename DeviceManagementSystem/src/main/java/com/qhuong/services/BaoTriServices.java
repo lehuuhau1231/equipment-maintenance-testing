@@ -41,10 +41,10 @@ public class BaoTriServices {
     public List<BaoTri> getMaintenanceDate() throws SQLException {
         List<BaoTri> maintenances = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT b.ngayBaoTri, t.tenThietBi FROM baotri b JOIN Thietbi t ON b.idThietBi = t.id");
+            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri, idThietBi FROM baotri");
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                BaoTri b = new BaoTri(rs.getTimestamp("ngayBaoTri").toLocalDateTime(), rs.getString("tenThietBi"));
+                BaoTri b = new BaoTri(rs.getTimestamp("ngayBaoTri").toLocalDateTime(), rs.getInt("idThietBi"));
                 maintenances.add(b);
             }
             return maintenances;
@@ -137,6 +137,21 @@ public class BaoTriServices {
         }
         return null;
     }
+    
+    public List<BaoTri> getUnmaintenanceEquipment() throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            List<BaoTri> maintenance = new ArrayList<>();
+            PreparedStatement stm = conn.prepareCall("SELECT t.id, b.ngayBaoTri, t.ngayNhap"
+                    + " FROM baotri b LEFT JOIN thietbi t ON b.idThietBi = t.id GROUP BY t.id, b.ngayBaoTri, t.ngayNhap HAVING COUNT(b.idThietBi) < 2");
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                BaoTri b = new BaoTri(rs.getTimestamp("ngayBaoTri").toLocalDateTime(), rs.getTimestamp("ngayNhap").toLocalDateTime(), rs.getInt("id"));
+                maintenance.add(b);
+            }
+            return maintenance;
+        }
+    }
+    
 
     public void updateScheduleMaintenance(int id, LocalDateTime ngayBaoTri, int idThietBi, int idNhanVien) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {

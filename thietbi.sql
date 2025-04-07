@@ -170,7 +170,7 @@ CREATE TABLE `thietbi` (
 
 LOCK TABLES `thietbi` WRITE;
 /*!40000 ALTER TABLE `thietbi` DISABLE KEYS */;
-INSERT INTO `thietbi` VALUES (1,'Quạt điện',NULL,'2025-03-12',3,1),(2,'Máy lạnh',NULL,'2025-03-01',4,1),(3,'Tủ lạnh',NULL,'2025-03-10',4,1),(4,'Bàn ủi',NULL,'2025-03-05',2,1),(5,'Nồi cơm điện','2025-03-23','2025-03-13',1,1);
+INSERT INTO `thietbi` VALUES (1,'Quạt điện',NULL,'2025-03-12',NULL,3,1),(2,'Máy lạnh',NULL,'2025-03-01',NULL,4,1),(3,'Tủ lạnh',NULL,'2025-03-10',NULL,4,1),(4,'Bàn ủi',NULL,'2025-03-05',NULL,2,1),(5,'Nồi cơm điện','2025-03-23','2025-03-13',NULL,1,1);
 /*!40000 ALTER TABLE `thietbi` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -11,19 +11,24 @@ import java.time.LocalDateTime;
  * @author lehuu
  */
 public class NhanVienSuaThietBi {
+
     private int id;
     private LocalDateTime ngaySua;
     private long chiPhi;
     private String tenThietBi;
     private String tenNV;
     private String moTa;
-    
+    private int idNhanVien;
+    private int idThietBi;
+
     public NhanVienSuaThietBi(int id, LocalDateTime ngaySua, String tenThietBi, String tenNV) {
         this.id = id;
         this.ngaySua = ngaySua;
         this.tenThietBi = tenThietBi;
         this.tenNV = tenNV;
-    };
+    }
+
+    ;
     
     public NhanVienSuaThietBi(int id, LocalDateTime ngaySua, String tenThietBi, String tenNV, long chiPhi, String moTa) {
         this.id = id;
@@ -33,6 +38,13 @@ public class NhanVienSuaThietBi {
         this.chiPhi = chiPhi;
         this.moTa = moTa;
     }
+
+    public NhanVienSuaThietBi(LocalDateTime ngaySua, int idThietBi, int idNhanVien) {
+        this.ngaySua = ngaySua;
+        this.idThietBi = idThietBi;
+        this.idNhanVien = idNhanVien;
+    }
+
     /**
      * @return the chiPhi
      */
@@ -115,5 +127,33 @@ public class NhanVienSuaThietBi {
      */
     public void setMoTa(String moTa) {
         this.moTa = moTa;
+    }
+
+    /**
+     * @return the idNhanVien
+     */
+    public int getIdNhanVien() {
+        return idNhanVien;
+    }
+
+    /**
+     * @param idNhanVien the idNhanVien to set
+     */
+    public void setIdNhanVien(int idNhanVien) {
+        this.idNhanVien = idNhanVien;
+    }
+
+    /**
+     * @return the idThietBi
+     */
+    public int getIdThietBi() {
+        return idThietBi;
+    }
+
+    /**
+     * @param idThietBi the idThietBi to set
+     */
+    public void setIdThietBi(int idThietBi) {
+        this.idThietBi = idThietBi;
     }
 }
