@@ -26,7 +26,21 @@ public class ThietBiServices {
             PreparedStatement stm = conn.prepareCall("SELECT * FROM thietbi");
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                ThietBi t = new ThietBi(rs.getInt("id"), rs.getString("tenThietBi"), rs.getDate("ngayNhap"), rs.getInt("idTrangThai"), rs.getDate("thanhLy"));
+                ThietBi t = new ThietBi(rs.getInt("id"), rs.getString("tenThietBi"), 
+                        rs.getDate("ngayNhap"), rs.getInt("idTrangThai"), rs.getDate("thanhLy"), rs.getString("thongBao"));
+                equipments.add(t);
+            }
+        }
+        return equipments;
+    }
+    
+    public List<ThietBi> getImportDateEquipment() throws SQLException {
+        List<ThietBi> equipments = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT id, ngayNhap FROM thietbi");
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                ThietBi t = new ThietBi(rs.getInt("id"),rs.getDate("ngayNhap"));
                 equipments.add(t);
             }
         }
@@ -103,6 +117,27 @@ public class ThietBiServices {
                 return rs.getInt("id");
         }
         return -1;
+    }
+    
+    public String getNameById(int idThietBi) throws SQLException {
+        try(Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT tenThietBi FROM thietbi WHERE id=?");
+            stm.setInt(1, idThietBi);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next())
+                return rs.getString("tenThietBi");
+        }
+        return null;
+    }
+    
+    public void addNotification(int idThietBi, String info) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("UPDATE thietBi SET thongBao=? WHERE id=?");
+            stm.setString(1, info);
+            stm.setInt(2, idThietBi);
+            stm.executeUpdate();
+            conn.commit();
+        }
     }
     
     public void updateStatus(int idThietbi, int idTrangThai) throws SQLException {

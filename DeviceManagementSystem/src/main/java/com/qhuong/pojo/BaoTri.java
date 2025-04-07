@@ -16,6 +16,7 @@ public class BaoTri {
     private LocalDateTime ngayBaoTri;
     private String tenThietBi;
     private String tenNV;
+    private int idThietbi;
     
     public BaoTri(int id, LocalDateTime ngayLapLich, LocalDateTime ngayBaoTri, String idThietBi, String idNhanVien){
         this.id = id;
@@ -25,9 +26,15 @@ public class BaoTri {
         this.tenNV = idNhanVien;
     };
     
-    public BaoTri(LocalDateTime ngayBaotri, String tenThietBi) {
+    public BaoTri(LocalDateTime ngayBaotri, int idThietBi) {
         this.ngayBaoTri = ngayBaotri;
-        this.tenThietBi = tenThietBi;
+        this.idThietbi = idThietBi;
+    }
+    
+    public BaoTri(LocalDateTime ngayBaotri, LocalDateTime ngayLapLich, int idThietBi) {
+        this.ngayBaoTri = ngayBaotri;
+        this.ngayLapLich = ngayLapLich;
+        this.idThietbi = idThietBi;
     }
 
     /**
@@ -83,7 +90,7 @@ public class BaoTri {
      * @param tenNV the idNhanVien to set
      */
     public void setIdNhanVien(String tenNV) {
-        this.tenNV = tenNV;
+        this.setTenNV(tenNV);
     }
 
     /**
@@ -98,6 +105,27 @@ public class BaoTri {
      */
     public void setNgayLapLich(LocalDateTime ngayLapLich) {
         this.ngayLapLich = ngayLapLich;
+    }
+
+    /**
+     * @param tenNV the tenNV to set
+     */
+    public void setTenNV(String tenNV) {
+        this.tenNV = tenNV;
+    }
+
+    /**
+     * @return the idThietbi
+     */
+    public int getIdThietbi() {
+        return idThietbi;
+    }
+
+    /**
+     * @param idThietbi the idThietbi to set
+     */
+    public void setIdThietbi(int idThietbi) {
+        this.idThietbi = idThietbi;
     }
     
 }

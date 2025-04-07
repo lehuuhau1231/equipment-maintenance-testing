@@ -8,4 +8,5 @@ module com.qhuong.devicemanagementsystem {
     exports com.qhuong.devicemanagementsystem;
     exports com.qhuong.pojo;
     requires jbcrypt;
+    requires jakarta.mail;
 }

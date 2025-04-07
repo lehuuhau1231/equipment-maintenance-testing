@@ -27,15 +27,26 @@ public class PrimaryController implements Initializable {
     TextField txtUsername;
     @FXML
     PasswordField txtPassword;
-    @FXML Button btnLogin;
+    @FXML
+    Button btnLogin;
     private Utils alert = new Utils();
     private int countPassError;
-    
+
     @FXML
     private void switchToSecondary() throws IOException {
         App.setRoot("secondary");
     }
-    
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+//        AdminServices admin = new AdminServices();
+//        try {
+//            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lehuuhau1231@gmail.com");
+//        } catch (SQLException ex) {
+//            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+    }
+
     public void loginHandler(ActionEvent e) throws SQLException, IOException {
         if (txtUsername.getText().isEmpty()) {
             alert.getAlert("Chưa điền username").show();
@@ -50,7 +61,7 @@ public class PrimaryController implements Initializable {
                 Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 window.setScene(listEquipmentScene);
                 window.show();
-            } else if(result == -1) {
+            } else if (result == -1) {
                 alert.getAlert("Sai tài khoản").show();
             } else {
                 countPassError++;
@@ -59,12 +70,13 @@ public class PrimaryController implements Initializable {
                     btnLogin.setDisable(true);
                     countPassError = 0;
                     delay();
-                } else
+                } else {
                     alert.getAlert("Sai mật khẩu").show();
+                }
             }
         }
     }
-    
+
     public void delay() {
         PauseTransition delay = new PauseTransition(Duration.seconds(10));
         delay.setOnFinished(e -> {
@@ -72,14 +84,19 @@ public class PrimaryController implements Initializable {
         });
         delay.play();
     }
-    
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-//        AdminServices admin = new AdminServices();
-//        try {
-//            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lehuuhau1231@gmail.com");
-//        } catch (SQLException ex) {
-//            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+
+    public void forgetPasswordHandler(ActionEvent e) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("QuenMatKhau.fxml"));
+        Parent forgetPassword;
+        try {
+            forgetPassword = loader.load();
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Scene forgetPasswordScene = new Scene(forgetPassword);
+            stage.setScene(forgetPasswordScene);
+            stage.show();
+        } catch (IOException ex) {
+            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
 }

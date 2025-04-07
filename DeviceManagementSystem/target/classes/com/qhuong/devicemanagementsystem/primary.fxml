@@ -41,7 +41,7 @@
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="40.0" layoutY="347.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="220.0" styleClass="forgotpass-btn" stylesheets="@Styles.css" text="Forgot Password?">
+                  <Button layoutX="40.0" layoutY="347.0" mnemonicParsing="false" onAction="#forgetPasswordHandler" prefHeight="40.0" prefWidth="220.0" styleClass="forgotpass-btn" stylesheets="@Styles.css" text="Forgot Password?">
                      <font>
                         <Font size="14.0" />
                      </font>

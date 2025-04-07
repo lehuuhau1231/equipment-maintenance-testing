@@ -79,7 +79,6 @@ public class LichBaoTriController implements Initializable {
     public void setDeviceData(ThietBi t) {
         txtDeviceCode.setText(String.valueOf(t.getId()));
         txtName.setText(t.getTenThietBi());
-
     }
 
     public void loadDataMaintenance() {
@@ -116,7 +115,8 @@ public class LichBaoTriController implements Initializable {
                             int idThietBi = equipmentService.getIdEquipment(txtName.getText());
                             maintenanceService.addMaintenanceSchedule(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien);
                             alert.getAlert("Lưu thành công!").show();
-
+                            
+                            equipmentService.addNotification(idThietBi, "");
                             loadDataMaintenance();
                             resetInputData();
                         } catch (SQLException ex) {
@@ -129,7 +129,7 @@ public class LichBaoTriController implements Initializable {
                     alert.getAlert("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày").show();
                 }
             } else {
-                alert.getAlert("Vui lòng nhập ngày bảo trì trong khoảng 6 đến 12 tháng").show();
+                alert.getAlert("Vui lòng nhập ngày bảo trì trong khoảng 3 đến 6 tháng").show();
             }
         } else {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
