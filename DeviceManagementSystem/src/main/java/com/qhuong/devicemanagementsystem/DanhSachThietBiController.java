@@ -260,27 +260,16 @@ public class DanhSachThietBiController implements Initializable {
     }
 
     public void addEquipment(ActionEvent e) {
-        if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
-            alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
-            return;
-        }
-
-        if (importDate.getValue().equals(LocalDate.now()) == false) {
-            alert.getAlert("Vui lòng điền ngày nhập là ngày hiện tại").show();
-            return;
-        }
-
-        if (checkNameExist()) {
-            alert.getAlert("Tên thiết bị này đã tồn tại!").show();
-            return;
-        }
-
         try {
             int idTrangThai = getValueStatusMap();
             equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
             alert.getAlert("Thêm thiết bị thành công!").show();
             resetInputData();
             loadData();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, "Lỗi hệ thống: " + ex.getMessage(), ex);
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -328,31 +317,14 @@ public class DanhSachThietBiController implements Initializable {
     }
 
     public void updateEquipment(ActionEvent e) {
-        if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
-            alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
-            return;
-        }
-        if (cbStatus.getValue().getTenTrangThai().equals("Đã thanh lý") && disposalDate.getValue() == null) {
-            alert.getAlert("Vui lòng điền ngày thanh lý").show();
-            return;
-        }
-
-        if (disposalDate.getValue() != null && disposalDate.getValue().isBefore(importDate.getValue())) {
-            alert.getAlert("Ngày thanh lý phải lớn hơn ngày nhập").show();
-            return;
-        }
-
-        if (checkNameExist() == false) {
-            alert.getAlert("Tên thiết bị này đã tồn tại!").show();
-            return;
-        }
-
         int idTrangThai = getValueStatusMap();
         try {
             equipment.updateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
             alert.getAlert("Cập nhật thông tin thành công").show();
             resetInputData();
             loadData();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -365,16 +337,6 @@ public class DanhSachThietBiController implements Initializable {
         if (disposalDate.getValue() != null) {
             disposalDate.setValue(null);
         }
-    }
-
-    public boolean checkNameExist() {
-        try {
-            String name = txtName.getText().trim();
-            return equipment.getEquipmentName().stream().anyMatch(item -> item.equalsIgnoreCase(name));
-        } catch (SQLException ex) {
-            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
     }
 
     public void comboBoxChange() {
