@@ -1,6 +1,6 @@
 Test
 Các ràng buộc: 
-1. qui định tg lập lịch bảo trì giữa các lần là ( 6 tháng )
+1. Khoảng thời gian bảo trì lần 1 là 3-6 tháng , lần 2 cách lần 1 là 6 tháng 
 2. ngày sửa chữa không được quá bao nhiêu ngày so với thời gian lập lịch ( sửa chữa thì ko qá 3 ngày)
 3. qui định thời gian được phép cập nhật lịch bảo trì là trước ngày bảo trì là bnhiu ( trước ngày bảo trì 2 ngày )
 4. những thiết bị có lịch bảo trì / sửa chửa mà chuyển sang trạng thái "đang hoạt động" hoặc "đã thanh lý" trc khi đến ngày bảo trì / sửa thì lịch bảo trì/ sửa chữa phải được HỦY 
