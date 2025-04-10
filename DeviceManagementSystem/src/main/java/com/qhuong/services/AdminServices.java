@@ -79,4 +79,35 @@ public class AdminServices {
             conn.commit();
         }
     }
+    
+    public void validateNewPassword(String newPassword, String confirmPassword) throws IllegalArgumentException {
+        if (newPassword == null || newPassword.isEmpty() || confirmPassword == null || confirmPassword.isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng điền đủ thông tin!");
+        }
+        
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Mật khẩu xác nhận không khớp với mật khẩu mới!");
+        }
+
+        if (newPassword.length() < 8) {
+            throw new IllegalArgumentException("Độ dài mật khẩu ít nhất 8 ký tự");
+        }
+
+        if (!newPassword.matches(".*[A-Z].*")) {
+            throw new IllegalArgumentException("Mật khẩu phải chứa ít nhất 1 ký tự HOA!");
+        }
+
+        if (!newPassword.matches(".*[a-z].*")) {
+            throw new IllegalArgumentException("Mật khẩu phải chứa ít nhất 1 ký tự THƯỜNG!");
+        }
+
+        if (!newPassword.matches(".*[0-9].*")) {
+            throw new IllegalArgumentException("Mật khẩu phải chứa ít nhất 1 ký tự SỐ!");
+        }
+
+        if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new IllegalArgumentException("Mật khẩu phải chứa ít nhất 1 ký tự ĐẶC BIỆT!");
+        }
+    }
 }
+

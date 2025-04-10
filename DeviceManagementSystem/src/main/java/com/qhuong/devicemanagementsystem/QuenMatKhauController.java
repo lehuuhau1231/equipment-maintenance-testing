@@ -4,12 +4,9 @@
  */
 package com.qhuong.devicemanagementsystem;
 
-import com.qhuong.pojo.Email;
 import com.qhuong.services.AdminServices;
-import com.qhuong.services.NhanVienSuaChuaServices;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;

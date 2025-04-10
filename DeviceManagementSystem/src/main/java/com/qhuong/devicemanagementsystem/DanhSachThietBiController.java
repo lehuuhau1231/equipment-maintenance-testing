@@ -5,6 +5,7 @@
 package com.qhuong.devicemanagementsystem;
 
 import com.qhuong.pojo.BaoTri;
+import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.pojo.ThietBi;
 import com.qhuong.pojo.TrangThai;
 import com.qhuong.services.BaoTriServices;
@@ -95,7 +96,7 @@ public class DanhSachThietBiController implements Initializable {
         btnUpdateEquipment.setDisable(true);
         LocalDate nowDate = LocalDate.now();
         try {
-            List<BaoTri> list = maintenanceServices.getMaintenanceDate();
+            List<BaoTri> list = maintenanceServices.getListMaintenanceDate();
             for (BaoTri b : list) {
                 if (b.getNgayBaoTri().toLocalDate().equals(nowDate)) {
                     equipment.updateStatus(b.getIdThietbi(), status.getIdStatus("Bảo trì"));
@@ -104,6 +105,7 @@ public class DanhSachThietBiController implements Initializable {
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        updateRepairStatus();
         updateMantenanceNotification();
         loadStatus(false, false);
         loadColumn();
@@ -117,18 +119,18 @@ public class DanhSachThietBiController implements Initializable {
         try {
             devices = equipment.getImportDateEquipment();
             for (ThietBi t : devices) {
-                int maintenanceCount = maintenanceServices.getMaintenanceCount(t.getId());
+                int maintenanceCount = maintenanceServices.getMaintenanceTimes(t.getId());
                 LocalDate nowDate = LocalDate.now();
                 if (maintenanceCount == 0) {
                     LocalDate threeMonthsAfterImport = t.getNgayNhap().toLocalDate().plusMonths(3);
-                    if (nowDate.isAfter(threeMonthsAfterImport.minusDays(3)) && nowDate.isBefore(threeMonthsAfterImport)) {
+                    if (nowDate.isAfter(threeMonthsAfterImport.minusWeeks(1)) && nowDate.isBefore(threeMonthsAfterImport)) {
                         equipment.addNotification(t.getId(), "Lập lịch bảo trì lần 1");
                     }
                 } else if (maintenanceCount == 1) {
                     LocalDateTime firstMaintenanceDate = maintenanceServices.getMaintenanceDate(t.getId());
                     if (firstMaintenanceDate != null) {
                         LocalDate threeMonthsAfterFirst = firstMaintenanceDate.toLocalDate().plusMonths(3);
-                        if (nowDate.isAfter(threeMonthsAfterFirst.minusDays(3)) && nowDate.isBefore(threeMonthsAfterFirst)) {
+                        if (nowDate.isAfter(threeMonthsAfterFirst.minusWeeks(1)) && nowDate.isBefore(threeMonthsAfterFirst)) {
                             equipment.addNotification(t.getId(), "Lập lịch bảo trì lần 2");
                         }
                     }
@@ -137,6 +139,20 @@ public class DanhSachThietBiController implements Initializable {
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void updateRepairStatus() {
+        NhanVienSuaThietBiServices repairService = new NhanVienSuaThietBiServices();
+        try {
+            List<NhanVienSuaThietBi> repairs  = repairService.getListNotRepair();
+            int idTrangThai = status.getIdStatus("Đang sửa");
+            for(NhanVienSuaThietBi r : repairs)
+                if(r.getNgaySua().toLocalDate().equals(LocalDate.now()))
+                    equipment.updateStatus(r.getIdThietBi(), idTrangThai);
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
     public void loadData() {
@@ -237,7 +253,7 @@ public class DanhSachThietBiController implements Initializable {
                     try {
                         ThietBi t = getTableView().getItems().get(getIndex());
                         String trangThai = statusMap.get(t.getIdTrangThai());
-                        if ("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceCount(t.getId()) == 2) {
+                        if ("Đang hoạt động".equals(trangThai) == false || maintenanceServices.getMaintenanceTimes(t.getId()) == 2) {
                             btnMaintenance.setDisable(true);
                         } else {
                             btnMaintenance.setDisable(false);
@@ -260,27 +276,17 @@ public class DanhSachThietBiController implements Initializable {
     }
 
     public void addEquipment(ActionEvent e) {
-        if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
-            alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
-            return;
-        }
-
-        if (importDate.getValue().equals(LocalDate.now()) == false) {
-            alert.getAlert("Vui lòng điền ngày nhập là ngày hiện tại").show();
-            return;
-        }
-
-        if (checkNameExist()) {
-            alert.getAlert("Tên thiết bị này đã tồn tại!").show();
-            return;
-        }
-
         try {
             int idTrangThai = getValueStatusMap();
+            equipment.validateAddThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
             equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
             alert.getAlert("Thêm thiết bị thành công!").show();
             resetInputData();
             loadData();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, "Lỗi hệ thống: " + ex.getMessage(), ex);
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -328,31 +334,15 @@ public class DanhSachThietBiController implements Initializable {
     }
 
     public void updateEquipment(ActionEvent e) {
-        if (txtName.getText().isEmpty() || importDate.getValue() == null || cbStatus.getValue() == null) {
-            alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
-            return;
-        }
-        if (cbStatus.getValue().getTenTrangThai().equals("Đã thanh lý") && disposalDate.getValue() == null) {
-            alert.getAlert("Vui lòng điền ngày thanh lý").show();
-            return;
-        }
-
-        if (disposalDate.getValue() != null && disposalDate.getValue().isBefore(importDate.getValue())) {
-            alert.getAlert("Ngày thanh lý phải lớn hơn ngày nhập").show();
-            return;
-        }
-
-        if (checkNameExist() == false) {
-            alert.getAlert("Tên thiết bị này đã tồn tại!").show();
-            return;
-        }
-
         int idTrangThai = getValueStatusMap();
         try {
+            equipment.validateUpdateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
             equipment.updateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
             alert.getAlert("Cập nhật thông tin thành công").show();
             resetInputData();
             loadData();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -365,16 +355,6 @@ public class DanhSachThietBiController implements Initializable {
         if (disposalDate.getValue() != null) {
             disposalDate.setValue(null);
         }
-    }
-
-    public boolean checkNameExist() {
-        try {
-            String name = txtName.getText().trim();
-            return equipment.getEquipmentName().stream().anyMatch(item -> item.equalsIgnoreCase(name));
-        } catch (SQLException ex) {
-            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
     }
 
     public void comboBoxChange() {

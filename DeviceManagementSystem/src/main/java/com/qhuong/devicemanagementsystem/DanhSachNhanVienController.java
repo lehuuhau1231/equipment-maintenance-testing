@@ -133,17 +133,18 @@ public class DanhSachNhanVienController implements Initializable {
     }
 
     public void addEmployee(ActionEvent e) {
-        if (validateInputValue()) {
-            try {
-                employeeService.addEmployee(txtName.getText(), birthDate.getValue(), txtID.getText(), txtPhoneNumber.getText(), txtAddress.getText(), txtEmail.getText());
-                alert.getAlert("Thêm thành công!").show();
-                btnAddEmployee.setDisable(false);
-                btnUpdateEmployee.setDisable(true);
-                resetInput();
-                loadData();
-            } catch (SQLException ex) {
-                Logger.getLogger(DanhSachNhanVienController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            employeeService.validateEmployeeInput(txtName.getText(), birthDate.getValue(), txtID.getText(), txtPhoneNumber.getText(), txtAddress.getText(), txtEmail.getText());
+            employeeService.addEmployee(txtName.getText(), birthDate.getValue(), txtID.getText(), txtPhoneNumber.getText(), txtAddress.getText(), txtEmail.getText());
+            alert.getAlert("Thêm thành công!").show();
+            btnAddEmployee.setDisable(false);
+            btnUpdateEmployee.setDisable(true);
+            resetInput();
+            loadData();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachNhanVienController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -181,50 +182,20 @@ public class DanhSachNhanVienController implements Initializable {
         txtEmail.setText("");
     }
 
-    public boolean validateInputValue() {
-        if (txtName.getText().equals("") || txtID.getText().equals("")
-                || txtPhoneNumber.getText().equals("") || birthDate.getValue() == null
-                || txtAddress.getText().equals("") || txtEmail.getText().equals("")) {
-            alert.getAlert("Vui lòng điền đầy đủ thông tin!").show();
-            return false;
-        }
-
-        if (txtID.getLength() != 12) {
-            alert.getAlert("CCCD không đủ 12 số").show();
-            return false;
-        }
-
-        if (txtPhoneNumber.getLength() != 10) {
-            alert.getAlert("Số điện thoại không đủ 10 số").show();
-            return false;
-        }
-
-        int yearValid = LocalDate.now().getYear() - 18;
-        if (birthDate.getValue().isAfter(LocalDate.of(yearValid, 1, 1))) {
-            alert.getAlert("Nhân viên không đủ 18 tuổi").show();
-            return false;
-        }
-
-        if (txtEmail.getText().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$") == false) {
-            alert.getAlert("Email không hợp lệ. Vui lòng nhập lại email với định dạng hợp lệ (ví dụ: example@domain.com).").show();
-            return false;
-        }
-        return true;
-    }
-
     public void updateEmployee() {
-        if (validateInputValue()) {
-            NhanVienSuaChua nv = new NhanVienSuaChua(idSelected, txtName.getText(), birthDate.getValue(), txtID.getText(), txtPhoneNumber.getText(), txtAddress.getText(), txtEmail.getText());
-            try {
-                employeeService.updateEmployee(nv);
-                alert.getAlert("Cập nhật thành công").show();
-                btnAddEmployee.setDisable(false);
-                btnUpdateEmployee.setDisable(true);
-                loadData();
-                resetInput();
-            } catch (SQLException ex) {
-                Logger.getLogger(DanhSachNhanVienController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        NhanVienSuaChua nv = new NhanVienSuaChua(idSelected, txtName.getText(), birthDate.getValue(), txtID.getText(), txtPhoneNumber.getText(), txtAddress.getText(), txtEmail.getText());
+        try {
+            employeeService.validateEmployeeInput(txtName.getText(), birthDate.getValue(), txtID.getText(), txtPhoneNumber.getText(), txtAddress.getText(), txtEmail.getText());
+            employeeService.updateEmployee(nv);
+            alert.getAlert("Cập nhật thành công").show();
+            btnAddEmployee.setDisable(false);
+            btnUpdateEmployee.setDisable(true);
+            loadData();
+            resetInput();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachNhanVienController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -247,7 +218,7 @@ public class DanhSachNhanVienController implements Initializable {
         Utils a = new Utils();
         a.switchTab(e, "ThanhToan.fxml");
     }
-    
+
     public void switchTabLogin(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "primary.fxml");
