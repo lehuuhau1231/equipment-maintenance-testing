@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 /**
@@ -22,7 +23,15 @@ import javafx.stage.Stage;
  */
 public class Utils {
     public static Alert getAlert(String content) {
-        return new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+        // Tạo Label với nội dung và bật wrapText
+        Label label = new Label(content);
+        label.setWrapText(true);       // Cho phép xuống dòng
+        label.setMaxWidth(400);        // Giới hạn chiều rộng (tùy chỉnh theo ý bạn)
+
+        // Gán Label làm nội dung của Alert
+        alert.getDialogPane().setContent(label);
+        return alert;
     }
     
     public void switchTab(ActionEvent e, String fileNameFXML) {

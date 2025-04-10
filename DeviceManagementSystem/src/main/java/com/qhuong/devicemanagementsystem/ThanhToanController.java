@@ -72,7 +72,7 @@ public class ThanhToanController implements Initializable {
 
     public void setDeviceData(NhanVienSuaThietBi t) {
         try {
-            idThietBi = equipmentService.getIdEquipment(txtName.getText().trim());
+            idThietBi = equipmentService.getIdEquipment(t.getTenThietBi());
         } catch (SQLException ex) {
             Logger.getLogger(ThanhToanController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -123,18 +123,19 @@ public class ThanhToanController implements Initializable {
 
     public void payment(ActionEvent e) {
         if (txtDeviceCode.getText().equals("") || txtName.getText().equals("")
-                || txtEmployee.getText().equals("") || repairDate.getValue() == null
-                || txtDescription.getText().equals("") || txtPrice.getText().equals("")) {
+                || txtEmployee.getText().equals("") || repairDate.getValue() == null) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
         } else {
             try {
                 int idNhanVien = employeeService.getIdEmployee(txtEmployee.getText());
-                repairService.updateReceipt(idReceipt, Double.parseDouble(txtPrice.getText()), txtDescription.getText());
+                repairService.validateUpdateReceipt(idReceipt, txtPrice.getText(), txtDescription.getText());
+                repairService.updateReceipt(idReceipt, Long.parseLong(txtPrice.getText()), txtDescription.getText());
                 alert.getAlert("Thanh toán thành công!").show();
 
                 TrangThaiServices statusService = new TrangThaiServices();
                 int idTrangThai = statusService.getIdStatus("Đang hoạt động");
-                equipmentService.updateStatus(idThietBi, idTrangThai);
+                System.out.println(idTrangThai);
+                equipmentService.updateStatus(Integer.parseInt(txtDeviceCode.getText()), idTrangThai);
 
                 loadData();
                 txtDeviceCode.setText("");
@@ -144,6 +145,8 @@ public class ThanhToanController implements Initializable {
                 repairDate.setValue(null);
                 txtDescription.setText("");
                 txtPrice.setText("");
+            } catch (IllegalArgumentException ex) {
+                alert.getAlert(ex.getMessage()).show();
             } catch (SQLException ex) {
                 Logger.getLogger(ThanhToanController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -169,7 +172,7 @@ public class ThanhToanController implements Initializable {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachThietBi.fxml");
     }
-    
+
     public void switchTabLogin(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "primary.fxml");
