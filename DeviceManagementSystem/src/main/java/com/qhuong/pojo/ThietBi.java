@@ -4,7 +4,8 @@
  */
 package com.qhuong.pojo;
 
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -16,16 +17,23 @@ public class ThietBi {
     private Date ngayNhap;
     private int idTrangThai;
     private Date ngayThanhLy;
+    private String thongBao;
     private int idAdmin;
     
     public ThietBi() {};
     
-    public ThietBi(int id, String tenThietBi, Date ngayNhap, int idTrangThai, Date ngayThanhLy) {
+    public ThietBi(int id, String tenThietBi, Date ngayNhap, int idTrangThai, Date ngayThanhLy, String thongBao) {
         this.id = id;
         this.tenThietBi = tenThietBi;
         this.idTrangThai = idTrangThai;
         this.ngayNhap = ngayNhap;
         this.ngayThanhLy = ngayThanhLy;
+        this.thongBao = thongBao;
+    }
+    
+    public ThietBi(int id, Date ngayNhap) {
+        this.id = id;
+        this.ngayNhap = ngayNhap;
     }
 
     /**
@@ -71,17 +79,31 @@ public class ThietBi {
     }
 
     /**
-     * @return the thanhLy
+     * @return the idAdmin
      */
-    public Date getNgayThanhLy() {
-        return ngayThanhLy;
+    public int getIdAdmin() {
+        return idAdmin;
     }
 
     /**
-     * @param ngayThanhLy the thanhLy to set
+     * @param idAdmin the idAdmin to set
      */
-    public void setNgayThanhLy(Date ngayThanhLy) {
-        this.ngayThanhLy = ngayThanhLy;
+    public void setIdAdmin(int idAdmin) {
+        this.idAdmin = idAdmin;
+    }
+
+    /**
+     * @return the thongBao
+     */
+    public String getThongBao() {
+        return thongBao;
+    }
+
+    /**
+     * @param thongBao the thongBao to set
+     */
+    public void setThongBao(String thongBao) {
+        this.thongBao = thongBao;
     }
 
     /**
@@ -99,16 +121,17 @@ public class ThietBi {
     }
 
     /**
-     * @return the idAdmin
+     * @return the ngayThanhLy
      */
-    public int getIdAdmin() {
-        return idAdmin;
+    public Date getNgayThanhLy() {
+        return ngayThanhLy;
     }
 
     /**
-     * @param idAdmin the idAdmin to set
+     * @param ngayThanhLy the ngayThanhLy to set
      */
-    public void setIdAdmin(int idAdmin) {
-        this.idAdmin = idAdmin;
+    public void setNgayThanhLy(Date ngayThanhLy) {
+        this.ngayThanhLy = ngayThanhLy;
     }
+
 }

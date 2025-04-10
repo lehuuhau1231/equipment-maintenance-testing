@@ -5,36 +5,57 @@
 package com.qhuong.pojo;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  *
  * @author lehuu
  */
 public class NhanVienSuaThietBi {
+
     private int id;
     private LocalDateTime ngaySua;
-    private double chiPhi;
+    private long chiPhi;
     private String tenThietBi;
     private String tenNV;
-    
+    private String moTa;
+    private int idNhanVien;
+    private int idThietBi;
+
     public NhanVienSuaThietBi(int id, LocalDateTime ngaySua, String tenThietBi, String tenNV) {
         this.id = id;
         this.ngaySua = ngaySua;
         this.tenThietBi = tenThietBi;
         this.tenNV = tenNV;
-    };
+    }
+
+    ;
+    
+    public NhanVienSuaThietBi(int id, LocalDateTime ngaySua, String tenThietBi, String tenNV, long chiPhi, String moTa) {
+        this.id = id;
+        this.ngaySua = ngaySua;
+        this.tenThietBi = tenThietBi;
+        this.tenNV = tenNV;
+        this.chiPhi = chiPhi;
+        this.moTa = moTa;
+    }
+
+    public NhanVienSuaThietBi(LocalDateTime ngaySua, int idThietBi, int idNhanVien) {
+        this.ngaySua = ngaySua;
+        this.idThietBi = idThietBi;
+        this.idNhanVien = idNhanVien;
+    }
+
     /**
      * @return the chiPhi
      */
-    public double getChiPhi() {
+    public long getChiPhi() {
         return chiPhi;
     }
 
     /**
      * @param chiPhi the chiPhi to set
      */
-    public void setChiPhi(double chiPhi) {
+    public void setChiPhi(long chiPhi) {
         this.chiPhi = chiPhi;
     }
 
@@ -92,5 +113,47 @@ public class NhanVienSuaThietBi {
      */
     public void setTenNV(String tenNV) {
         this.tenNV = tenNV;
+    }
+
+    /**
+     * @return the moTa
+     */
+    public String getMoTa() {
+        return moTa;
+    }
+
+    /**
+     * @param moTa the moTa to set
+     */
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
+    }
+
+    /**
+     * @return the idNhanVien
+     */
+    public int getIdNhanVien() {
+        return idNhanVien;
+    }
+
+    /**
+     * @param idNhanVien the idNhanVien to set
+     */
+    public void setIdNhanVien(int idNhanVien) {
+        this.idNhanVien = idNhanVien;
+    }
+
+    /**
+     * @return the idThietBi
+     */
+    public int getIdThietBi() {
+        return idThietBi;
+    }
+
+    /**
+     * @param idThietBi the idThietBi to set
+     */
+    public void setIdThietBi(int idThietBi) {
+        this.idThietBi = idThietBi;
     }
 }

@@ -16,22 +16,42 @@ import org.mindrot.jbcrypt.BCrypt;
  * @author lehuu
  */
 public class AdminServices {
-    public static int idAdmin = 1;
+    public static int idAdmin = 3;
     
-    public boolean getAdmin(String username,String password) throws SQLException {
+    public int getAdmin(String username,String password) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=?");
             stm.setString(1, username);
             ResultSet rs = stm.executeQuery();
             if(rs.next()) {
-//                return BCrypt.checkpw(password, rs.getString("password"));
-                if(BCrypt.checkpw(password, rs.getString("password")) == true) {
+                if(password.equals("") == false && BCrypt.checkpw(password, rs.getString("password")) == true) {
                     this.idAdmin = rs.getInt("id");
-                    return true;
+                    return 1;
                 }
-            }
+            } else
+                return -1;
         }
-        return false;
+        return 0;
+    }
+    
+    public boolean isUsernameExist(String username) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=?");
+            stm.setString(1, username);
+            ResultSet rs = stm.executeQuery();
+            return rs.next();
+        }
+    }
+    
+    public String getEmail(String username) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT email FROM admin WHERE username=?");
+            stm.setString(1, username);
+            ResultSet rs = stm.executeQuery();
+            if(rs.next())
+                return rs.getString("email");
+        }
+        return null;
     }
     
     public void addAdmin(String username, String password, String ho, String ten, String email) throws SQLException {
@@ -47,6 +67,16 @@ public class AdminServices {
             stm.executeUpdate();
             conn.commit();
         }
-        
+    }
+    
+    public void updatePassword(String username, String hashedPassword) throws SQLException {
+        String sql = "UPDATE admin SET password=? WHERE username=?";
+        try(Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, hashedPassword);
+            stm.setString(2, username);
+            stm.executeUpdate();
+            conn.commit();
+        }
     }
 }

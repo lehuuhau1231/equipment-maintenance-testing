@@ -4,15 +4,17 @@
  */
 package com.qhuong.devicemanagementsystem;
 
-import com.qhuong.pojo.BaoTri;
+import com.qhuong.pojo.Email;
 import com.qhuong.pojo.NhanVienSuaChua;
 import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.pojo.ThietBi;
 import com.qhuong.services.NhanVienSuaChuaServices;
 import com.qhuong.services.NhanVienSuaThietBiServices;
 import com.qhuong.services.ThietBiServices;
+import com.qhuong.services.TrangThaiServices;
 import java.io.IOException;
 import java.net.URL;
+import java.security.interfaces.RSAKey;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,6 +76,22 @@ public class LichSuaChuaController implements Initializable {
         loadColumn();
         loadDataRepair();
         loadEmployee();
+        
+        try {
+            List<NhanVienSuaThietBi> repair = repairService.getListNotRepair();
+            LocalDate nowDate = LocalDate.now();
+            for(NhanVienSuaThietBi r : repair) {
+                if(nowDate.equals(r.getNgaySua().toLocalDate().minusDays(1))) {
+                    String name = equipmentService.getNameById(r.getIdThietBi());
+                    String toEmail = employeeService.getEmail(r.getIdNhanVien());
+                    String subject = "Thông báo sửa chữa thiết bị " + name;
+                    String body = "Thiết bị " + name + " cần sử vào ngày mai(" + r.getNgaySua().toLocalDate() + ") vào lúc " + r.getNgaySua().toLocalTime();
+                    Email.sendEmail(toEmail, subject, body);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LichSuaChuaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setDeviceData(ThietBi t) {
@@ -83,7 +101,7 @@ public class LichSuaChuaController implements Initializable {
 
     public void loadDataRepair() {
         try {
-            tbRepair.setItems(FXCollections.observableList(repairService.getNhanVienSuaThietBi()));
+            tbRepair.setItems(FXCollections.observableList(repairService.getNhanVienSuaThietBi(false)));
         } catch (SQLException ex) {
             Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -188,6 +206,11 @@ public class LichSuaChuaController implements Initializable {
                 LocalDateTime ngaySua = repairValue.atTime(hourValue);
                 repairService.updateRepairSchedule(ngaySua, idThietBi, idNhanVien);
                 alert.getAlert("Lập lịch sửa chữa thành công!").show();
+                
+                TrangThaiServices statusService = new TrangThaiServices();
+                int idTrangThai = statusService.getIdStatus("Đang sửa");
+                equipmentService.updateStatus(Integer.parseInt(txtDeviceCode.getText()), idTrangThai);
+                
                 loadDataRepair();
                 txtDeviceCode.setText("");
                 txtName.setText("");
@@ -242,5 +265,15 @@ public class LichSuaChuaController implements Initializable {
     public void switchTabEmployee(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
+    }
+    
+    public void switchTabReceipt(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "ThanhToan.fxml");
+    }
+    
+    public void switchTabLogin(ActionEvent e) {
+        Utils a = new Utils();
+        a.switchTab(e, "primary.fxml");
     }
 }
