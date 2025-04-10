@@ -11,10 +11,8 @@ import com.qhuong.pojo.ThietBi;
 import com.qhuong.services.NhanVienSuaChuaServices;
 import com.qhuong.services.NhanVienSuaThietBiServices;
 import com.qhuong.services.ThietBiServices;
-import com.qhuong.services.TrangThaiServices;
 import java.io.IOException;
 import java.net.URL;
-import java.security.interfaces.RSAKey;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -76,12 +74,12 @@ public class LichSuaChuaController implements Initializable {
         loadColumn();
         loadDataRepair();
         loadEmployee();
-        
+
         try {
             List<NhanVienSuaThietBi> repair = repairService.getListNotRepair();
             LocalDate nowDate = LocalDate.now();
-            for(NhanVienSuaThietBi r : repair) {
-                if(nowDate.equals(r.getNgaySua().toLocalDate().minusDays(1))) {
+            for (NhanVienSuaThietBi r : repair) {
+                if (nowDate.equals(r.getNgaySua().toLocalDate().minusDays(1))) {
                     String name = equipmentService.getNameById(r.getIdThietBi());
                     String toEmail = employeeService.getEmail(r.getIdNhanVien());
                     String subject = "Thông báo sửa chữa thiết bị " + name;
@@ -136,13 +134,13 @@ public class LichSuaChuaController implements Initializable {
         colPayment.setPrefWidth(100);
         colPayment.setCellFactory(e -> new TableCell<NhanVienSuaThietBi, Void>() {
             Button btn = new Button("Thanh toán");
-            
+
             {
                 btn.setOnAction(evt -> {
                     try {
                         NhanVienSuaThietBi t = getTableView().getItems().get(getIndex());
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("ThanhToan.fxml"));
-                        
+
                         Parent receipt = loader.load();
 
                         ThanhToanController controller = loader.getController();
@@ -175,81 +173,37 @@ public class LichSuaChuaController implements Initializable {
     }
 
     public void saveRepairSchedule(ActionEvent e) {
-        if (txtDeviceCode.getText().equals("") || txtName.getText().equals("") || repairDate.getValue() == null || cbEmployee.getValue() == null) {
+        if(txtDeviceCode.getText().isEmpty() || txtName.getText().isEmpty()) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
             return;
         }
-
-        int idNhanVien = - 1;
         LocalDate repairValue = repairDate.getValue();
         LocalTime hourValue = LocalTime.of(hourSpinner.getValue(), 0);
         try {
-            idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
+            int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
+
+            LocalDate dateNow = LocalDate.now();
+            int idThietBi;
+
+            idThietBi = equipmentService.getIdEquipment(txtName.getText());
+            LocalDateTime ngaySua = repairValue.atTime(hourValue);
+
+            repairService.validateAddRepairSchedule(ngaySua, idThietBi, idNhanVien);
+
+            repairService.addRepairSchedule(ngaySua, idThietBi, idNhanVien);
+            alert.getAlert("Lập lịch sửa chữa thành công!").show();
+
+            loadDataRepair();
+            txtDeviceCode.setText("");
+            txtName.setText("");
+            repairDate.setValue(null);
+            cbEmployee.setValue(null);
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
         } catch (SQLException ex) {
             Logger.getLogger(LichSuaChuaController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (checkSameTime(idNhanVien, repairValue, hourValue) == false) {
-            alert.getAlert("Lỗi! Nhân viên làm trùng giờ").show();
-            return;
-        }
 
-        if (checkEmployeeWorkload(idNhanVien, repairValue, hourValue) == false) {
-            alert.getAlert("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày").show();
-            return;
-        }
-
-        LocalDate dateNow = LocalDate.now();
-        if (repairValue.isAfter(dateNow.plusDays(-1)) && repairValue.isBefore(dateNow.plusDays(4)) == true) {
-            int idThietBi;
-            try {
-                idThietBi = equipmentService.getIdEquipment(txtName.getText());
-                LocalDateTime ngaySua = repairValue.atTime(hourValue);
-                repairService.updateRepairSchedule(ngaySua, idThietBi, idNhanVien);
-                alert.getAlert("Lập lịch sửa chữa thành công!").show();
-                
-                TrangThaiServices statusService = new TrangThaiServices();
-                int idTrangThai = statusService.getIdStatus("Đang sửa");
-                equipmentService.updateStatus(Integer.parseInt(txtDeviceCode.getText()), idTrangThai);
-                
-                loadDataRepair();
-                txtDeviceCode.setText("");
-                txtName.setText("");
-                repairDate.setValue(null);
-                cbEmployee.setValue(null);
-            } catch (SQLException ex) {
-                Logger.getLogger(LichSuaChuaController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        } else {
-            alert.getAlert("Ngày sửa phải nằm trong 3 ngày kể từ ngày hiện tại").show();
-        }
-
-    }
-
-    public boolean checkSameTime(int idNhanVien, LocalDate date, LocalTime time) {
-        List<LocalDateTime> dateTime;
-        try {
-            dateTime = repairService.getListDateTime(idNhanVien);
-            long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date) && t.toLocalTime().equals(time)).count();
-            return count == 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    public boolean checkEmployeeWorkload(int idNhanVien, LocalDate date, LocalTime time) {
-        if (idNhanVien > 0) {
-            try {
-                List<LocalDateTime> dateTime = repairService.getListDateTime(idNhanVien);
-                long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date)).count();
-                return count <= 2;
-            } catch (SQLException ex) {
-                Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return true;
-        }
-        return false;
     }
 
     public void switchTabMaintenance(ActionEvent e) {
@@ -266,12 +220,12 @@ public class LichSuaChuaController implements Initializable {
         Utils a = new Utils();
         a.switchTab(e, "DanhSachNhanVien.fxml");
     }
-    
+
     public void switchTabReceipt(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "ThanhToan.fxml");
     }
-    
+
     public void switchTabLogin(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "primary.fxml");
