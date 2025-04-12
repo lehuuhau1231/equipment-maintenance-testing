@@ -36,45 +36,13 @@ public class XacNhanMatKhauController {
         String newPassword = txtNewPassword.getText();
         String confirmPassword = txtConfirmPassword.getText();
 
-        if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            alert.getAlert("Vui lòng điền đủ thông tin!").show();
-            return;
-        }
-
-        if (newPassword.length() < 8) {
-            alert.getAlert("Độ dài mật khẩu ít nhất 8 ký tự").show();
-            return;
-        }
-
-        if (!newPassword.matches(".*[A-Z].*")) {
-            alert.getAlert("Mật khẩu phải chứa ít nhất 1 ký tự HOA!").show();
-            return;
-        }
-
-        if (!newPassword.matches(".*[a-z].*")) {
-            alert.getAlert("Mật khẩu phải chứa ít nhất 1 ký tự THƯỜNG!").show();
-            return;
-        }
-
-        if (!newPassword.matches(".*[0-9].*")) {
-            alert.getAlert("Mật khẩu phải chứa ít nhất 1 ký tự SỐ!").show();
-            return;
-        }
-
-        if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-            alert.getAlert("Mật khẩu phải chứa ít nhất 1 ký tự ĐẶC BIỆT!").show();
-            return;
-        }
-
-        if (newPassword.equals(confirmPassword) == false) {
-            alert.getAlert("Mật khẩu xác nhận không khớp với mật khẩu mới!").show();
-            return;
-        }
-
-        AdminServices adminServices = new AdminServices();
+        AdminServices adminService = new AdminServices();
         try {
+
+            adminService.validateNewPassword(newPassword, confirmPassword);
+
             String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
-            adminServices.updatePassword(username, hashedPassword);
+            adminService.updatePassword(username, hashedPassword);
             alert.getAlert("Đổi mật khẩu thành công!").show();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("primary.fxml"));
             Parent homePage;
@@ -87,6 +55,8 @@ public class XacNhanMatKhauController {
             } catch (IOException ex) {
                 Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
         } catch (SQLException ex) {
             Logger.getLogger(XacNhanMatKhauController.class.getName()).log(Level.SEVERE, null, ex);
         }

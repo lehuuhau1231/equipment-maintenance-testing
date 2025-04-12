@@ -41,7 +41,7 @@ public class PrimaryController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 //        AdminServices admin = new AdminServices();
 //        try {
-//            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lehuuhau1231@gmail.com");
+//            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lamn10049@gmail.com");
 //        } catch (SQLException ex) {
 //            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
 //        }
@@ -65,7 +65,7 @@ public class PrimaryController implements Initializable {
                 alert.getAlert("Sai tài khoản").show();
             } else {
                 countPassError++;
-                if (countPassError >= 2) {
+                if (countPassError >= 5) {
                     alert.getAlert("Vui lòng chờ sau 5 phút để đăng nhập").show();
                     btnLogin.setDisable(true);
                     countPassError = 0;
@@ -78,7 +78,7 @@ public class PrimaryController implements Initializable {
     }
 
     public void delay() {
-        PauseTransition delay = new PauseTransition(Duration.seconds(10));
+        PauseTransition delay = new PauseTransition(Duration.minutes(5));
         delay.setOnFinished(e -> {
             btnLogin.setDisable(false);
         });

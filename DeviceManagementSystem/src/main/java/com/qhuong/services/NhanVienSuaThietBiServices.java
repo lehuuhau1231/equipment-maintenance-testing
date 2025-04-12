@@ -11,7 +11,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,8 +85,19 @@ public class NhanVienSuaThietBiServices {
         }
         return repairs;
     }
+    
+    public int repairScheduleTimes(int idThietBi) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idThietBi=? AND chiPhi IS NULL AND moTa IS NULL");
+            stm.setInt(1, idThietBi);
+            ResultSet rs = stm.executeQuery();
+            if(rs.next())
+                return rs.getInt(1);
+        }
+        return -1;
+    }
 
-    public void updateRepairSchedule(LocalDateTime ngaySua, int idThietBi, int idNhanVien) throws SQLException {
+    public void addRepairSchedule(LocalDateTime ngaySua, int idThietBi, int idNhanVien) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("INSERT INTO nhanviensuathietbi(ngaySua, idThietbi, idNhanVien) VALUE(?, ?, ?)");
             stm.setTimestamp(1, Timestamp.valueOf(ngaySua));
@@ -92,6 +105,40 @@ public class NhanVienSuaThietBiServices {
             stm.setInt(3, idNhanVien);
             stm.executeUpdate();
             conn.commit();
+        }
+    }
+    
+    public void validateAddRepairSchedule(LocalDateTime ngaySua, int idThietBi, int idNhanVien) throws SQLException {
+        // Ràng buộc 1: Kiểm tra dữ liệu đầu vào không null
+        if (ngaySua == null || idThietBi <= 0 || idNhanVien <= 0) {
+            throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
+        }
+        
+        if(repairScheduleTimes(idThietBi) == 1)
+            throw new IllegalArgumentException("Trong một thời điểm thiết bị chỉ được lập lịch sửa 1 lần");
+
+        // Ràng buộc 2: Kiểm tra trùng giờ làm việc của nhân viên
+        LocalDate repairDate = ngaySua.toLocalDate();
+        LocalTime repairTime = ngaySua.toLocalTime();
+        List<LocalDateTime> employeeSchedule = getListDateTime(idNhanVien);
+        boolean isTimeConflict = employeeSchedule.stream()
+                .anyMatch(t -> t.toLocalDate().equals(repairDate) && t.toLocalTime().equals(repairTime));
+        if (isTimeConflict) {
+            throw new IllegalArgumentException("Lỗi! Nhân viên làm trùng giờ");
+        }
+
+        // Ràng buộc 3: Kiểm tra khối lượng công việc của nhân viên (tối đa 3 công việc/ngày)
+        long dailyWorkload = employeeSchedule.stream()
+                .filter(t -> t.toLocalDate().equals(repairDate))
+                .count();
+        if (dailyWorkload >= 3) {
+            throw new IllegalArgumentException("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày");
+        }
+
+        // Ràng buộc 4: Kiểm tra ngày sửa chữa trong khoảng 0-3 ngày từ hiện tại
+        LocalDate now = LocalDate.now();
+        if (!(repairDate.isAfter(now.minusDays(1)) && repairDate.isBefore(now.plusDays(4)))) {
+            throw new IllegalArgumentException("Ngày sửa phải nằm trong 3 ngày kể từ ngày hiện tại");
         }
     }
 
@@ -107,14 +154,38 @@ public class NhanVienSuaThietBiServices {
         return false;
     }
 
-    public void updateReceipt(int id, double chiPhi, String moTa) throws SQLException {
+    public void updateReceipt(int id, long chiPhi, String moTa) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("UPDATE nhanviensuathietbi SET chiPhi=?, moTa=? WHERE id=?");
-            stm.setDouble(1, chiPhi);
+            stm.setLong(1, chiPhi);
             stm.setString(2, moTa);
             stm.setInt(3, id);
             stm.executeUpdate();
             conn.commit();
         }
     }
+    
+    public void validateUpdateReceipt(int id, String chiPhi, String moTa) {
+        if(chiPhi.trim().isEmpty() || moTa.trim().isEmpty())
+            throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
+        
+        if(moTa.length() > 250)
+            throw new IllegalArgumentException("Mô tả tối đa 250 ký tự");
+        
+        String specialCharactersPattern = "^[\\p{L}\\p{N}\\s]+$";
+        if(!moTa.matches(specialCharactersPattern))
+            throw new IllegalArgumentException("Mô tả không được chứa ký tự đặc biệt");
+        
+        if(!chiPhi.matches("\\d+"))
+            throw new IllegalArgumentException("Chi phí chỉ được nhập số nguyên dương");
+        try {
+            long value = Long.parseLong(chiPhi);
+            if(value < 10000)
+                throw new IllegalArgumentException("Chi phí từ 10.000 trở lên");
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Lỗi! Số quá lớn");
+        }
+    }
+    
+    
 }

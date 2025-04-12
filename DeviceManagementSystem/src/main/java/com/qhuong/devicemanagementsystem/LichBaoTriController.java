@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,41 +97,30 @@ public class LichBaoTriController implements Initializable {
     }
 
     public void createSchedule(ActionEvent e) {
-        if (checkInputValueNotNull() == true) {
-            if (checkMaintenanceDate() == true) {
-                LocalDate date = maintenanceDate.getValue();
-                LocalDateTime ngayBaoTri = date.atTime(hourSpinner.getValue(), 0);
-                int idNhanVien = -1;
-                try {
-                    idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
-                } catch (SQLException ex) {
-                    Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if (checkEmployeeWorkload(idNhanVien, date, LocalTime.of(hourSpinner.getValue(), 0)) == true) {
-                    if (checkSameTime(idNhanVien, date, LocalTime.of(hourSpinner.getValue(), 0)) == true) {
-                        try {
-                            LocalDateTime ngayLapLich = LocalDateTime.now();
-                            int idThietBi = equipmentService.getIdEquipment(txtName.getText());
-                            maintenanceService.addMaintenanceSchedule(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien);
-                            alert.getAlert("Lưu thành công!").show();
-                            
-                            equipmentService.addNotification(idThietBi, "");
-                            loadDataMaintenance();
-                            resetInputData();
-                        } catch (SQLException ex) {
-                            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                        alert.getAlert("Lỗi! Nhân viên làm trùng giờ").show();
-                    }
-                } else {
-                    alert.getAlert("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày").show();
-                }
-            } else {
-                alert.getAlert("Vui lòng nhập ngày bảo trì trong khoảng 3 đến 6 tháng").show();
-            }
-        } else {
+        if(txtDeviceCode.getText().isEmpty() || txtName.getText().isEmpty()) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
+            return;
+        }
+        
+        LocalDate date = maintenanceDate.getValue();
+        LocalDateTime ngayBaoTri = date.atTime(hourSpinner.getValue(), 0);
+        try {
+            int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
+            LocalDateTime ngayLapLich = LocalDateTime.now();
+            int idThietBi = equipmentService.getIdEquipment(txtName.getText());
+
+            maintenanceService.validateAddMaintenanceSchedule(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien);
+
+            maintenanceService.addMaintenanceSchedule(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien);
+            alert.getAlert("Lưu thành công!").show();
+
+            equipmentService.addNotification(idThietBi, "");
+            loadDataMaintenance();
+            resetInputData();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
+        } catch (SQLException ex) {
+            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -167,80 +155,17 @@ public class LichBaoTriController implements Initializable {
         tbMaintenance.getColumns().addAll(colDeviceCode, colName, colScheduleDate, colMaintenanceDate, colEmployee);
     }
 
-    public boolean checkEmployeeWorkload(int id, LocalDate date, LocalTime time) {
-        if (id > 0) {
-            try {
-                List<LocalDateTime> dateTime = maintenanceService.getListDateTime(id);
-                long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date)).count();
-                return count <= 2;
-            } catch (SQLException ex) {
-                Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkSameTime(int id, LocalDate date, LocalTime time) {
-        List<LocalDateTime> dateTime;
-        try {
-            dateTime = maintenanceService.getListDateTime(id);
-            long count = dateTime.stream().filter(t -> t.toLocalDate().equals(date) && t.toLocalTime().equals(time)).count();
-            return count == 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    public boolean checkInputValueNotNull() {
-        return (maintenanceDate.getValue() != null && cbEmployee.getValue() != null && txtDeviceCode.getText().equals("") == false && txtName.getText().equals("") == false);
-    }
-
-    public boolean checkMaintenanceDate() {
-        int idThietBi = Integer.parseInt(txtDeviceCode.getText());
-        try {
-            LocalDateTime d = maintenanceService.getMaintenanceDate(idThietBi);
-            LocalDate dateNow = (d != null) ? d.toLocalDate() : LocalDate.now();
-            return (maintenanceDate.getValue().isAfter(dateNow.plusMonths(3)) && maintenanceDate.getValue().isBefore(dateNow.plusMonths(6)));
-        } catch (SQLException ex) {
-            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    public boolean checkDateUpdate() {
-        int idThietBi = Integer.parseInt(txtDeviceCode.getText());
-        System.out.println(idThietBi);
-        int maintenanceTimes = getMaintenanceTimes();
-        LocalDate d = null;
-        try {
-            if (maintenanceTimes == 1) {
-                d = maintenanceService.getScheduleDate(idThietBi).toLocalDate();
-            } else if (maintenanceTimes == 2) {
-                d = maintenanceService.getMaintenanceDate(idThietBi).toLocalDate();
-            }
-            return (maintenanceDate.getValue().isAfter(d.plusMonths(3)) && maintenanceDate.getValue().isBefore(d.plusMonths(6)));
-        } catch (SQLException ex) {
-            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
     public void selectItemTableView() {
         tbMaintenance.setOnMouseClicked(e -> {
             if (e.getClickCount() >= 2) {
                 BaoTri selectedItem = tbMaintenance.getSelectionModel().getSelectedItem();
                 selectedDate = selectedItem.getNgayBaoTri().toLocalDate();
-                LocalDate date = null;
                 try {
-                    date = maintenanceService.getMaintenanceDateOfId(selectedItem.getId()).toLocalDate();
-                } catch (SQLException ex) {
-                    Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if (date != null && LocalDate.now().isBefore(date)) {
+                    maintenanceService.checkLastTwoDaysUpdate(selectedDate);
+
                     btnCreateSchedule.setDisable(true);
                     btnUpdateSchedule.setDisable(false);
+                    maintenanceDate.setDisable(true);
                     idMaintenance = selectedItem.getId();
                     LocalDate storeDate = selectedItem.getNgayBaoTri().toLocalDate();
                     LocalTime storeTime = selectedItem.getNgayBaoTri().toLocalTime();
@@ -250,83 +175,53 @@ public class LichBaoTriController implements Initializable {
                     cbEmployee.setValue(nv);
                     String tenThietBi = selectedItem.getTenThietBi();
                     txtName.setText(tenThietBi);
-                    try {
-                        txtDeviceCode.setText(String.valueOf(equipmentService.getIdEquipment(tenThietBi)));
-                    } catch (SQLException ex) {
-                        Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else {
-                    alert.getAlert("Không được cập nhật lịch trong 2 ngày cuối").show();
+                    txtDeviceCode.setText(String.valueOf(equipmentService.getIdEquipment(tenThietBi)));
+                } catch (IllegalArgumentException ex) {
+                    alert.getAlert(ex.getMessage()).show();
+                } catch (SQLException ex) {
+                    Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
                 resetInputData();
                 btnUpdateSchedule.setDisable(true);
                 btnCreateSchedule.setDisable(false);
+                maintenanceDate.setDisable(false);
             }
-        });
-
-        tbMaintenance.getSelectionModel().selectionModeProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || oldValue != newValue) {
-                resetInputData();
-                btnUpdateSchedule.setDisable(false);
-                btnCreateSchedule.setDisable(true);
-            }
-        });
-    }
-
-    public int getMaintenanceTimes() {
-        int idThietBi = Integer.parseInt(txtDeviceCode.getText());
-        List<LocalDate> date;
-
-        try {
-            date = maintenanceService.getLocalDate(idThietBi);
-            for (int i = 0; i < date.size(); i++) {
-                if (date.get(i).equals(selectedDate)) {
-                    return i + 1; // Lịch thứ 1 hoặc thứ 2
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return -1;
+        );
+
+        tbMaintenance.getSelectionModel()
+                .selectionModeProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue == null || oldValue != newValue) {
+                        resetInputData();
+                        btnUpdateSchedule.setDisable(false);
+                        btnCreateSchedule.setDisable(true);
+                    }
+                }
+                );
     }
 
     public void updateScheduleMaintenance(ActionEvent e) {
-        if (checkInputValueNotNull() == true) {
-            if (checkDateUpdate() == true) {
-                int idThietBi = Integer.parseInt(txtDeviceCode.getText());
-                int idNhanVien = -1;
-                try {
-                    idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().toString());
-                } catch (SQLException ex) {
-                    Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                LocalDate date = maintenanceDate.getValue();
-                LocalTime time = LocalTime.of(hourSpinner.getValue(), 0);
-                if (checkEmployeeWorkload(idNhanVien, date, time) == true) {
-                    if (checkSameTime(idThietBi, date, time) == true) {
-                        LocalDateTime dateTime = LocalDateTime.of(date, time);
-                        try {
-                            maintenanceService.updateScheduleMaintenance(idMaintenance, dateTime, idThietBi, idNhanVien);
-                            alert.getAlert("Cập nhật thành công!").show();
-                            btnUpdateSchedule.setDisable(true);
-                            btnCreateSchedule.setDisable(false);
-                            loadDataMaintenance();
-                            resetInputData();
-                        } catch (SQLException ex) {
-                            Logger.getLogger(LichBaoTriController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                        alert.getAlert("Lỗi! Nhân viên làm trùng giờ").show();
-                    }
-                } else {
-                    alert.getAlert("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày").show();
-                }
-            } else {
-                alert.getAlert("Vui lòng nhập ngày bảo trì trong khoảng 6 đến 12 tháng").show();
-            }
-        } else {
-            alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
+        int idThietBi = Integer.parseInt(txtDeviceCode.getText());
+        try {
+            int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().toString());
+            LocalDate date = maintenanceDate.getValue();
+            LocalTime time = LocalTime.of(hourSpinner.getValue(), 0);
+            LocalDateTime dateTime = LocalDateTime.of(date, time);
+
+            maintenanceService.validateUpdateScheduleMaintenance(idMaintenance, dateTime, idNhanVien);
+            maintenanceService.updateScheduleMaintenance(idMaintenance, idNhanVien);
+            alert.getAlert("Cập nhật thành công!").show();
+            btnUpdateSchedule.setDisable(true);
+            btnCreateSchedule.setDisable(false);
+            loadDataMaintenance();
+            resetInputData();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(LichBaoTriController.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -349,7 +244,7 @@ public class LichBaoTriController implements Initializable {
         Utils a = new Utils();
         a.switchTab(e, "ThanhToan.fxml");
     }
-    
+
     public void switchTabLogin(ActionEvent e) {
         Utils a = new Utils();
         a.switchTab(e, "primary.fxml");

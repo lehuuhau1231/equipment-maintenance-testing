@@ -24,14 +24,15 @@ DROP TABLE IF EXISTS `admin`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `username` varchar(50) NOT NULL,
   `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `ho` varchar(20) DEFAULT NULL,
   `ten` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `email` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`),
-  UNIQUE KEY `email_UNIQUE` (`email`)
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  CONSTRAINT `admin_luotdangnhap` FOREIGN KEY (`username`) REFERENCES `luotdangnhap` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -41,7 +42,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (1,'admin','admin123','Nguyễn','Lâm','lamn9049@gmail.com'),(2,'admin2','admin123','Lê','Hậu',NULL),(3,'admin3','admin123','Trần','Hương',NULL);
+INSERT INTO `admin` VALUES (1,'admin','admin123','Nguyễn','Lâm','lamn9049@gmail.com');
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -63,7 +64,7 @@ CREATE TABLE `baotri` (
   KEY `nhanvien_baotri_idx` (`idNhanVien`),
   CONSTRAINT `nhanvien_baotri` FOREIGN KEY (`idNhanVien`) REFERENCES `nhanviensuachua` (`id`),
   CONSTRAINT `thietbi_baotri` FOREIGN KEY (`idThietBi`) REFERENCES `thietbi` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,6 +74,32 @@ CREATE TABLE `baotri` (
 LOCK TABLES `baotri` WRITE;
 /*!40000 ALTER TABLE `baotri` DISABLE KEYS */;
 /*!40000 ALTER TABLE `baotri` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `luotdangnhap`
+--
+
+DROP TABLE IF EXISTS `luotdangnhap`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `luotdangnhap` (
+  `username` varchar(50) NOT NULL,
+  `soLuotDangNhap` int NOT NULL DEFAULT '0',
+  `thoiGianKhoa` datetime DEFAULT NULL,
+  PRIMARY KEY (`username`),
+  UNIQUE KEY `username_UNIQUE` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `luotdangnhap`
+--
+
+LOCK TABLES `luotdangnhap` WRITE;
+/*!40000 ALTER TABLE `luotdangnhap` DISABLE KEYS */;
+INSERT INTO `luotdangnhap` VALUES ('admin',3,NULL);
+/*!40000 ALTER TABLE `luotdangnhap` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -122,14 +149,14 @@ CREATE TABLE `nhanviensuathietbi` (
   `ngaySua` datetime NOT NULL,
   `idThietBi` int NOT NULL,
   `idNhanVien` int NOT NULL,
-  `chiPhi` BIGINT DEFAULT NULL,
+  `chiPhi` bigint DEFAULT NULL,
   `moTa` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `nvsuachua_nvsuathietbii_idx` (`idNhanVien`),
   KEY `thietbi_nvsuathietbii_idx` (`idThietBi`),
   CONSTRAINT `nvsuachua_nvsuathietbii` FOREIGN KEY (`idNhanVien`) REFERENCES `nhanviensuachua` (`id`),
   CONSTRAINT `thietbi_nvsuathietbii` FOREIGN KEY (`idThietBi`) REFERENCES `thietbi` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -185,7 +212,7 @@ CREATE TABLE `trangthai` (
   `id` int NOT NULL AUTO_INCREMENT,
   `tenTrangThai` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -207,4 +234,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-27 15:42:40
+-- Dump completed on 2025-04-12 23:24:21
