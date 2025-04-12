@@ -1,4 +1,3 @@
-
 Test
 Các ràng buộc: 
 1. Khoảng thời gian bảo trì lần 1 là 3-6 tháng , lần 2 cách lần 1 là 3 tháng 
@@ -8,9 +7,4 @@ Các ràng buộc:
 5. số lần lập lịch bảo trì cho 1 thiết bị là 2 lần
 6. ô nhập tên thiết bị, tên nhân viên, mô tả, chi phí không được nhập các ký tự đặc biệt
 7. Không thể cập nhật khi trạng thái "đang hoạt động" chuyển sang "đang sửa"
-<<<<<<< HEAD
-8. Không thể cập nhật khi trạng thái "hỏng hóc" chuyển sang "đang hoạt động"
-
-=======
 8. Không thể cập nhật khi trạng thái "hỏng hóc" chuyển sang "đang hoạt động" 
->>>>>>> 5ef79fc21a9b7fe936e11a16bfaf8d8df8104ed4
