@@ -30,9 +30,7 @@ CREATE TABLE `admin` (
   `ten` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `email` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username_UNIQUE` (`username`),
-  UNIQUE KEY `email_UNIQUE` (`email`),
-  CONSTRAINT `admin_luotdangnhap` FOREIGN KEY (`username`) REFERENCES `luotdangnhap` (`username`)
+  UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -84,11 +82,15 @@ DROP TABLE IF EXISTS `luotdangnhap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `luotdangnhap` (
+  `id` int NOT NULL,
   `username` varchar(50) NOT NULL,
   `soLuotDangNhap` int NOT NULL DEFAULT '0',
   `thoiGianKhoa` datetime DEFAULT NULL,
-  PRIMARY KEY (`username`),
-  UNIQUE KEY `username_UNIQUE` (`username`)
+  `idadmin` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  KEY `admin_luotdangnhap_idx` (`idadmin`),
+  CONSTRAINT `admin_luotdangnhap` FOREIGN KEY (`idadmin`) REFERENCES `admin` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -98,7 +100,7 @@ CREATE TABLE `luotdangnhap` (
 
 LOCK TABLES `luotdangnhap` WRITE;
 /*!40000 ALTER TABLE `luotdangnhap` DISABLE KEYS */;
-INSERT INTO `luotdangnhap` VALUES ('admin',3,NULL);
+INSERT INTO `luotdangnhap` VALUES (1,'admin',0,NULL,1);
 /*!40000 ALTER TABLE `luotdangnhap` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -234,4 +236,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-12 23:24:21
+-- Dump completed on 2025-04-13 10:37:30
