@@ -39,13 +39,13 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        AdminServices admin = new AdminServices();
-        try {
-//            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lehuuhau1231@gmail.com");
-              admin.addAdmin("qhuong", "quynhhuongtran314@", "Tran", "Huong", "quynhhuongtran314@gmail.com");
-        } catch (SQLException ex) {
-            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        AdminServices admin = new AdminServices();
+//        try {
+////            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lehuuhau1231@gmail.com");
+//              admin.addAdmin("qhuong", "@Huong123", "Tran", "Huong", "quynhhuongtran314@gmail.com");
+//        } catch (SQLException ex) {
+//            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     public void loginHandler(ActionEvent e) throws SQLException, IOException {
