@@ -21,10 +21,16 @@ import java.util.regex.Pattern;
  */
 public class ThietBiServices {
 
-    public List<ThietBi> getThietBi() throws SQLException {
+    public List<ThietBi> getThietBi(String kw) throws SQLException {
         List<ThietBi> equipments = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT * FROM thietbi");
+            PreparedStatement stm;
+            if(kw.trim().isEmpty())
+                stm = conn.prepareCall("SELECT * FROM thietbi");
+            else {
+                stm = conn.prepareCall("SELECT * FROM thietbi WHERE tenThietBi LIKE CONCAT('%', ?, '%')");
+                stm.setString(1, kw);
+            }
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 ThietBi t = new ThietBi(rs.getInt("id"), rs.getString("tenThietBi"),
@@ -128,7 +134,7 @@ public class ThietBiServices {
         }
     }
 
-    public void updateThietBi(int id, String tenThietBi, LocalDate ngayNhap, LocalDate ngayThanhLy, int idTrangThai) throws SQLException {
+    public void updateThietBi(int id, String tenThietBi, LocalDate ngayThanhLy, int idTrangThai) throws SQLException {
         //Ràng buộc 6: những thiết bị có trạng thái "đang hoạt động" đã được lập lịch bảo trì trước đó mà chuyển sang "đã thanh lý" thì phải HỦY lịch bảo trì
         int currentStatus = getCurrentStatus(id);
         if (currentStatus > 0) {
@@ -137,24 +143,21 @@ public class ThietBiServices {
                 deleteAllSchedule(idThietBi);
             }
         }
-
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm;
             if (ngayThanhLy == null) {
-                stm = conn.prepareCall("UPDATE thietbi SET tenThietBi=?, ngayNhap=?, idTrangThai=?, idAdmin=? WHERE id=?");
+                stm = conn.prepareCall("UPDATE thietbi SET tenThietBi=?, idTrangThai=?, idAdmin=? WHERE id=?");
                 stm.setString(1, tenThietBi);
-                stm.setDate(2, java.sql.Date.valueOf(ngayNhap));
+                stm.setInt(2, idTrangThai);
+                stm.setInt(3, AdminServices.idAdmin);
+                stm.setInt(4, id);
+            } else {
+                stm = conn.prepareCall("UPDATE thietbi SET tenThietBi=?, thanhLy=?, idTrangThai=?, idAdmin=? WHERE id=?");
+                stm.setString(1, tenThietBi);
+                stm.setDate(2, java.sql.Date.valueOf(ngayThanhLy));
                 stm.setInt(3, idTrangThai);
                 stm.setInt(4, AdminServices.idAdmin);
                 stm.setInt(5, id);
-            } else {
-                stm = conn.prepareCall("UPDATE thietbi SET tenThietBi=?, thanhLy=?, ngayNhap=?, idTrangThai=?, idAdmin=? WHERE id=?");
-                stm.setString(1, tenThietBi);
-                stm.setDate(2, java.sql.Date.valueOf(ngayThanhLy));
-                stm.setDate(3, java.sql.Date.valueOf(ngayNhap));
-                stm.setInt(4, idTrangThai);
-                stm.setInt(5, AdminServices.idAdmin);
-                stm.setInt(6, id);
             }
 
             stm.executeUpdate();
@@ -162,19 +165,26 @@ public class ThietBiServices {
         }
     }
 
-    public void validateUpdateThietBi(int id, String tenThietBi, LocalDate ngayNhap, LocalDate ngayThanhLy, int newIdTrangThai) throws SQLException {
-        
+    public void validateUpdateThietBi(int id, String tenThietBi, LocalDate ngayThanhLy, int newIdTrangThai) throws SQLException {
+        TrangThaiServices statusServices = new TrangThaiServices();
+        int idTrangThaiDangSua = statusServices.getIdStatus("Đang sửa");
+        int idTrangThaiBaoTri = statusServices.getIdStatus("Bảo trì");
+        int idTrangThaiThanhLy = statusServices.getIdStatus("Đã thanh lý");
         int currentStatus = getCurrentStatus(id);
     // Ràng buộc 1: Kiểm tra trường rỗng
-        if (tenThietBi.trim().isEmpty() || ngayNhap == null || newIdTrangThai <= 0) {
+        if (tenThietBi.trim().isEmpty() || newIdTrangThai <= 0) {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
         }
         
-        if(newIdTrangThai == 3) 
+        if(newIdTrangThai == idTrangThaiDangSua) 
             throw new IllegalArgumentException("Không được cập nhật thiệt bị ĐANG SỬA");
 
-        if (currentStatus == 1) {
+        if (currentStatus == idTrangThaiThanhLy) {
             throw new IllegalArgumentException("Không được cập nhật trạng thái ĐÃ THANH LÝ");
+        }
+        
+        if (currentStatus == idTrangThaiBaoTri) {
+            throw new IllegalArgumentException("Không được cập nhật trạng thái ĐANG BẢO TRÌ");
         }
 
         if (tenThietBi.length() > 50) {
@@ -191,6 +201,7 @@ public class ThietBiServices {
         }
 
         // Ràng buộc 5: Ngày thanh lý phải lớn hơn ngày nhập (nếu có ngày thanh lý)
+        LocalDate ngayNhap = getImportDateById(id);
         if (ngayThanhLy != null && ngayThanhLy.isBefore(ngayNhap)) {
             throw new IllegalArgumentException("Ngày thanh lý phải lớn hơn ngày nhập");
         }
@@ -268,6 +279,8 @@ public class ThietBiServices {
     }
 
     public void updateStatus(int idThietbi, int idTrangThai) throws SQLException {
+        System.out.println("idThitBi" + idThietbi);
+        System.out.println("idTrangThai" + idTrangThai);
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("UPDATE thietbi SET idTrangThai=? WHERE id=?");
             stm.setInt(1, idTrangThai);
@@ -288,6 +301,16 @@ public class ThietBiServices {
             stmSuaChua.executeUpdate();
 
             conn.commit();
+        }
+    }
+    
+    public void validateSearch(String kw) {
+        if (kw.length() > 50) {
+            throw new IllegalArgumentException("Tối đa 50 ký tự");
+        }
+
+        if (containsSpecialCharacters(kw)) {
+            throw new IllegalArgumentException("Không được chứa ký tự đặc biệt");
         }
     }
 }

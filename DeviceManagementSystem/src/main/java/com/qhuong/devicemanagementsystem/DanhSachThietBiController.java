@@ -5,10 +5,12 @@
 package com.qhuong.devicemanagementsystem;
 
 import com.qhuong.pojo.BaoTri;
+import com.qhuong.pojo.Email;
 import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.pojo.ThietBi;
 import com.qhuong.pojo.TrangThai;
 import com.qhuong.services.BaoTriServices;
+import com.qhuong.services.NhanVienSuaChuaServices;
 import com.qhuong.services.NhanVienSuaThietBiServices;
 import com.qhuong.services.ThietBiServices;
 import com.qhuong.services.TrangThaiServices;
@@ -20,10 +22,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,6 +45,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javax.xml.validation.Validator;
 
 /**
  * FXML Controller class
@@ -63,6 +68,8 @@ public class DanhSachThietBiController implements Initializable {
     Button btnAddEquipment;
     @FXML
     Button btnUpdateEquipment;
+    @FXML
+    TextField txtSearch;
 
     private Map<Integer, String> statusMap;
     private static TrangThaiServices status = new TrangThaiServices();
@@ -71,6 +78,7 @@ public class DanhSachThietBiController implements Initializable {
     private String tenTrangThaiDaThanhLy;
     private int idEquipment;
     private BaoTriServices maintenanceServices = new BaoTriServices();
+    private ScheduledExecutorService scheduler;
 
     /**
      * Initializes the controller class.
@@ -93,25 +101,33 @@ public class DanhSachThietBiController implements Initializable {
                 txtName.setText(oldValue);
             }
         });
-        btnUpdateEquipment.setDisable(true);
-        LocalDate nowDate = LocalDate.now();
-        try {
-            List<BaoTri> list = maintenanceServices.getListMaintenanceDate();
-            for (BaoTri b : list) {
-                if (b.getNgayBaoTri().toLocalDate().equals(nowDate)) {
-                    equipment.updateStatus(b.getIdThietbi(), status.getIdStatus("Bảo trì"));
-                }
+
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("[\\p{L}\\p{N} ]*")) {
+                txtSearch.setText(oldValue);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        });
+
+        txtSearch.textProperty().addListener((e) -> {
+            loadData(txtSearch.getText());
+            try {
+                equipment.validateSearch(txtSearch.getText());
+            } catch (IllegalArgumentException ex) {
+                alert.getAlert(ex.getMessage()).show();
+            }
+        });
+
+        btnUpdateEquipment.setDisable(true);
+        updateMaintenanceStatus();
+        updateMaintenanceCompletedStatus();
         updateRepairStatus();
         updateMantenanceNotification();
         loadStatus(false, false);
         loadColumn();
-        loadData();
+        loadData("");
         selectItemTableView();
         comboBoxChange();
+        sendOTPAsync();
     }
 
     public void updateMantenanceNotification() {
@@ -140,24 +156,81 @@ public class DanhSachThietBiController implements Initializable {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void updateRepairStatus() {
         NhanVienSuaThietBiServices repairService = new NhanVienSuaThietBiServices();
         try {
-            List<NhanVienSuaThietBi> repairs  = repairService.getListNotRepair();
+            List<NhanVienSuaThietBi> repairs = repairService.getListNotRepair();
             int idTrangThai = status.getIdStatus("Đang sửa");
-            for(NhanVienSuaThietBi r : repairs)
-                if(r.getNgaySua().toLocalDate().equals(LocalDate.now()))
+            for (NhanVienSuaThietBi r : repairs) {
+                if (r.getNgaySua().toLocalDate().equals(LocalDate.now())) {
                     equipment.updateStatus(r.getIdThietBi(), idTrangThai);
+                }
+            }
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
 
-    public void loadData() {
+    public void updateMaintenanceStatus() {
         try {
-            tbEquipment.setItems(FXCollections.observableList(equipment.getThietBi()));
+            List<Integer> list = maintenanceServices.listEquipmentForMaintenance();
+            int idTrangThai = status.getIdStatus("Bảo trì");
+            for (Integer idThietBi : list) {
+                equipment.updateStatus(idThietBi, idTrangThai);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void updateMaintenanceCompletedStatus() {
+        try {
+            List<Integer> list = maintenanceServices.getListMaintenanceCompleted();
+            for (Integer idThietBi : list) {
+                equipment.updateStatus(idThietBi, status.getIdStatus("Đang hoạt động"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void sendEmail() {
+        try {
+            List<BaoTri> maintenance = maintenanceServices.getListMaintenanceToSendEmail();
+            NhanVienSuaChuaServices employeeServices = new NhanVienSuaChuaServices();
+            for (BaoTri r : maintenance) {
+                String name = equipment.getNameById(r.getIdThietBi());
+                String toEmail = employeeServices.getEmail(r.getIdNhanVien());
+                String subject = "Thông báo sửa chữa thiết bị " + name;
+                String body = "Thiết bị " + name + " cần bảo trì vào ngày " + r.getNgayBaoTri().toLocalDate() + " vào lúc " + r.getNgayBaoTri().toLocalTime();
+                Email.sendEmail(toEmail, subject, body);
+                maintenanceServices.updateFieldSentEmailStatus(r.getId());
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LichSuaChuaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void sendOTPAsync() {
+        Task<Void> sendEmailTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                sendEmail();
+                return null;
+            }
+        };
+
+        sendEmailTask.setOnFailed(event -> {
+            Utils alert = new Utils();
+            alert.getAlert("Không thể gửi qua email. Vui lòng thử lại!").show();
+        });
+        new Thread(sendEmailTask).start();
+    }
+
+    public void loadData(String kw) {
+        try {
+            tbEquipment.setItems(FXCollections.observableList(equipment.getThietBi(kw)));
         } catch (SQLException ex) {
             Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -282,7 +355,7 @@ public class DanhSachThietBiController implements Initializable {
             equipment.addThietBi(txtName.getText(), importDate.getValue(), idTrangThai);
             alert.getAlert("Thêm thiết bị thành công!").show();
             resetInputData();
-            loadData();
+            loadData("");
         } catch (IllegalArgumentException ex) {
             alert.getAlert(ex.getMessage()).show();
         } catch (IllegalStateException ex) {
@@ -293,35 +366,47 @@ public class DanhSachThietBiController implements Initializable {
     }
 
     public void selectItemTableView() {
-        tbEquipment.setOnMouseClicked(e -> {
-            if (e.getClickCount() >= 2) {
-                ThietBi selectedItem = tbEquipment.getSelectionModel().getSelectedItem();
-                if (selectedItem.getNgayThanhLy() != null) {
-                    alert.getAlert("Không được cập nhật thiết bị ĐÃ THANH LÝ!").show();
-                    return;
-                } else if (selectedItem.getIdTrangThai() == 3) {
-                    alert.getAlert("Không được cập nhật thiết bị ĐANG SỬA!").show();
-                    return;
-                } else if (selectedItem != null) {
-                    btnAddEquipment.setDisable(true);
-                    btnUpdateEquipment.setDisable(false);
-                    idEquipment = selectedItem.getId();
-                    txtName.setText(selectedItem.getTenThietBi());
-                    TrangThai t = new TrangThai(statusMap.get(selectedItem.getIdTrangThai()));
-                    cbStatus.setValue(t);
-                    LocalDate ngayNhap = selectedItem.getNgayNhap().toLocalDate();
-                    importDate.setValue(ngayNhap);
-                    if (selectedItem.getIdTrangThai() == 4) {
-                        loadStatus(true, true);
-                    } else {
-                        loadStatus(true, false);
+        try {
+            int idTrangThaiDangSua = status.getIdStatus("Đang sửa");
+            int idTrangThaiBaoTri = status.getIdStatus("Bảo trì");
+
+            tbEquipment.setOnMouseClicked(e -> {
+                if (e.getClickCount() >= 2) {
+                    ThietBi selectedItem = tbEquipment.getSelectionModel().getSelectedItem();
+                    if (selectedItem.getNgayThanhLy() != null) {
+                        alert.getAlert("Không được cập nhật thiết bị ĐÃ THANH LÝ!").show();
+                        return;
+                    } else if (selectedItem.getIdTrangThai() == idTrangThaiDangSua) {
+                        alert.getAlert("Không được cập nhật thiết bị ĐANG SỬA!").show();
+                        return;
+                    } else if (selectedItem.getIdTrangThai() == idTrangThaiBaoTri) {
+                        alert.getAlert("Không được cập nhật thiết bị ĐANG BẢO TRÌ!").show();
+                        return;
+                    } else if (selectedItem != null) {
+                        btnAddEquipment.setDisable(true);
+                        btnUpdateEquipment.setDisable(false);
+                        idEquipment = selectedItem.getId();
+                        txtName.setText(selectedItem.getTenThietBi());
+                        importDate.setDisable(true);
+                        TrangThai t = new TrangThai(statusMap.get(selectedItem.getIdTrangThai()));
+                        cbStatus.setValue(t);
+                        LocalDate ngayNhap = selectedItem.getNgayNhap().toLocalDate();
+                        importDate.setValue(ngayNhap);
+                        if (selectedItem.getIdTrangThai() == 4) {
+                            loadStatus(true, true);
+                        } else {
+                            loadStatus(true, false);
+                        }
                     }
+                } else {
+                    btnUpdateEquipment.setDisable(true);
+                    btnAddEquipment.setDisable(false);
+                    importDate.setDisable(false);
                 }
-            } else {
-                btnUpdateEquipment.setDisable(true);
-                btnAddEquipment.setDisable(false);
-            }
-        });
+            });
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhSachThietBiController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         tbEquipment.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null || oldValue != newValue) {
@@ -329,6 +414,7 @@ public class DanhSachThietBiController implements Initializable {
                 loadStatus(false, false);
                 btnAddEquipment.setDisable(false);
                 btnUpdateEquipment.setDisable(true);
+                importDate.setDisable(false);
             }
         });
     }
@@ -336,11 +422,11 @@ public class DanhSachThietBiController implements Initializable {
     public void updateEquipment(ActionEvent e) {
         int idTrangThai = getValueStatusMap();
         try {
-            equipment.validateUpdateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
-            equipment.updateThietBi(idEquipment, txtName.getText(), importDate.getValue(), disposalDate.getValue(), idTrangThai);
+            equipment.validateUpdateThietBi(idEquipment, txtName.getText(), disposalDate.getValue(), idTrangThai);
+            equipment.updateThietBi(idEquipment, txtName.getText(), disposalDate.getValue(), idTrangThai);
             alert.getAlert("Cập nhật thông tin thành công").show();
             resetInputData();
-            loadData();
+            loadData("");
         } catch (IllegalArgumentException ex) {
             alert.getAlert(ex.getMessage()).show();
         } catch (SQLException ex) {

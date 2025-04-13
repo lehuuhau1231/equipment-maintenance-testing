@@ -20,6 +20,7 @@ com\qhuong\pojo\TrangThai.class
 com\qhuong\services\NhanVienSuaChuaServices.class
 com\qhuong\devicemanagementsystem\ThanhToanController.class
 com\qhuong\pojo\ThietBi.class
+com\qhuong\devicemanagementsystem\DanhSachThietBiController$2.class
 com\qhuong\pojo\NhanVienSuaThietBi.class
 com\qhuong\devicemanagementsystem\App.class
 com\qhuong\devicemanagementsystem\OTPController$1.class
