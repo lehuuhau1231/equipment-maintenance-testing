@@ -74,29 +74,13 @@ public class LichSuaChuaController implements Initializable {
         loadColumn();
         loadDataRepair();
         loadEmployee();
-
-        try {
-            List<NhanVienSuaThietBi> repair = repairService.getListNotRepair();
-            LocalDate nowDate = LocalDate.now();
-            for (NhanVienSuaThietBi r : repair) {
-                if (nowDate.equals(r.getNgaySua().toLocalDate().minusDays(1))) {
-                    String name = equipmentService.getNameById(r.getIdThietBi());
-                    String toEmail = employeeService.getEmail(r.getIdNhanVien());
-                    String subject = "Thông báo sửa chữa thiết bị " + name;
-                    String body = "Thiết bị " + name + " cần sử vào ngày mai(" + r.getNgaySua().toLocalDate() + ") vào lúc " + r.getNgaySua().toLocalTime();
-                    Email.sendEmail(toEmail, subject, body);
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(LichSuaChuaController.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public void setDeviceData(ThietBi t) {
         txtDeviceCode.setText(String.valueOf(t.getId()));
         txtName.setText(t.getTenThietBi());
     }
-
+        
     public void loadDataRepair() {
         try {
             tbRepair.setItems(FXCollections.observableList(repairService.getNhanVienSuaThietBi(false)));
@@ -173,20 +157,18 @@ public class LichSuaChuaController implements Initializable {
     }
 
     public void saveRepairSchedule(ActionEvent e) {
-        if(txtDeviceCode.getText().isEmpty() || txtName.getText().isEmpty()) {
+        if (txtDeviceCode.getText().isEmpty() || txtName.getText().isEmpty()) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
             return;
         }
         LocalDate repairValue = repairDate.getValue();
         LocalTime hourValue = LocalTime.of(hourSpinner.getValue(), 0);
         try {
-            int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
+            String tenNhanVien = (cbEmployee.getValue() != null) ? cbEmployee.getValue().getTenNV() : "";
+            int idNhanVien = employeeService.getIdEmployee(tenNhanVien);
 
-            LocalDate dateNow = LocalDate.now();
-            int idThietBi;
-
-            idThietBi = equipmentService.getIdEquipment(txtName.getText());
-            LocalDateTime ngaySua = repairValue.atTime(hourValue);
+            int idThietBi = equipmentService.getIdEquipment(txtName.getText());
+            LocalDateTime ngaySua = (repairValue != null ) ? repairValue.atTime(hourValue) : null;
 
             repairService.validateAddRepairSchedule(ngaySua, idThietBi, idNhanVien);
 

@@ -27,7 +27,8 @@ public class Utils {
         // Tạo Label với nội dung và bật wrapText
         Label label = new Label(content);
         label.setWrapText(true);       // Cho phép xuống dòng
-        label.setMaxWidth(400);        // Giới hạn chiều rộng (tùy chỉnh theo ý bạn)
+//        label.setMaxWidth(400);        // Giới hạn chiều rộng (tùy chỉnh theo ý bạn)
+    label.setMinWidth(250);
 
         // Gán Label làm nội dung của Alert
         alert.getDialogPane().setContent(label);
