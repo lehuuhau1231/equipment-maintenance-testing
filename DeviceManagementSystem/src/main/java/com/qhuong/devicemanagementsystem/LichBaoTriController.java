@@ -97,17 +97,18 @@ public class LichBaoTriController implements Initializable {
     }
 
     public void createSchedule(ActionEvent e) {
-        if(txtDeviceCode.getText().isEmpty() || txtName.getText().isEmpty()) {
+        if (txtDeviceCode.getText().isEmpty() || txtName.getText().isEmpty()) {
             alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
             return;
         }
-        
-        LocalDate date = maintenanceDate.getValue();
-        LocalDateTime ngayBaoTri = date.atTime(hourSpinner.getValue(), 0);
         try {
-            int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().getTenNV());
+            String tenNhanVien = (cbEmployee.getValue() != null) ?  cbEmployee.getValue().getTenNV() : "";
+            int idNhanVien = employeeService.getIdEmployee(tenNhanVien);
             LocalDateTime ngayLapLich = LocalDateTime.now();
             int idThietBi = equipmentService.getIdEquipment(txtName.getText());
+
+            LocalDate date = maintenanceDate.getValue();
+            LocalDateTime ngayBaoTri = (date != null) ? date.atTime(hourSpinner.getValue(), 0) : null;
 
             maintenanceService.validateAddMaintenanceSchedule(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien);
 
@@ -202,14 +203,10 @@ public class LichBaoTriController implements Initializable {
     }
 
     public void updateScheduleMaintenance(ActionEvent e) {
-        int idThietBi = Integer.parseInt(txtDeviceCode.getText());
         try {
             int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().toString());
-            LocalDate date = maintenanceDate.getValue();
-            LocalTime time = LocalTime.of(hourSpinner.getValue(), 0);
-            LocalDateTime dateTime = LocalDateTime.of(date, time);
 
-            maintenanceService.validateUpdateScheduleMaintenance(idMaintenance, dateTime, idNhanVien);
+            maintenanceService.validateUpdateScheduleMaintenance(idMaintenance, idNhanVien);
             maintenanceService.updateScheduleMaintenance(idMaintenance, idNhanVien);
             alert.getAlert("Cập nhật thành công!").show();
             btnUpdateSchedule.setDisable(true);
@@ -218,7 +215,6 @@ public class LichBaoTriController implements Initializable {
             resetInputData();
         } catch (IllegalArgumentException ex) {
             alert.getAlert(ex.getMessage()).show();
-
         } catch (SQLException ex) {
             Logger.getLogger(LichBaoTriController.class
                     .getName()).log(Level.SEVERE, null, ex);

@@ -70,7 +70,7 @@ public class NhanVienSuaThietBiServices {
         }
         return dates;
     }
-    
+
     public List<NhanVienSuaThietBi> getListNotRepair() throws SQLException {
         List<NhanVienSuaThietBi> repairs = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
@@ -85,14 +85,15 @@ public class NhanVienSuaThietBiServices {
         }
         return repairs;
     }
-    
+
     public int repairScheduleTimes(int idThietBi) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idThietBi=? AND chiPhi IS NULL AND moTa IS NULL");
             stm.setInt(1, idThietBi);
             ResultSet rs = stm.executeQuery();
-            if(rs.next())
+            if (rs.next()) {
                 return rs.getInt(1);
+            }
         }
         return -1;
     }
@@ -107,15 +108,16 @@ public class NhanVienSuaThietBiServices {
             conn.commit();
         }
     }
-    
+
     public void validateAddRepairSchedule(LocalDateTime ngaySua, int idThietBi, int idNhanVien) throws SQLException {
         // Ràng buộc 1: Kiểm tra dữ liệu đầu vào không null
         if (ngaySua == null || idThietBi <= 0 || idNhanVien <= 0) {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
         }
-        
-        if(repairScheduleTimes(idThietBi) == 1)
+
+        if (repairScheduleTimes(idThietBi) == 1) {
             throw new IllegalArgumentException("Trong một thời điểm thiết bị chỉ được lập lịch sửa 1 lần");
+        }
 
         // Ràng buộc 2: Kiểm tra trùng giờ làm việc của nhân viên
         LocalDate repairDate = ngaySua.toLocalDate();
@@ -137,7 +139,7 @@ public class NhanVienSuaThietBiServices {
 
         // Ràng buộc 4: Kiểm tra ngày sửa chữa trong khoảng 0-3 ngày từ hiện tại
         LocalDate now = LocalDate.now();
-        if (!(repairDate.isAfter(now.minusDays(1)) && repairDate.isBefore(now.plusDays(4)))) {
+        if (!(repairDate.isAfter(now.minusDays(1)) && repairDate.isBefore(now.plusDays(3)))) {
             throw new IllegalArgumentException("Ngày sửa phải nằm trong 3 ngày kể từ ngày hiện tại");
         }
     }
@@ -164,28 +166,51 @@ public class NhanVienSuaThietBiServices {
             conn.commit();
         }
     }
-    
+
     public void validateUpdateReceipt(int id, String chiPhi, String moTa) {
-        if(chiPhi.trim().isEmpty() || moTa.trim().isEmpty())
+        if (chiPhi.trim().isEmpty() || moTa.trim().isEmpty()) {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
-        
-        if(moTa.length() > 250)
+        }
+
+        if (moTa.length() > 250) {
             throw new IllegalArgumentException("Mô tả tối đa 250 ký tự");
-        
+        }
+
         String specialCharactersPattern = "^[\\p{L}\\p{N}\\s]+$";
-        if(!moTa.matches(specialCharactersPattern))
+        if (!moTa.matches(specialCharactersPattern)) {
             throw new IllegalArgumentException("Mô tả không được chứa ký tự đặc biệt");
-        
-        if(!chiPhi.matches("\\d+"))
+        }
+
+        if (!chiPhi.matches("\\d+")) {
             throw new IllegalArgumentException("Chi phí chỉ được nhập số nguyên dương");
+        }
         try {
             long value = Long.parseLong(chiPhi);
-            if(value < 10000)
+            if (value < 10000) {
                 throw new IllegalArgumentException("Chi phí từ 10.000 trở lên");
+            }
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Lỗi! Số quá lớn");
         }
     }
-    
-    
+
+    public NhanVienSuaThietBi getRepairScheduleNew() throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT b.ngaySua, t.tenThietBi, nv.tenNV, b.chiPhi, b.moTa"
+                    + " FROM nhanviensuathietbi b "
+                    + "JOIN ThietBi t ON b.idThietBi = t.id "
+                    + "JOIN NhanVienSuaChua nv ON b.idNhanVien = nv.id");
+
+            ResultSet rs = stm.executeQuery();
+            if (rs.getString("moTa") != null && rs.getLong("chiPhi") != 0) {
+                NhanVienSuaThietBi r = new NhanVienSuaThietBi(rs.getInt("id"),
+                        rs.getTimestamp("ngaySua").toLocalDateTime(),
+                        rs.getString("tenThietbi"), rs.getString("tenNV"),
+                        rs.getLong("chiPhi"), rs.getString("moTa"));
+                return r;
+            }
+
+        }
+        return null;
+    }
 }

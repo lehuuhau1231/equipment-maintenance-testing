@@ -36,16 +36,21 @@ public class NhanVienSuaChuaServices {
     }
 
     public int getIdEmployee(String name) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT id FROM nhanviensuachua WHERE tenNV=?");
-            stm.setString(1, name);
-            ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("id");
+        if (name.trim().isEmpty()) {
+            return -1;
+        }else {
+            try (Connection conn = JdbcUtils.getConn()) {
+                PreparedStatement stm = conn.prepareCall("SELECT id FROM nhanviensuachua WHERE tenNV=?");
+                stm.setString(1, name);
+                ResultSet rs = stm.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
             }
         }
         return -1;
     }
+    
 
     public String getEmail(int idNhanVien) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
@@ -98,39 +103,50 @@ public class NhanVienSuaChuaServices {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin!");
         }
 
-        if (tenNV.length() > 50) 
+        if (tenNV.length() > 50) {
             throw new IllegalArgumentException("Tên nhân viên tối đa 50 ký tự");
+        }
 
-        if (CCCD.length() != 12) 
+        if (CCCD.length() != 12) {
             throw new IllegalArgumentException("CCCD 12 số");
+        }
 
-        if (soDT.length() != 10) 
+        if (soDT.length() != 10) {
             throw new IllegalArgumentException("Số điện thoại 10 số");
+        }
 
-        if (diaChi.length() > 250) 
+        if (diaChi.length() > 250) {
             throw new IllegalArgumentException("Địa chỉ tối đa 250 ký tự");
+        }
 
-        if (email.length() > 50) 
+        if (email.length() > 50) {
             throw new IllegalArgumentException("Email tối đa 50 ký tự");
-        
-        if(containsSpecialCharacters(tenNV)) 
+        }
+
+        if (containsSpecialCharacters(tenNV)) {
             throw new IllegalArgumentException("Tên nhân viên không được chứa ký tự đặc biệt");
-        
-        if(containsSpecialCharacters(diaChi)) 
+        }
+
+        if (containsSpecialCharacters(diaChi)) {
             throw new IllegalArgumentException("Địa chỉ không được chứa ký tự đặc biệt");
-        
-        if(isNumber(CCCD))
+        }
+
+        if (isNumber(CCCD)) {
             throw new IllegalArgumentException("Căn cước công dân chỉ được chứa ký tự số");
-        
-        if(isNumber(soDT))
+        }
+
+        if (isNumber(soDT)) {
             throw new IllegalArgumentException("Số điện thoại chỉ được chứa ký tự số");
+        }
 
         LocalDate birthdDate = LocalDate.now().minusYears(18);
-        if (!ngaySinh.isBefore(birthdDate)) 
+        if (!ngaySinh.isBefore(birthdDate)) {
             throw new IllegalArgumentException("Nhân viên không đủ 18 tuổi");
+        }
 
-        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) 
+        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
             throw new IllegalArgumentException("Email không hợp lệ. Vui lòng nhập lại email với định dạng hợp lệ (ví dụ: example@domain.com).");
+        }
         return true;
     }
 
@@ -138,7 +154,7 @@ public class NhanVienSuaChuaServices {
         String specialCharactersPattern = "^[\\p{L}\\p{N}\\s]+$";
         return !input.matches(specialCharactersPattern);
     }
-    
+
     public boolean isNumber(String input) {
         return !input.matches("\\d+");
     }

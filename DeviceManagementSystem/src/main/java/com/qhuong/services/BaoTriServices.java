@@ -7,6 +7,7 @@ package com.qhuong.services;
 import com.qhuong.pojo.BaoTri;
 import com.qhuong.pojo.JdbcUtils;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,16 +40,61 @@ public class BaoTriServices {
         return maintenance;
     }
 
-    public List<BaoTri> getListMaintenanceDate() throws SQLException {
-        List<BaoTri> maintenances = new ArrayList<>();
+    public List<Integer> listEquipmentForMaintenance() throws SQLException {
+        List<Integer> equipment = new ArrayList<>();
+        LocalDate today = LocalDate.now();
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri, idThietBi FROM baotri");
+            PreparedStatement stm = conn.prepareCall("SELECT idThietBi FROM baotri WHERE ngayBaoTri >= ? AND ngayBaoTri < ?");
+            stm.setDate(1, Date.valueOf(today));
+            stm.setDate(2, Date.valueOf(today.plusDays(1)));
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                BaoTri b = new BaoTri(rs.getTimestamp("ngayBaoTri").toLocalDateTime(), rs.getInt("idThietBi"));
-                maintenances.add(b);
+                equipment.add(rs.getInt("idThietBi"));
             }
-            return maintenances;
+            return equipment;
+        }
+    }
+
+    public List<Integer> getListMaintenanceCompleted() throws SQLException {
+        List<Integer> equipment = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        TrangThaiServices statusService = new TrangThaiServices();
+        int idTrangThai = statusService.getIdStatus("Bảo trì");
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT b.idThietBi FROM baotri b JOIN thietbi t ON b.idThietBi = t.id WHERE t.idTrangThai=? AND b.ngayBaoTri < ?");
+            stm.setInt(1, idTrangThai);
+            stm.setDate(2, Date.valueOf(today));
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                equipment.add(rs.getInt("idThietBi"));
+            }
+            return equipment;
+        }
+    }
+
+    public List<BaoTri> getListMaintenanceToSendEmail() throws SQLException {
+        List<BaoTri> maintenance = new ArrayList<>();
+        LocalDate nextDate = LocalDate.now().plusDays(1);
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT id, ngayBaoTri, idThietBi, idNhanVien FROM baotri WHERE ngayBaoTri >= ? AND ngayBaoTri < ? AND sentEmail = FALSE");
+            stm.setDate(1, Date.valueOf(nextDate));
+            stm.setDate(2, Date.valueOf(nextDate.plusDays(1)));
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                BaoTri nv = new BaoTri(rs.getInt("id"), rs.getTimestamp("ngayBaoTri").toLocalDateTime(), rs.getInt("idThietBi"), rs.getInt("idNhanVien"));
+                maintenance.add(nv);
+            }
+        }
+        return maintenance;
+    }
+    
+    public void updateFieldSentEmailStatus(int id) throws SQLException {
+        
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("UPDATE baotri SET sentEmail = TRUE WHERE id=?");
+            stm.setInt(1, id);
+            stm.executeUpdate();
+            conn.commit();
         }
     }
 
@@ -92,12 +138,13 @@ public class BaoTriServices {
         ThietBiServices equipmentService = new ThietBiServices();
         LocalDateTime lastMaintenance = getMaintenanceDate(idThietBi);
         LocalDate baseDate;
-        if(lastMaintenance != null)  
+        if (lastMaintenance != null) {
             baseDate = lastMaintenance.toLocalDate();
-        else
+        } else {
             baseDate = equipmentService.getImportDateById(idThietBi);
+        }
         LocalDate maintenanceDate = ngayBaoTri.toLocalDate();
-        if (!(maintenanceDate.isAfter(baseDate.plusMonths(3)) && maintenanceDate.isBefore(baseDate.plusMonths(6)))) {
+        if (!(maintenanceDate.isAfter(baseDate.plusMonths(3).minusDays(1)) && maintenanceDate.isBefore(baseDate.plusMonths(6).plusDays(1)))) {
             throw new IllegalArgumentException("Ngày bảo trì phải trong khoảng 3 đến 6 tháng kể từ " + (lastMaintenance != null ? "ngày bảo trì thứ nhất" : "ngày nhập"));
         }
 
@@ -152,7 +199,7 @@ public class BaoTriServices {
         }
         return null;
     }
-    
+
     public LocalDateTime getMaintenanceDateById(int id) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri FROM baotri WHERE id=?");
@@ -163,6 +210,19 @@ public class BaoTriServices {
             }
         }
         return null;
+    }
+
+    public List<LocalDateTime> getListMaintenanceDateNotId(int id) throws SQLException {
+        List<LocalDateTime> dates = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri FROM baotri WHERE id<>?");
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                dates.add(rs.getTimestamp("ngayBaoTri").toLocalDateTime());
+            }
+        }
+        return dates;
     }
 
     public int getMaintenanceTimes(int idThietBi) throws SQLException {
@@ -201,43 +261,41 @@ public class BaoTriServices {
         }
     }
 
-    public void validateUpdateScheduleMaintenance(int id, LocalDateTime ngayBaoTri, int idNhanVien) throws SQLException {
+    public void validateUpdateScheduleMaintenance(int id, int idNhanVien) throws SQLException {
         // Ràng buộc 1: Kiểm tra dữ liệu đầu vào không null
-        if (id <= 0 || ngayBaoTri == null || idNhanVien <= 0) {
+        if (id <= 0 || idNhanVien <= 0) {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
         }
-        
-        if(!isScheduleExist(id))
+
+        if (!isScheduleExist(id)) {
             throw new IllegalArgumentException("Lịch bảo trì không tồn tại");
-        
-        checkLastTwoDaysUpdate(ngayBaoTri.toLocalDate());
-        
-        // Ràng buộc 3: Kiểm tra khối lượng công việc của nhân viên (tối đa 3 công việc/ngày)
-        List<LocalDateTime> employeeSchedule = getListDateTime(idNhanVien);
-        LocalDate maintenanceDate = ngayBaoTri.toLocalDate();
-        long dailyWorkload = employeeSchedule.stream().filter(t -> t.toLocalDate().equals(maintenanceDate)).count();
-        if (dailyWorkload >= 3) {
-            throw new IllegalArgumentException("Nhân viên chỉ được làm tối đa 3 công việc trong 1 ngày");
         }
 
+        LocalDateTime ngayBaoTri = getMaintenanceDateById(id);
+        checkLastTwoDaysUpdate(ngayBaoTri.toLocalDate());
+
         // Ràng buộc 4: Kiểm tra trùng giờ làm việc của nhân viên
+        List<LocalDateTime> employeeSchedule = getListDateTime(idNhanVien);
+        LocalDate maintenanceDate = ngayBaoTri.toLocalDate();
         LocalTime maintenanceTime = ngayBaoTri.toLocalTime();
         boolean isTimeConflict = employeeSchedule.stream().anyMatch(t -> t.toLocalDate().equals(maintenanceDate) && t.toLocalTime().equals(maintenanceTime));
         if (isTimeConflict) {
             throw new IllegalArgumentException("Nhân viên đã có lịch trùng giờ tại thời điểm này");
         }
     }
-    
+
     public void checkLastTwoDaysUpdate(LocalDate ngayBaoTri) {
-        if(ngayBaoTri == null)
+        if (ngayBaoTri == null) {
             throw new IllegalArgumentException("Vui lòng nhập ngày bảo trì");
-        
-        if(!LocalDate.now().isBefore(ngayBaoTri.minusDays(2)))
+        }
+
+        if (!LocalDate.now().isBefore(ngayBaoTri.minusDays(2))) {
             throw new IllegalArgumentException("Không được cập nhật lịch trong 2 ngày cuối");
+        }
     }
-    
+
     public boolean isScheduleExist(int id) throws SQLException {
-        try(Connection conn = JdbcUtils.getConn()) {
+        try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT * FROM baotri WHERE id=?");
             stm.setInt(1, id);
             ResultSet rs = stm.executeQuery();
