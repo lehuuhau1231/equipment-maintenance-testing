@@ -201,9 +201,8 @@ public class ThietBiServices {
         }
 
         // Ràng buộc 5: Ngày thanh lý phải lớn hơn ngày nhập (nếu có ngày thanh lý)
-        LocalDate ngayNhap = getImportDateById(id);
-        if (ngayThanhLy != null && ngayThanhLy.isBefore(ngayNhap)) {
-            throw new IllegalArgumentException("Ngày thanh lý phải lớn hơn ngày nhập");
+        if (ngayThanhLy != null && !ngayThanhLy.isAfter(LocalDate.now().minusDays(1))) {
+            throw new IllegalArgumentException("Ngày thanh lý phải từ ngày hiện tại trở đi");
         }
 
         // Ràng buộc 3: Kiểm tra tên thiết bị đã tồn tại
