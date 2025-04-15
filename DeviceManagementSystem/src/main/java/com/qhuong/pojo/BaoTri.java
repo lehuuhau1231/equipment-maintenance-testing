@@ -16,7 +16,8 @@ public class BaoTri {
     private LocalDateTime ngayBaoTri;
     private String tenThietBi;
     private String tenNV;
-    private int idThietbi;
+    private int idThietBi;
+    private int idNhanVien;
     
     public BaoTri(int id, LocalDateTime ngayLapLich, LocalDateTime ngayBaoTri, String idThietBi, String idNhanVien){
         this.id = id;
@@ -26,15 +27,22 @@ public class BaoTri {
         this.tenNV = idNhanVien;
     };
     
+    public BaoTri(int id, LocalDateTime ngayBaotri, int idThietBi, int idNhanVien) {
+        this.id = id;
+        this.ngayBaoTri = ngayBaotri;
+        this.idThietBi = idThietBi;
+        this.idNhanVien = idNhanVien;
+    }
+    
     public BaoTri(LocalDateTime ngayBaotri, int idThietBi) {
         this.ngayBaoTri = ngayBaotri;
-        this.idThietbi = idThietBi;
+        this.idThietBi = idThietBi;
     }
     
     public BaoTri(LocalDateTime ngayBaotri, LocalDateTime ngayLapLich, int idThietBi) {
         this.ngayBaoTri = ngayBaotri;
         this.ngayLapLich = ngayLapLich;
-        this.idThietbi = idThietBi;
+        this.idThietBi = idThietBi;
     }
 
     /**
@@ -115,17 +123,31 @@ public class BaoTri {
     }
 
     /**
-     * @return the idThietbi
+     * @return the idNhanVien
      */
-    public int getIdThietbi() {
-        return idThietbi;
+    public int getIdNhanVien() {
+        return idNhanVien;
     }
 
     /**
-     * @param idThietbi the idThietbi to set
+     * @param idNhanVien the idNhanVien to set
      */
-    public void setIdThietbi(int idThietbi) {
-        this.idThietbi = idThietbi;
+    public void setIdNhanVien(int idNhanVien) {
+        this.idNhanVien = idNhanVien;
+    }
+
+    /**
+     * @return the idThietBi
+     */
+    public int getIdThietBi() {
+        return idThietBi;
+    }
+
+    /**
+     * @param idThietBi the idThietBi to set
+     */
+    public void setIdThietBi(int idThietBi) {
+        this.idThietBi = idThietBi;
     }
     
 }

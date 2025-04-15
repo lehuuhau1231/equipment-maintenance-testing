@@ -13,11 +13,11 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.DanhSachThietBiController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="530.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.DanhSachThietBiController">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <AnchorPane layoutX="-6.0" prefHeight="500.0" prefWidth="214.0" styleClass="left-form" stylesheets="@Styles.css">
+            <AnchorPane layoutX="-6.0" prefHeight="530.0" prefWidth="215.0" styleClass="left-form" stylesheets="@Styles.css">
                <children>
                   <ImageView fitHeight="86.0" fitWidth="66.0" layoutX="82.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -62,7 +62,7 @@
                   </Button>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="217.0" prefHeight="500.0" prefWidth="697.0" styleClass="right-form" stylesheets="@Styles.css">
+            <AnchorPane layoutX="217.0" prefHeight="530.0" prefWidth="697.0" styleClass="right-form" stylesheets="@Styles.css">
                <children>
                   <Line endX="561.2000732421875" endY="-8.000007629394531" layoutX="122.0" layoutY="48.0" startX="-129.0" startY="-8.000007629394531" />
                   <Label layoutX="22.0" layoutY="14.0" text="Danh sách thiết bị">
@@ -87,14 +87,14 @@
                   </Label>
                   <DatePicker fx:id="importDate" editable="false" layoutX="140.0" layoutY="119.0" prefHeight="26.0" prefWidth="178.0" />
                   <TextField fx:id="txtName" layoutX="136.0" layoutY="73.0" prefHeight="26.0" prefWidth="178.0" />
-                  <TableView fx:id="tbEquipment" layoutX="21.0" layoutY="182.0" prefHeight="242.0" prefWidth="654.0" />
-                  <Button fx:id="btnAddEquipment" layoutX="471.0" layoutY="445.0" mnemonicParsing="false" onAction="#addEquipment" text="Thêm thiết bị">
+                  <TableView fx:id="tbEquipment" layoutX="22.0" layoutY="212.0" prefHeight="242.0" prefWidth="654.0" />
+                  <Button fx:id="btnAddEquipment" layoutX="472.0" layoutY="475.0" mnemonicParsing="false" onAction="#addEquipment" text="Thêm thiết bị">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
                   <ComboBox fx:id="cbStatus" layoutX="474.0" layoutY="73.0" prefHeight="26.0" prefWidth="178.0" />
-                  <Button fx:id="btnUpdateEquipment" layoutX="596.0" layoutY="445.0" mnemonicParsing="false" onAction="#updateEquipment" text="Cập nhật">
+                  <Button fx:id="btnUpdateEquipment" layoutX="597.0" layoutY="475.0" mnemonicParsing="false" onAction="#updateEquipment" text="Cập nhật">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -105,6 +105,12 @@
                      </font>
                   </Label>
                   <DatePicker fx:id="disposalDate" disable="true" editable="false" layoutX="478.0" layoutY="122.0" prefHeight="26.0" prefWidth="178.0" />
+                  <TextField fx:id="txtSearch" layoutX="92.0" layoutY="172.0" prefHeight="25.0" prefWidth="565.0" promptText="Tên thiết bị" />
+                  <Label layoutX="22.0" layoutY="174.0" text="Tìm kiếm: ">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
          </children>

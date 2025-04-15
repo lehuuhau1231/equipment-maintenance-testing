@@ -30,6 +30,7 @@ CREATE TABLE `admin` (
   `ten` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `email` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `username_UNIQUE` (`username`),
   UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -55,6 +56,7 @@ CREATE TABLE `baotri` (
   `id` int NOT NULL AUTO_INCREMENT,
   `ngayLapLich` datetime NOT NULL,
   `ngayBaoTri` datetime NOT NULL,
+  `sentEmail` boolean DEFAULT FALSE,
   `idThietBi` int NOT NULL,
   `idNhanVien` int NOT NULL,
   PRIMARY KEY (`id`),
@@ -74,35 +76,7 @@ LOCK TABLES `baotri` WRITE;
 /*!40000 ALTER TABLE `baotri` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `luotdangnhap`
---
 
-DROP TABLE IF EXISTS `luotdangnhap`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `luotdangnhap` (
-  `id` int NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `soLuotDangNhap` int NOT NULL DEFAULT '0',
-  `thoiGianKhoa` datetime DEFAULT NULL,
-  `idadmin` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username_UNIQUE` (`username`),
-  KEY `admin_luotdangnhap_idx` (`idadmin`),
-  CONSTRAINT `admin_luotdangnhap` FOREIGN KEY (`idadmin`) REFERENCES `admin` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `luotdangnhap`
---
-
-LOCK TABLES `luotdangnhap` WRITE;
-/*!40000 ALTER TABLE `luotdangnhap` DISABLE KEYS */;
-INSERT INTO `luotdangnhap` VALUES (1,'admin',0,NULL,1);
-/*!40000 ALTER TABLE `luotdangnhap` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `nhanviensuachua`
@@ -199,7 +173,7 @@ CREATE TABLE `thietbi` (
 
 LOCK TABLES `thietbi` WRITE;
 /*!40000 ALTER TABLE `thietbi` DISABLE KEYS */;
-INSERT INTO `thietbi` VALUES (1,'Quạt điện',NULL,'2025-03-12',NULL,3,1),(2,'Máy lạnh',NULL,'2025-03-01',NULL,4,1),(3,'Tủ lạnh',NULL,'2025-03-10',NULL,4,1),(4,'Bàn ủi',NULL,'2025-03-05',NULL,2,1),(5,'Nồi cơm điện','2025-03-23','2025-03-13',NULL,1,1);
+INSERT INTO `thietbi` VALUES (1,'Quạt điện',NULL,'2025-03-12',NULL,2,1),(2,'Máy lạnh',NULL,'2025-03-01',NULL,2,1),(3,'Tủ lạnh',NULL,'2025-03-10',NULL,2,1),(4,'Bàn ủi',NULL,'2025-03-05',NULL,2,1),(5,'Nồi cơm điện','2025-03-23','2025-03-13',NULL,1,1);
 /*!40000 ALTER TABLE `thietbi` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,4 +210,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-13 10:37:30
+-- Dump completed on 2025-04-12 23:24:21

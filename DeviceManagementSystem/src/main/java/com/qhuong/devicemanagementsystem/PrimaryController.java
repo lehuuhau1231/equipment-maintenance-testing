@@ -16,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -29,8 +30,11 @@ public class PrimaryController implements Initializable {
     PasswordField txtPassword;
     @FXML
     Button btnLogin;
+    @FXML
+    Label timer;
     private Utils alert = new Utils();
     private int countPassError;
+    private int remainingSeconds = 5 * 60;
 
     @FXML
     private void switchToSecondary() throws IOException {
@@ -47,38 +51,34 @@ public class PrimaryController implements Initializable {
 //        }
     }
 
-    public void loginHandler(ActionEvent e) throws SQLException, IOException {
-        if (txtUsername.getText().isEmpty()) {
-            alert.getAlert("Chưa điền username").show();
-        } else if (txtPassword.getText().isEmpty()) {
-            alert.getAlert("Chưa điền password").show();
-        } else {
-            AdminServices admin = new AdminServices();
-            int result = admin.getAdmin(txtUsername.getText(), txtPassword.getText());
-            if (result == 1) {
-                Parent listEquipment = FXMLLoader.load(getClass().getResource("DanhSachThietBi.fxml"));
-                Scene listEquipmentScene = new Scene(listEquipment);
-                Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
-                window.setScene(listEquipmentScene);
-                window.show();
-            } else if (result == -1) {
-                alert.getAlert("Sai tài khoản").show();
-            } else {
-                countPassError++;
-                if (countPassError >= 5) {
-                    alert.getAlert("Vui lòng chờ sau 5 phút để đăng nhập").show();
-                    btnLogin.setDisable(true);
-                    countPassError = 0;
-                    delay();
-                } else {
-                    alert.getAlert("Sai mật khẩu").show();
-                }
-            }
+    public void loginHandler(ActionEvent e) throws IOException {
+        AdminServices admin = new AdminServices();
+        try {
+
+            admin.checkLogin(txtUsername.getText(), txtPassword.getText());
+
+            Parent listEquipment = FXMLLoader.load(getClass().getResource("DanhSachThietBi.fxml"));
+            Scene listEquipmentScene = new Scene(listEquipment);
+            Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            window.setScene(listEquipmentScene);
+            window.show();
+        } catch (IllegalArgumentException ex) {
+            alert.getAlert(ex.getMessage()).show();
+        } catch (SQLException ex) {
+            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        countPassError++;
+        if (countPassError >= 2) {
+//                alert.getAlert("Vui lòng chờ sau 5 phút để đăng nhập").show();
+//                btnLogin.setDisable(true);
+            countPassError = 0;
+//                    delay();
+        }
+
     }
 
     public void delay() {
-        PauseTransition delay = new PauseTransition(Duration.minutes(5));
+        PauseTransition delay = new PauseTransition(Duration.seconds(10));
         delay.setOnFinished(e -> {
             btnLogin.setDisable(false);
         });
@@ -98,5 +98,4 @@ public class PrimaryController implements Initializable {
             Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }
