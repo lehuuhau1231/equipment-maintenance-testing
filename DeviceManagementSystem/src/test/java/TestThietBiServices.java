@@ -736,4 +736,8 @@ public class TestThietBiServices {
                 () -> thietBiServices.validateSearch("Search#"));
         assertEquals("Không được chứa ký tự đặc biệt", thrown.getMessage());
     }
+
 }
+
+
+

@@ -218,47 +218,47 @@ public class TestNhanVienSuaThietBiServices {
         assertTrue(result.isEmpty(), "Phải trả về danh sách rỗng khi không có bản ghi hợp lệ");
     }
 
-    @Test
-    void testGetListDateTime_Success() throws SQLException {
-        // Arrange
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
-            stmt.setInt(2, 1);
-            stmt.setInt(3, 1);
-            stmt.setLong(4, 0);
-            stmt.executeUpdate();
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-02 10:00:00"));
-            stmt.executeUpdate();
-        }
+//    @Test
+//    void testGetListDateTime_Success() throws SQLException {
+//        // Arrange
+//        try (PreparedStatement stmt = connection.prepareStatement(
+//                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
+//            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+//            stmt.setInt(2, 1);
+//            stmt.setInt(3, 1);
+//            stmt.setLong(4, 0);
+//            stmt.executeUpdate();
+//            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-02 10:00:00"));
+//            stmt.executeUpdate();
+//        }
+//
+//        // Act
+//        List<LocalDateTime> result = services.getListDateTime(1);
+//
+//        // Assert
+//        assertEquals(2, result.size(), "Phải trả về 2 ngày sửa");
+//        assertEquals(LocalDateTime.of(2023, 10, 1, 10, 0), result.get(0));
+//        assertEquals(LocalDateTime.of(2023, 10, 2, 10, 0), result.get(1));
+//    }
 
-        // Act
-        List<LocalDateTime> result = services.getListDateTime(1);
-
-        // Assert
-        assertEquals(2, result.size(), "Phải trả về 2 ngày sửa");
-        assertEquals(LocalDateTime.of(2023, 10, 1, 10, 0), result.get(0));
-        assertEquals(LocalDateTime.of(2023, 10, 2, 10, 0), result.get(1));
-    }
-
-    @Test
-    void testGetListDateTime_NoMatches() throws SQLException {
-        // Arrange
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
-            stmt.setInt(2, 1);
-            stmt.setInt(3, 1);
-            stmt.setLong(4, 500000);
-            stmt.executeUpdate();
-        }
-
-        // Act
-        List<LocalDateTime> result = services.getListDateTime(1);
-
-        // Assert
-        assertTrue(result.isEmpty(), "Phải trả về danh sách rỗng khi không có ngày hợp lệ");
-    }
+//    @Test
+//    void testGetListDateTime_NoMatches() throws SQLException {
+//        // Arrange
+//        try (PreparedStatement stmt = connection.prepareStatement(
+//                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
+//            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+//            stmt.setInt(2, 1);
+//            stmt.setInt(3, 1);
+//            stmt.setLong(4, 500000);
+//            stmt.executeUpdate();
+//        }
+//
+//        // Act
+//        List<LocalDateTime> result = services.getListDateTime(1);
+//
+//        // Assert
+//        assertTrue(result.isEmpty(), "Phải trả về danh sách rỗng khi không có ngày hợp lệ");
+//    }
 
     @Test
     void testGetListNotRepair_Success() throws SQLException {

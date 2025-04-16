@@ -203,11 +203,16 @@ public class LichBaoTriController implements Initializable {
     }
 
     public void updateScheduleMaintenance(ActionEvent e) {
+        
         try {
+            if(maintenanceDate.getValue() == null || cbEmployee.getValue() == null) {
+                alert.getAlert("Vui lòng điền đầy đủ thông tin").show();
+                return;
+            }
             int idNhanVien = employeeService.getIdEmployee(cbEmployee.getValue().toString());
-
-            maintenanceService.validateUpdateScheduleMaintenance(idMaintenance, idNhanVien);
-            maintenanceService.updateScheduleMaintenance(idMaintenance, idNhanVien);
+            LocalDateTime ngayBaoTri = maintenanceDate.getValue().atTime(hourSpinner.getValue(), 0);
+            maintenanceService.validateUpdateScheduleMaintenance(idMaintenance, ngayBaoTri, idNhanVien);
+            maintenanceService.updateScheduleMaintenance(idMaintenance, ngayBaoTri, idNhanVien);
             alert.getAlert("Cập nhật thành công!").show();
             btnUpdateSchedule.setDisable(true);
             btnCreateSchedule.setDisable(false);
