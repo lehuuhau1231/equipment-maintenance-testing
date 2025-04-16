@@ -11,10 +11,10 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,14 +87,13 @@ public class BaoTriServices {
         }
         return maintenance;
     }
-    
+
     public void updateFieldSentEmailStatus(int id) throws SQLException {
-        
+
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("UPDATE baotri SET sentEmail = TRUE WHERE id=?");
             stm.setInt(1, id);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -120,7 +119,6 @@ public class BaoTriServices {
             stm.setInt(3, idThietBi);
             stm.setInt(4, idNhanVien);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -149,43 +147,27 @@ public class BaoTriServices {
         }
 
         // Ràng buộc 3: Kiểm tra khối lượng công việc của nhân viên (tối đa 3 công việc/ngày)
-        List<LocalDateTime> employeeSchedule = getListDateTime(idNhanVien);
-        long dailyWorkload = employeeSchedule.stream().filter(t -> t.toLocalDate().equals(maintenanceDate)).count();
+        long dailyWorkload = OverWorkload(idNhanVien, ngayBaoTri);
         if (dailyWorkload >= 3) {
             throw new IllegalArgumentException("Nhân viên chỉ được làm tối đa 3 công việc trong 1 ngày");
         }
 
         // Ràng buộc 4: Kiểm tra trùng giờ làm việc của nhân viên
-        LocalTime maintenanceTime = ngayBaoTri.toLocalTime();
-        boolean isTimeConflict = employeeSchedule.stream().anyMatch(t -> t.toLocalDate().equals(maintenanceDate) && t.toLocalTime().equals(maintenanceTime));
-        if (isTimeConflict) {
+        if (checkTimeConflict(idNhanVien, ngayBaoTri, 0) >= 1) {
             throw new IllegalArgumentException("Nhân viên đã có lịch trùng giờ tại thời điểm này");
         }
     }
 
-    public List<LocalDateTime> getListDateTime(int idNhanVien) throws SQLException {
-        List<LocalDateTime> dates = new ArrayList<>();
+    public int getMaintenanceTimes(int idThietBi) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri FROM baotri WHERE idNhanVien=?");
-            stm.setInt(1, idNhanVien);
-            ResultSet rs = stm.executeQuery();
-            while (rs.next()) {
-                dates.add(rs.getTimestamp("ngayBaoTri").toLocalDateTime());
-            }
-        }
-        return dates;
-    }
-
-    public LocalDateTime getScheduleDate(int id) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT ngayLapLich FROM baotri WHERE id=?");
-            stm.setInt(1, id);
+            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idThietBi=?");
+            stm.setInt(1, idThietBi);
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
-                return rs.getTimestamp("ngayLapLich").toLocalDateTime();
+                return rs.getInt(1);
             }
         }
-        return null;
+        return -1;
     }
 
     public LocalDateTime getMaintenanceDate(int idThietBi) throws SQLException {
@@ -195,6 +177,71 @@ public class BaoTriServices {
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
                 return rs.getTimestamp("ngayBaoTri").toLocalDateTime();
+            }
+        }
+        return null;
+    }
+
+    public int checkTimeConflict(int idNhanVien, LocalDateTime ngayBaoTri, int id) throws SQLException {
+        int count = 0;
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ? AND TIME(ngayBaoTri) = ?";
+            if (id > 0) {
+                sql += " AND id <> ?";
+            }
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setInt(1, idNhanVien);
+            stm.setDate(2, Date.valueOf(ngayBaoTri.toLocalDate()));
+            stm.setTime(3, Time.valueOf(ngayBaoTri.toLocalTime()));
+            if (id > 0) {
+                stm.setInt(4, id);
+            }
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                count += rs.getInt(1);
+            }
+
+            PreparedStatement stm1 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND TIME(ngaySua) = ? AND chiPhi IS NULL");
+            stm1.setInt(1, idNhanVien);
+            stm1.setDate(2, Date.valueOf(ngayBaoTri.toLocalDate()));
+            stm1.setTime(3, Time.valueOf(ngayBaoTri.toLocalTime()));
+            ResultSet rs1 = stm1.executeQuery();
+            if (rs1.next()) {
+                count += rs1.getInt(1);
+            }
+        }
+        return count;
+    }
+
+    public int OverWorkload(int idNhanVien, LocalDateTime ngayBaoTri) throws SQLException {
+        LocalDate date = ngayBaoTri.toLocalDate();
+        int count = 0;
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ?");
+            stm.setInt(1, idNhanVien);
+            stm.setDate(2, Date.valueOf(date));
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                count += rs.getInt(1);
+            }
+            PreparedStatement stm2 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND chiPhi IS NULL");
+            stm2.setInt(1, idNhanVien);
+            stm2.setDate(2, Date.valueOf(date));
+            ResultSet rs2 = stm2.executeQuery();
+            if (rs2.next()) {
+                count += rs2.getInt(1);
+            }
+        }
+        return count;
+    }
+
+    public LocalDateTime getScheduleDate(int id) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT ngayLapLich FROM baotri WHERE id=?");
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                return rs.getTimestamp("ngayLapLich").toLocalDateTime();
             }
         }
         return null;
@@ -225,18 +272,6 @@ public class BaoTriServices {
         return dates;
     }
 
-    public int getMaintenanceTimes(int idThietBi) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idThietBi=?");
-            stm.setInt(1, idThietBi);
-            ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return -1;
-    }
-
     public List<BaoTri> getUnmaintenanceEquipment() throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             List<BaoTri> maintenance = new ArrayList<>();
@@ -251,17 +286,17 @@ public class BaoTriServices {
         }
     }
 
-    public void updateScheduleMaintenance(int id, int idNhanVien) throws SQLException {
+    public void updateScheduleMaintenance(int id, LocalDateTime ngayBaoTri, int idNhanVien) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("UPDATE baotri SET idNhanVien=? WHERE id=?");
-            stm.setInt(1, idNhanVien);
-            stm.setInt(2, id);
+            PreparedStatement stm = conn.prepareCall("UPDATE baotri SET ngayBaoTri=?, idNhanVien=? WHERE id=?");
+            stm.setTimestamp(1, Timestamp.valueOf(ngayBaoTri));
+            stm.setInt(2, idNhanVien);
+            stm.setInt(3, id);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
-    public void validateUpdateScheduleMaintenance(int id, int idNhanVien) throws SQLException {
+    public void validateUpdateScheduleMaintenance(int id, LocalDateTime ngayBaoTri, int idNhanVien) throws SQLException {
         // Ràng buộc 1: Kiểm tra dữ liệu đầu vào không null
         if (id <= 0 || idNhanVien <= 0) {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
@@ -271,15 +306,15 @@ public class BaoTriServices {
             throw new IllegalArgumentException("Lịch bảo trì không tồn tại");
         }
 
-        LocalDateTime ngayBaoTri = getMaintenanceDateById(id);
+        long dailyWorkload = OverWorkload(idNhanVien, ngayBaoTri);
+        if (dailyWorkload >= 3) {
+            throw new IllegalArgumentException("Nhân viên chỉ được làm tối đa 3 công việc trong 1 ngày");
+        }
+
         checkLastTwoDaysUpdate(ngayBaoTri.toLocalDate());
 
         // Ràng buộc 4: Kiểm tra trùng giờ làm việc của nhân viên
-        List<LocalDateTime> employeeSchedule = getListDateTime(idNhanVien);
-        LocalDate maintenanceDate = ngayBaoTri.toLocalDate();
-        LocalTime maintenanceTime = ngayBaoTri.toLocalTime();
-        boolean isTimeConflict = employeeSchedule.stream().anyMatch(t -> t.toLocalDate().equals(maintenanceDate) && t.toLocalTime().equals(maintenanceTime));
-        if (isTimeConflict) {
+        if (checkTimeConflict(idNhanVien, ngayBaoTri, id) >= 1) {
             throw new IllegalArgumentException("Nhân viên đã có lịch trùng giờ tại thời điểm này");
         }
     }
@@ -289,7 +324,15 @@ public class BaoTriServices {
             throw new IllegalArgumentException("Vui lòng nhập ngày bảo trì");
         }
 
-        if (!LocalDate.now().isBefore(ngayBaoTri.minusDays(2))) {
+        LocalDate today = LocalDate.now();
+
+        // Không được cập nhật nếu đã qua ngày bảo trì
+        if (today.isAfter(ngayBaoTri)) {
+            throw new IllegalArgumentException("Không thể cập nhật vì đã qua ngày bảo trì");
+        }
+
+        // Không được cập nhật trong 2 ngày cuối trước lịch bảo trì
+        if (!today.isBefore(ngayBaoTri.minusDays(2))) {
             throw new IllegalArgumentException("Không được cập nhật lịch trong 2 ngày cuối");
         }
     }
