@@ -25,9 +25,9 @@ public class ThietBiServices {
         List<ThietBi> equipments = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm;
-            if(kw.trim().isEmpty())
+            if (kw.trim().isEmpty()) {
                 stm = conn.prepareCall("SELECT * FROM thietbi");
-            else {
+            } else {
                 stm = conn.prepareCall("SELECT * FROM thietbi WHERE tenThietBi LIKE CONCAT('%', ?, '%')");
                 stm.setString(1, kw);
             }
@@ -53,7 +53,7 @@ public class ThietBiServices {
         }
         return equipments;
     }
-    
+
     public LocalDate getImportDateById(int id) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT ngayNhap FROM thietbi WHERE id=?");
@@ -95,29 +95,25 @@ public class ThietBiServices {
 
     public void addThietBi(String tenThietBi, LocalDate ngayNhap, int idTrangThai) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("INSERT INTO thietbi(tenThietBi, ngayNhap, idTrangThai, idAdmin) VALUE(?, ?, ?, ?)");
+            PreparedStatement stm = conn.prepareCall("INSERT INTO thietbi(tenThietBi, ngayNhap, idTrangThai, idAdmin) VALUES(?, ?, ?, ?)");
             stm.setString(1, tenThietBi);
             stm.setDate(2, java.sql.Date.valueOf(ngayNhap));
             stm.setInt(3, idTrangThai);
-            stm.setInt(4, 1);
+            stm.setInt(4, AdminServices.idAdmin);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
     public void validateAddThietBi(String tenThietBi, LocalDate ngayNhap, int idTrangThai) throws SQLException {
+        TrangThaiServices statusServices = new TrangThaiServices();
+        int idTrangThaiHoatDong = statusServices.getIdStatus("Đang hoạt động");
+        int idTrangThaiHongHoc = statusServices.getIdStatus("Hỏng hóc");
         // Ràng buộc 1: Kiểm tra trường rỗng
         if (tenThietBi.trim().isEmpty() || ngayNhap == null || idTrangThai <= 0) {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
         }
 
-        if (tenThietBi.length() > 50) {
-            throw new IllegalArgumentException("Tên thiết bị tối đa 50 ký tự");
-        }
-
-        if (containsSpecialCharacters(tenThietBi)) {
-            throw new IllegalArgumentException("Tên thiết bị không được chứa ký tự đặc biệt");
-        }
+        checkNameRules(tenThietBi);
 
         // Ràng buộc 2: Ngày nhập phải là ngày hiện tại
         if (!ngayNhap.equals(LocalDate.now())) {
@@ -129,8 +125,8 @@ public class ThietBiServices {
             throw new IllegalArgumentException("Tên thiết bị này đã tồn tại");
         }
 
-        if (idTrangThai != 2 && idTrangThai != 4) {
-            throw new IllegalArgumentException("Quy định trang thái thiết bị khi thêm là: ĐANG HOẠT ĐỘNG HOẶC HỎNG HÓC");
+        if (idTrangThai != idTrangThaiHoatDong && idTrangThai != idTrangThaiHongHoc) {
+            throw new IllegalArgumentException("Quy định trạng thái thiết bị khi thêm là: ĐANG HOẠT ĐỘNG HOẶC HỎNG HÓC");
         }
     }
 
@@ -161,32 +157,27 @@ public class ThietBiServices {
             }
 
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
     public void validateUpdateThietBi(int id, String tenThietBi, LocalDate ngayThanhLy, int newIdTrangThai) throws SQLException {
-        TrangThaiServices statusServices = new TrangThaiServices();
-        int idTrangThaiDangSua = statusServices.getIdStatus("Đang sửa");
-        int idTrangThaiBaoTri = statusServices.getIdStatus("Bảo trì");
-        int idTrangThaiThanhLy = statusServices.getIdStatus("Đã thanh lý");
         int currentStatus = getCurrentStatus(id);
-    // Ràng buộc 1: Kiểm tra trường rỗng
+
+        checkEmptyFields(tenThietBi, newIdTrangThai);
+        checkNameRules(tenThietBi);
+        checkStatusUpdateRules(currentStatus, newIdTrangThai);
+        checkThanhLyDateRules(id, newIdTrangThai, ngayThanhLy);
+        checkNameExists(tenThietBi.trim());
+    }
+
+// --- Các phương thức con bên dưới:
+    public void checkEmptyFields(String tenThietBi, int newIdTrangThai) {
         if (tenThietBi.trim().isEmpty() || newIdTrangThai <= 0) {
             throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin");
         }
-        
-        if(newIdTrangThai == idTrangThaiDangSua) 
-            throw new IllegalArgumentException("Không được cập nhật thiệt bị ĐANG SỬA");
+    }
 
-        if (currentStatus == idTrangThaiThanhLy) {
-            throw new IllegalArgumentException("Không được cập nhật trạng thái ĐÃ THANH LÝ");
-        }
-        
-        if (currentStatus == idTrangThaiBaoTri) {
-            throw new IllegalArgumentException("Không được cập nhật trạng thái ĐANG BẢO TRÌ");
-        }
-
+    public void checkNameRules(String tenThietBi) {
         if (tenThietBi.length() > 50) {
             throw new IllegalArgumentException("Tên thiết bị tối đa 50 ký tự");
         }
@@ -194,38 +185,60 @@ public class ThietBiServices {
         if (containsSpecialCharacters(tenThietBi)) {
             throw new IllegalArgumentException("Tên thiết bị không được chứa ký tự đặc biệt");
         }
+    }
 
-        // Ràng buộc 4: Nếu trạng thái là "Đã thanh lý" (giả sử idTrangThai = 4), ngày thanh lý không được null
-        if (newIdTrangThai == 1 && ngayThanhLy == null) {
-            throw new IllegalArgumentException("Vui lòng điền ngày thanh lý khi trạng thái là 'Đã thanh lý'");
+    public void checkStatusUpdateRules(int currentStatus, int newIdTrangThai) throws SQLException {
+        TrangThaiServices statusServices = new TrangThaiServices();
+        int idDangSua = statusServices.getIdStatus("Đang sửa");
+        int idBaoTri = statusServices.getIdStatus("Bảo trì");
+        int idThanhLy = statusServices.getIdStatus("Đã thanh lý");
+        int idHoatDong = statusServices.getIdStatus("Đang hoạt động");
+        int idHongHoc = statusServices.getIdStatus("Hỏng hóc");
+
+        if (newIdTrangThai == idDangSua) {
+            throw new IllegalArgumentException("Không được cập nhật thiết bị ĐANG SỬA");
         }
 
-        // Ràng buộc 5: Ngày thanh lý phải lớn hơn ngày nhập (nếu có ngày thanh lý)
-        if (ngayThanhLy != null && !ngayThanhLy.isAfter(LocalDate.now().minusDays(1))) {
-            throw new IllegalArgumentException("Ngày thanh lý phải từ ngày hiện tại trở đi");
+        if (currentStatus == idThanhLy) {
+            throw new IllegalArgumentException("Không được cập nhật thiết bị ĐÃ THANH LÝ");
         }
 
-        // Ràng buộc 3: Kiểm tra tên thiết bị đã tồn tại
-        if (isNameExist(tenThietBi.trim(), false) == false) {
-            throw new IllegalArgumentException("Tên thiết bị này đã tồn tại");
+        if (currentStatus == idBaoTri) {
+            throw new IllegalArgumentException("Không được cập nhật thiết bị ĐANG BẢO TRÌ");
         }
 
-        //Ràng buộc 9: Không thể cập nhật khi trạng thái "đang hoạt động" chuyển sang "đang sửa"
-        if (currentStatus > 0) {
-            if (currentStatus == 2 && newIdTrangThai == 3) {
-                throw new IllegalArgumentException("Không thể cập nhật khi trạng thái 'đang hoạt động' chuyển sang 'đang sửa'");
-            }
+        // Đang hoạt động → Đang sửa
+        if (currentStatus == idHoatDong && newIdTrangThai == idDangSua) {
+            throw new IllegalArgumentException("Không thể cập nhật khi trạng thái 'đang hoạt động' chuyển sang 'đang sửa'");
         }
 
-        //Ràng buộc 10: Không thể cập nhật khi trạng thái "hỏng hóc" chuyển sang "đang hoạt động" 
-        if (currentStatus > 0) {
-            if (currentStatus == 4 && newIdTrangThai == 2) {
-                throw new IllegalArgumentException("Không thể cập nhật khi trạng thái 'hỏng hóc' chuyển sang đang 'hoạt động'");
-            }
+        // Hỏng hóc → Đang hoạt động
+        if (currentStatus == idHongHoc && newIdTrangThai == idHoatDong) {
+            throw new IllegalArgumentException("Không thể cập nhật khi trạng thái 'hỏng hóc' chuyển sang 'đang hoạt động'");
         }
     }
 
-    private boolean containsSpecialCharacters(String input) {
+    public void checkThanhLyDateRules(int id, int newIdTrangThai, LocalDate ngayThanhLy) throws SQLException {
+        TrangThaiServices statusServices = new TrangThaiServices();
+        int idThanhLy = statusServices.getIdStatus("Đã thanh lý");
+
+        if (newIdTrangThai == idThanhLy && ngayThanhLy == null) {
+            throw new IllegalArgumentException("Vui lòng điền ngày thanh lý khi trạng thái là 'Đã thanh lý'");
+        }
+
+        if (ngayThanhLy != null && !ngayThanhLy.isAfter(LocalDate.now().minusDays(1))) {
+            throw new IllegalArgumentException("Ngày thanh lý phải từ ngày hiện tại trở đi");
+        }
+    }
+
+    public void checkNameExists(String tenThietBi) throws SQLException {
+        if (!isNameExist(tenThietBi, false)) {
+            throw new IllegalArgumentException("Tên thiết bị này đã tồn tại");
+        }
+    }
+    //=============================
+
+    public boolean containsSpecialCharacters(String input) {
         // Regex kiểm tra ký tự đặc biệt: bất kỳ ký tự nào không phải chữ cái, số hoặc khoảng trắng
         String specialCharactersPattern = "[^\\p{L}\\p{N}\\s]";
         return Pattern.compile(specialCharactersPattern).matcher(input).find();
@@ -273,19 +286,15 @@ public class ThietBiServices {
             stm.setString(1, info);
             stm.setInt(2, idThietBi);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
     public void updateStatus(int idThietbi, int idTrangThai) throws SQLException {
-        System.out.println("idThitBi" + idThietbi);
-        System.out.println("idTrangThai" + idTrangThai);
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("UPDATE thietbi SET idTrangThai=? WHERE id=?");
             stm.setInt(1, idTrangThai);
             stm.setInt(2, idThietbi);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -298,11 +307,9 @@ public class ThietBiServices {
             PreparedStatement stmSuaChua = conn.prepareCall("DELETE FROM nhanviensuathietbi WHERE idThietBi=? AND chiPhi IS NULL AND moTa IS NULL");
             stmSuaChua.setInt(1, idThietBi);
             stmSuaChua.executeUpdate();
-
-            conn.commit();
         }
     }
-    
+
     public void validateSearch(String kw) {
         if (kw.length() > 50) {
             throw new IllegalArgumentException("Tối đa 50 ký tự");

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.403" tests="20" errors="0" skipped="0" failures="5">
+  <properties/>
+  <testcase name="testGetNhanVienSuaThietBi_FullData_NoMatches" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.211"/>
+  <testcase name="testGetListDateTime_Success" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.013"/>
+  <testcase name="testGetListNotRepair_NoMatches" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.01"/>
+  <testcase name="testRepairScheduleTimes_NoMatches" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.014"/>
+  <testcase name="testValidateAddRepairSchedule_InvalidDate_BeforeRange" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.014">
+    <failure message="Phải ném ngoại lệ khi ngày sửa ngoài khoảng 0-3 ngày ==&gt; Unexpected exception type thrown, expected: &lt;java.lang.IllegalArgumentException&gt; but was: &lt;java.lang.IllegalStateException&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Phải ném ngoại lệ khi ngày sửa ngoài khoảng 0-3 ngày ==> Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <java.lang.IllegalStateException>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_BeforeRange(TestNhanVienSuaThietBiServices.java:501)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_InvalidDate_BeforeRange$7(TestNhanVienSuaThietBiServices.java:502)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_BeforeRange(TestNhanVienSuaThietBiServices.java:501)
+]]></failure>
+    <system-out><![CDATA[Moi truong test
+]]></system-out>
+  </testcase>
+  <testcase name="testGetListNotRepair_Success" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.011"/>
+  <testcase name="testRepairScheduleTimes_Success" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.008"/>
+  <testcase name="testValidateAddRepairSchedule_NullNgaySua" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.008"/>
+  <testcase name="testValidateAddRepairSchedule_TimeConflict" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.009">
+    <failure message="expected: &lt;Lỗi! Nhân viên làm trùng giờ&gt; but was: &lt;Trong một thời điểm thiết bị chỉ được lập lịch sửa 1 lần&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <Lỗi! Nhân viên làm trùng giờ> but was: <Trong một thời điểm thiết bị chỉ được lập lịch sửa 1 lần>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_TimeConflict(TestNhanVienSuaThietBiServices.java:466)
+]]></failure>
+    <system-out><![CDATA[Moi truong test
+]]></system-out>
+  </testcase>
+  <testcase name="testValidateAddRepairSchedule_ExistingSchedule" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.008"/>
+  <testcase name="testAddRepairSchedule_Success" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.01"/>
+  <testcase name="testGetNhanVienSuaThietBi_NotFullData_NoMatches" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.009"/>
+  <testcase name="testGetListDateTime_NoMatches" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.008"/>
+  <testcase name="testValidateAddRepairSchedule_InvalidIdNhanVien" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.006"/>
+  <testcase name="testValidateAddRepairSchedule_InvalidIdThietBi" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.006"/>
+  <testcase name="testValidateAddRepairSchedule_OverWorkload" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.006">
+    <failure message="Phải ném ngoại lệ khi nhân viên làm quá 3 công việc/ngày ==&gt; Unexpected exception type thrown, expected: &lt;java.lang.IllegalArgumentException&gt; but was: &lt;java.lang.IllegalStateException&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Phải ném ngoại lệ khi nhân viên làm quá 3 công việc/ngày ==> Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <java.lang.IllegalStateException>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_OverWorkload(TestNhanVienSuaThietBiServices.java:489)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_OverWorkload$6(TestNhanVienSuaThietBiServices.java:490)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_OverWorkload(TestNhanVienSuaThietBiServices.java:489)
+]]></failure>
+    <system-out><![CDATA[Moi truong test
+]]></system-out>
+  </testcase>
+  <testcase name="testGetNhanVienSuaThietBi_NotFullData_Success" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.007"/>
+  <testcase name="testGetNhanVienSuaThietBi_FullData_Success" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.007"/>
+  <testcase name="testValidateAddRepairSchedule_Success" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.006">
+    <failure message="Không nên ném ngoại lệ khi dữ liệu hợp lệ ==&gt; Unexpected exception thrown: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước." type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: Không nên ném ngoại lệ khi dữ liệu hợp lệ ==> Unexpected exception thrown: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_Success(TestNhanVienSuaThietBiServices.java:376)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_Success$0(TestNhanVienSuaThietBiServices.java:376)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_Success(TestNhanVienSuaThietBiServices.java:376)
+</failure>
+    <system-out><![CDATA[Moi truong test
+]]></system-out>
+  </testcase>
+  <testcase name="testValidateAddRepairSchedule_InvalidDate_AfterRange" classname="com.qhuong.services.TestNhanVienSuaThietBiServices" time="0.007">
+    <failure message="Phải ném ngoại lệ khi ngày sửa ngoài khoảng 0-3 ngày ==&gt; Unexpected exception type thrown, expected: &lt;java.lang.IllegalArgumentException&gt; but was: &lt;java.lang.IllegalStateException&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Phải ném ngoại lệ khi ngày sửa ngoài khoảng 0-3 ngày ==> Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <java.lang.IllegalStateException>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_AfterRange(TestNhanVienSuaThietBiServices.java:513)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_InvalidDate_AfterRange$8(TestNhanVienSuaThietBiServices.java:514)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_AfterRange(TestNhanVienSuaThietBiServices.java:513)
+]]></failure>
+    <system-out><![CDATA[Moi truong test
+]]></system-out>
+  </testcase>
+</testsuite>

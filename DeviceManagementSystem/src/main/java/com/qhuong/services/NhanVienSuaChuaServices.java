@@ -75,7 +75,6 @@ public class NhanVienSuaChuaServices {
             stm.setString(6, email);
             stm.setInt(7, AdminServices.idAdmin);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -92,7 +91,6 @@ public class NhanVienSuaChuaServices {
             stm.setInt(7, AdminServices.idAdmin);
             stm.setInt(8, nv.getId());
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
