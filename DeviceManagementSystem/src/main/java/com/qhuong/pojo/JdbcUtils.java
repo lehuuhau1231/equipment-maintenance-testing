@@ -36,22 +36,20 @@ public class JdbcUtils {
             ex.printStackTrace();
         }
     }
-
     public static Connection getConn() throws SQLException {
         // Nếu đang trong môi trường test, dùng connection test
         if (testConnection != null && !testConnection.isClosed()) {
             System.out.println("Moi truong test");
             return testConnection;
         }
-        throw new IllegalStateException("Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.");
 
         // Môi trường production dùng MySQL
-//        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/equipmentdb", "root", "123456");
-//        conn.setAutoCommit(false);
-//        return conn;
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/equipmentdb", "root", "123456");
+        return conn;
     }
 
     public static void setConnection(Connection conn) {
         testConnection = conn;
     }
+        
 }

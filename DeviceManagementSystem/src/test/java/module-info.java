@@ -4,6 +4,7 @@ module com.qhuong.devicemanagementsystem {
     requires java.base;
     requires java.sql;
     requires org.junit.jupiter.api;
+    requires org.junit.jupiter.params; 
 
     opens com.qhuong.devicemanagementsystem to javafx.fxml;
     exports com.qhuong.devicemanagementsystem;

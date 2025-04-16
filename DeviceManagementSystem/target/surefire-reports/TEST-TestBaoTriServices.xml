@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="TestBaoTriServices" time="0.76" tests="10" errors="0" skipped="0" failures="1">
+  <properties/>
+  <testcase name="testGetBaoTri_Success" classname="TestBaoTriServices" time="0.271"/>
+  <testcase name="testListEquipmentForMaintenance_Success" classname="TestBaoTriServices" time="0.015"/>
+  <testcase name="testGetLocalDate_NoDates" classname="TestBaoTriServices" time="0.013"/>
+  <testcase name="testGetBaoTri_Empty" classname="TestBaoTriServices" time="0.013"/>
+  <testcase name="testGetLocalDate_Success" classname="TestBaoTriServices" time="0.01"/>
+  <testcase name="testGetListMaintenanceCompleted_Success" classname="TestBaoTriServices" time="0.358">
+    <failure message="Phải trả về 1 thiết bị ==&gt; expected: &lt;1&gt; but was: &lt;0&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Phải trả về 1 thiết bị ==> expected: <1> but was: <0>
+	at TestBaoTriServices.testGetListMaintenanceCompleted_Success(TestBaoTriServices.java:250)
+]]></failure>
+    <system-out><![CDATA[Moi truong test
+]]></system-out>
+  </testcase>
+  <testcase name="testGetListMaintenanceCompleted_NoMatches" classname="TestBaoTriServices" time="0.03"/>
+  <testcase name="testListEquipmentForMaintenance_NoMatches" classname="TestBaoTriServices" time="0.01"/>
+  <testcase name="testGetListMaintenanceToSendEmail_AlreadySent" classname="TestBaoTriServices" time="0.009"/>
+  <testcase name="testGetListMaintenanceToSendEmail_Success" classname="TestBaoTriServices" time="0.011"/>
+</testsuite>

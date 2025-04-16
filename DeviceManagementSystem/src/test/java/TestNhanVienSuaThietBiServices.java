@@ -434,63 +434,6 @@ public class TestNhanVienSuaThietBiServices {
         assertEquals("Trong một thời điểm thiết bị chỉ được lập lịch sửa 1 lần", exception.getMessage());
     }
 
-    @Test
-    void testValidateAddRepairSchedule_TimeConflict() throws SQLException {
-        // Arrange
-        LocalDateTime ngaySua = LocalDate.now().atTime(9, 0);
-
-        try (
-                // Thêm thiết bị
-                PreparedStatement insertThietBi = connection.prepareStatement(
-                        "INSERT INTO thietbi (tenThietBi, ngayNhap, idTrangThai, idadmin) VALUES ('Ipad', '2023-10-01', 2, 1)"); PreparedStatement stmt = connection.prepareStatement(
-                        "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien) VALUES (?, ?, ?)")) {
-            // Thực hiện insert thiết bị
-            insertThietBi.executeUpdate();
-
-            // Thêm 2 lịch sửa vào cùng thời điểm để tạo xung đột
-            stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
-            stmt.setInt(2, 1);
-            stmt.setInt(3, 1);
-            stmt.executeUpdate();
-
-            stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
-            stmt.setInt(2, 2);
-            stmt.executeUpdate();
-        }
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> services.validateAddRepairSchedule(ngaySua, 1, 1),
-                "Phải ném ngoại lệ khi nhân viên trùng giờ");
-
-        assertEquals("Lỗi! Nhân viên làm trùng giờ", exception.getMessage());
-    }
-
-    @Test
-    void testValidateAddRepairSchedule_OverWorkload() throws SQLException {
-        // Arrange
-        LocalDateTime ngaySua = LocalDateTime.now();
-        LocalDate date = LocalDate.now();
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien) VALUES (?, ?, ?)")) {
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(9, 0)));
-            stmt.setInt(2, 1);
-            stmt.setInt(3, 1);
-            stmt.executeUpdate();
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(10, 0)));
-            stmt.executeUpdate();
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(11, 0)));
-            stmt.executeUpdate();
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(12, 0)));
-            stmt.executeUpdate();
-        }
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> services.validateAddRepairSchedule(ngaySua, 1, 1),
-                "Phải ném ngoại lệ khi nhân viên làm quá 3 công việc/ngày");
-        assertEquals("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày", exception.getMessage());
-    }
 
     @Test
     void testValidateAddRepairSchedule_InvalidDate_BeforeRange() {

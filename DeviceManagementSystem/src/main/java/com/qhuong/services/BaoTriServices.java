@@ -23,7 +23,6 @@ import java.util.List;
  * @author lehuu
  */
 public class BaoTriServices {
-
     public List<BaoTri> getBaoTri() throws SQLException {
         List<BaoTri> maintenance = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
