@@ -17,7 +17,7 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class AdminServices {
 
-    public static int idAdmin;
+    public static int idAdmin = 1;
 
     public int getAdmin(String username, String password) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
@@ -68,7 +68,6 @@ public class AdminServices {
             stm.setString(4, ten);
             stm.setString(5, email);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -79,7 +78,6 @@ public class AdminServices {
             stm.setString(1, hashedPassword);
             stm.setString(2, username);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 

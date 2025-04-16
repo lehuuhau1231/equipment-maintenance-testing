@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------------
+Test set: com.qhuong.services.TestNhanVienSuaThietBiServices
+-------------------------------------------------------------------------------
+Tests run: 20, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 0.403 s <<< FAILURE! - in com.qhuong.services.TestNhanVienSuaThietBiServices
+testValidateAddRepairSchedule_InvalidDate_BeforeRange  Time elapsed: 0.014 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Phải ném ngoại lệ khi ngày sửa ngoài khoảng 0-3 ngày ==> Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <java.lang.IllegalStateException>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_BeforeRange(TestNhanVienSuaThietBiServices.java:501)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_InvalidDate_BeforeRange$7(TestNhanVienSuaThietBiServices.java:502)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_BeforeRange(TestNhanVienSuaThietBiServices.java:501)
+
+testValidateAddRepairSchedule_TimeConflict  Time elapsed: 0.009 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <Lỗi! Nhân viên làm trùng giờ> but was: <Trong một thời điểm thiết bị chỉ được lập lịch sửa 1 lần>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_TimeConflict(TestNhanVienSuaThietBiServices.java:466)
+
+testValidateAddRepairSchedule_OverWorkload  Time elapsed: 0.006 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Phải ném ngoại lệ khi nhân viên làm quá 3 công việc/ngày ==> Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <java.lang.IllegalStateException>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_OverWorkload(TestNhanVienSuaThietBiServices.java:489)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_OverWorkload$6(TestNhanVienSuaThietBiServices.java:490)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_OverWorkload(TestNhanVienSuaThietBiServices.java:489)
+
+testValidateAddRepairSchedule_Success  Time elapsed: 0.006 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Không nên ném ngoại lệ khi dữ liệu hợp lệ ==> Unexpected exception thrown: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_Success(TestNhanVienSuaThietBiServices.java:376)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_Success$0(TestNhanVienSuaThietBiServices.java:376)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_Success(TestNhanVienSuaThietBiServices.java:376)
+
+testValidateAddRepairSchedule_InvalidDate_AfterRange  Time elapsed: 0.007 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Phải ném ngoại lệ khi ngày sửa ngoài khoảng 0-3 ngày ==> Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <java.lang.IllegalStateException>
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_AfterRange(TestNhanVienSuaThietBiServices.java:513)
+Caused by: java.lang.IllegalStateException: Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.lambda$testValidateAddRepairSchedule_InvalidDate_AfterRange$8(TestNhanVienSuaThietBiServices.java:514)
+	at com.qhuong.services.TestNhanVienSuaThietBiServices.testValidateAddRepairSchedule_InvalidDate_AfterRange(TestNhanVienSuaThietBiServices.java:513)
+

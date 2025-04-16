@@ -49,7 +49,17 @@
             <scope>test</scope>
         </dependency>
         <!-- Xóa dependency junit-platform-runner vì không cần thiết với Surefire 2.22.2 và JUnit 5 -->
+<<<<<<< HEAD
 
+=======
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.3.232</version>
+            <scope>test</scope>
+        </dependency>
+>>>>>>> 82e3786063537e75aa17a90b720f1b284772ef2c
     </dependencies>
     <build>
         <plugins>

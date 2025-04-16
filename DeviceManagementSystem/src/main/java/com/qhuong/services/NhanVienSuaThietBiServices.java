@@ -7,6 +7,7 @@ package com.qhuong.services;
 import com.qhuong.pojo.JdbcUtils;
 import com.qhuong.pojo.NhanVienSuaThietBi;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -100,12 +101,11 @@ public class NhanVienSuaThietBiServices {
 
     public void addRepairSchedule(LocalDateTime ngaySua, int idThietBi, int idNhanVien) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("INSERT INTO nhanviensuathietbi(ngaySua, idThietbi, idNhanVien) VALUE(?, ?, ?)");
+            PreparedStatement stm = conn.prepareCall("INSERT INTO nhanviensuathietbi(ngaySua, idThietbi, idNhanVien) VALUES(?, ?, ?)");
             stm.setTimestamp(1, Timestamp.valueOf(ngaySua));
             stm.setInt(2, idThietBi);
             stm.setInt(3, idNhanVien);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -130,18 +130,39 @@ public class NhanVienSuaThietBiServices {
         }
 
         // Ràng buộc 3: Kiểm tra khối lượng công việc của nhân viên (tối đa 3 công việc/ngày)
-        long dailyWorkload = employeeSchedule.stream()
-                .filter(t -> t.toLocalDate().equals(repairDate))
-                .count();
+        long dailyWorkload = OverWorkload(idNhanVien, ngaySua);
+        System.out.println(dailyWorkload);
         if (dailyWorkload >= 3) {
             throw new IllegalArgumentException("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày");
         }
 
         // Ràng buộc 4: Kiểm tra ngày sửa chữa trong khoảng 0-3 ngày từ hiện tại
         LocalDate now = LocalDate.now();
-        if (!(repairDate.isAfter(now.minusDays(1)) && repairDate.isBefore(now.plusDays(3)))) {
+        if (!(repairDate.isAfter(now.minusDays(1)) && repairDate.isBefore(now.plusDays(4)))) {
             throw new IllegalArgumentException("Ngày sửa phải nằm trong 3 ngày kể từ ngày hiện tại");
         }
+    }
+    
+    public int OverWorkload(int idNhanVien, LocalDateTime ngaySuaChua) throws SQLException {
+        LocalDate date = ngaySuaChua.toLocalDate();
+        int count = 0;
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND chiPhi IS NULL");
+            stm.setInt(1, idNhanVien);
+            stm.setDate(2, Date.valueOf(date));
+            ResultSet rs = stm.executeQuery();
+            if(rs.next()) {
+                count += rs.getInt(1);
+            }
+            PreparedStatement stm2 = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ?");
+            stm2.setInt(1, idNhanVien);
+            stm2.setDate(2, Date.valueOf(date));
+            ResultSet rs2 = stm2.executeQuery();
+            if (rs2.next()) {
+                count += rs2.getInt(1);
+            }
+        }
+        return count;
     }
 
     public boolean checkIdEquipment(int idThietBi) throws SQLException {
@@ -163,7 +184,6 @@ public class NhanVienSuaThietBiServices {
             stm.setString(2, moTa);
             stm.setInt(3, id);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
