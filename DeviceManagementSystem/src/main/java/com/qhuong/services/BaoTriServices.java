@@ -87,14 +87,13 @@ public class BaoTriServices {
         }
         return maintenance;
     }
-    
+
     public void updateFieldSentEmailStatus(int id) throws SQLException {
-        
+
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("UPDATE baotri SET sentEmail = TRUE WHERE id=?");
             stm.setInt(1, id);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -120,7 +119,6 @@ public class BaoTriServices {
             stm.setInt(3, idThietBi);
             stm.setInt(4, idNhanVien);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 
@@ -149,18 +147,43 @@ public class BaoTriServices {
         }
 
         // Ràng buộc 3: Kiểm tra khối lượng công việc của nhân viên (tối đa 3 công việc/ngày)
-        List<LocalDateTime> employeeSchedule = getListDateTime(idNhanVien);
-        long dailyWorkload = employeeSchedule.stream().filter(t -> t.toLocalDate().equals(maintenanceDate)).count();
+        long dailyWorkload = OverWorkload(idNhanVien, ngayBaoTri);
+        System.out.println(dailyWorkload);
         if (dailyWorkload >= 3) {
             throw new IllegalArgumentException("Nhân viên chỉ được làm tối đa 3 công việc trong 1 ngày");
         }
 
         // Ràng buộc 4: Kiểm tra trùng giờ làm việc của nhân viên
         LocalTime maintenanceTime = ngayBaoTri.toLocalTime();
+        List<LocalDateTime> employeeSchedule = getListDateTime(idNhanVien);
         boolean isTimeConflict = employeeSchedule.stream().anyMatch(t -> t.toLocalDate().equals(maintenanceDate) && t.toLocalTime().equals(maintenanceTime));
         if (isTimeConflict) {
             throw new IllegalArgumentException("Nhân viên đã có lịch trùng giờ tại thời điểm này");
         }
+    }
+
+    public int getMaintenanceTimes(int idThietBi) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idThietBi=?");
+            stm.setInt(1, idThietBi);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+
+    public LocalDateTime getMaintenanceDate(int idThietBi) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri FROM baotri WHERE idThietBi=?");
+            stm.setInt(1, idThietBi);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                return rs.getTimestamp("ngayBaoTri").toLocalDateTime();
+            }
+        }
+        return null;
     }
 
     public List<LocalDateTime> getListDateTime(int idNhanVien) throws SQLException {
@@ -176,6 +199,28 @@ public class BaoTriServices {
         return dates;
     }
 
+    public int OverWorkload(int idNhanVien, LocalDateTime ngayBaoTri) throws SQLException {
+        LocalDate date = ngayBaoTri.toLocalDate();
+        int count = 0;
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ?");
+            stm.setInt(1, idNhanVien);
+            stm.setDate(2, Date.valueOf(date));
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                count += rs.getInt(1);
+            }
+            PreparedStatement stm2 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND chiPhi IS NULL");
+            stm2.setInt(1, idNhanVien);
+            stm2.setDate(2, Date.valueOf(date));
+            ResultSet rs2 = stm2.executeQuery();
+            if (rs2.next()) {
+                count += rs2.getInt(1);
+            }
+        }
+        return count;
+    }
+
     public LocalDateTime getScheduleDate(int id) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             PreparedStatement stm = conn.prepareCall("SELECT ngayLapLich FROM baotri WHERE id=?");
@@ -183,18 +228,6 @@ public class BaoTriServices {
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
                 return rs.getTimestamp("ngayLapLich").toLocalDateTime();
-            }
-        }
-        return null;
-    }
-
-    public LocalDateTime getMaintenanceDate(int idThietBi) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT ngayBaoTri FROM baotri WHERE idThietBi=?");
-            stm.setInt(1, idThietBi);
-            ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                return rs.getTimestamp("ngayBaoTri").toLocalDateTime();
             }
         }
         return null;
@@ -225,18 +258,6 @@ public class BaoTriServices {
         return dates;
     }
 
-    public int getMaintenanceTimes(int idThietBi) throws SQLException {
-        try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idThietBi=?");
-            stm.setInt(1, idThietBi);
-            ResultSet rs = stm.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return -1;
-    }
-
     public List<BaoTri> getUnmaintenanceEquipment() throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             List<BaoTri> maintenance = new ArrayList<>();
@@ -257,7 +278,6 @@ public class BaoTriServices {
             stm.setInt(1, idNhanVien);
             stm.setInt(2, id);
             stm.executeUpdate();
-            conn.commit();
         }
     }
 

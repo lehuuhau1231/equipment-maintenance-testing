@@ -13,6 +13,22 @@ import java.sql.SQLException;
  * @author lehuu
  */
 public class JdbcUtils {
+//    static {
+//        try {
+//            Class.forName("com.mysql.cj.jdbc.Driver");
+//        } catch (ClassNotFoundException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+//    
+//    public static Connection getConn() throws SQLException {
+//        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/equipmentdb", "root", "123456");
+//        conn.setAutoCommit(false);
+//        return conn;
+//    }
+
+    private static Connection testConnection;
+
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -20,10 +36,22 @@ public class JdbcUtils {
             ex.printStackTrace();
         }
     }
-    
+
     public static Connection getConn() throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/equipmentdb", "root", "123456");
-        conn.setAutoCommit(false);
-        return conn;
+        // Nếu đang trong môi trường test, dùng connection test
+        if (testConnection != null && !testConnection.isClosed()) {
+            System.out.println("Moi truong test");
+            return testConnection;
+        }
+        throw new IllegalStateException("Không được gọi kết nối thật khi đang test! Hãy setConnection() trước.");
+
+        // Môi trường production dùng MySQL
+//        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/equipmentdb", "root", "123456");
+//        conn.setAutoCommit(false);
+//        return conn;
+    }
+
+    public static void setConnection(Connection conn) {
+        testConnection = conn;
     }
 }
