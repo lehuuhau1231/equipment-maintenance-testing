@@ -43,7 +43,7 @@ public class JdbcUtils {
             System.out.println("Moi truong test");
             return testConnection;
         }
-
+        System.out.println("Moi truong that");
         // Môi trường production dùng MySQL
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/thietbi", "root", "1234");
         return conn;

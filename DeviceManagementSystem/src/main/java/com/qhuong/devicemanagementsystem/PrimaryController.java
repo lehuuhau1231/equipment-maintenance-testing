@@ -45,7 +45,7 @@ public class PrimaryController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 //        AdminServices admin = new AdminServices();
 //        try {
-//            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lehuuhau1231@gmail.com");
+//            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lamn10049@gmail.com");
 //        } catch (SQLException ex) {
 //            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
 //        }
