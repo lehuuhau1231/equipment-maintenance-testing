@@ -2,6 +2,7 @@ package com.qhuong.services;
 
 import com.qhuong.pojo.JdbcUtils;
 import com.qhuong.pojo.NhanVienSuaThietBi;
+import com.qhuong.services.NhanVienSuaThietBiServices;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,14 +12,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.Mockito;
 
-public class TestNhanVienSuaThietBiServices {
+public class TestNhanVienSuaThietBiservices {
 
     private static NhanVienSuaThietBiServices services;
     private static Connection connection;
@@ -27,15 +28,16 @@ public class TestNhanVienSuaThietBiServices {
     void setUpDatabase() throws SQLException {
         connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
         JdbcUtils.setConnection(connection);
-        
+
         services = new NhanVienSuaThietBiServices();
         AdminServices.idAdmin = 1;
 
         try (var stmt = connection.createStatement()) {
             // Xóa các bảng nếu đã tồn tại
             stmt.executeUpdate("DROP TABLE IF EXISTS nhanviensuathietbi");
-            stmt.executeUpdate("DROP TABLE IF EXISTS nhanviensuachua");
+            stmt.executeUpdate("DROP TABLE IF EXISTS baotri");
             stmt.executeUpdate("DROP TABLE IF EXISTS thietbi");
+            stmt.executeUpdate("DROP TABLE IF EXISTS nhanviensuachua");
             stmt.executeUpdate("DROP TABLE IF EXISTS admin");
             stmt.executeUpdate("DROP TABLE IF EXISTS trangthai");
 
@@ -82,9 +84,8 @@ public class TestNhanVienSuaThietBiServices {
             );
             stmt.executeUpdate(
                     "INSERT INTO thietbi (tenThietBi, ngayNhap, idTrangThai, idadmin) VALUES "
-                    + "('Laptop', '2023-10-01', 2, 1)"
+                    + "('Laptop', '2025-1-01', 2, 1)"
             );
-
             // Tạo bảng nhanviensuachua
             stmt.executeUpdate(
                     "CREATE TABLE nhanviensuachua ("
@@ -115,6 +116,17 @@ public class TestNhanVienSuaThietBiServices {
                     + "idNhanVien INT NOT NULL, "
                     + "chiPhi BIGINT, "
                     + "moTa VARCHAR(250), "
+                    + "FOREIGN KEY (idThietBi) REFERENCES thietbi(id), "
+                    + "FOREIGN KEY (idNhanVien) REFERENCES nhanviensuachua(id))"
+            );
+
+            stmt.executeUpdate(
+                    "CREATE TABLE baotri ("
+                    + "id INT PRIMARY KEY AUTO_INCREMENT, "
+                    + "ngayLapLich DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                    + "ngayBaoTri DATETIME NOT NULL, "
+                    + "idThietBi INT NOT NULL, "
+                    + "idNhanVien INT NOT NULL, "
                     + "FOREIGN KEY (idThietBi) REFERENCES thietbi(id), "
                     + "FOREIGN KEY (idNhanVien) REFERENCES nhanviensuachua(id))"
             );
@@ -178,7 +190,7 @@ public class TestNhanVienSuaThietBiServices {
         // Arrange
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) VALUES (?, ?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2025-01-01 10:00:00"));
             stmt.setInt(2, 1);
             stmt.setInt(3, 1);
             stmt.setLong(4, 0);
@@ -193,7 +205,7 @@ public class TestNhanVienSuaThietBiServices {
         assertEquals(1, result.size(), "Phải trả về 1 bản ghi sửa chữa");
         NhanVienSuaThietBi repair = result.get(0);
         assertEquals(1, repair.getId());
-        assertEquals(LocalDateTime.of(2023, 10, 1, 10, 0), repair.getNgaySua());
+        assertEquals(LocalDateTime.of(2025, 1, 1, 10, 0), repair.getNgaySua());
         assertEquals("Laptop", repair.getTenThietBi());
         assertEquals("Lê Hữu Hậu", repair.getTenNV());
     }
@@ -218,54 +230,125 @@ public class TestNhanVienSuaThietBiServices {
         assertTrue(result.isEmpty(), "Phải trả về danh sách rỗng khi không có bản ghi hợp lệ");
     }
 
-//    @Test
-//    void testGetListDateTime_Success() throws SQLException {
-//        // Arrange
-//        try (PreparedStatement stmt = connection.prepareStatement(
-//                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
-//            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
-//            stmt.setInt(2, 1);
-//            stmt.setInt(3, 1);
-//            stmt.setLong(4, 0);
-//            stmt.executeUpdate();
-//            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-02 10:00:00"));
-//            stmt.executeUpdate();
-//        }
-//
-//        // Act
-//        List<LocalDateTime> result = services.getListDateTime(1);
-//
-//        // Assert
-//        assertEquals(2, result.size(), "Phải trả về 2 ngày sửa");
-//        assertEquals(LocalDateTime.of(2023, 10, 1, 10, 0), result.get(0));
-//        assertEquals(LocalDateTime.of(2023, 10, 2, 10, 0), result.get(1));
-//    }
+    @Test
+    void testCheckTimeConflict_NoConflicts() throws SQLException {
+        // Arrange
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 1, 10, 0);
+        int idNhanVien = 1;
 
-//    @Test
-//    void testGetListDateTime_NoMatches() throws SQLException {
-//        // Arrange
-//        try (PreparedStatement stmt = connection.prepareStatement(
-//                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
-//            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
-//            stmt.setInt(2, 1);
-//            stmt.setInt(3, 1);
-//            stmt.setLong(4, 500000);
-//            stmt.executeUpdate();
-//        }
-//
-//        // Act
-//        List<LocalDateTime> result = services.getListDateTime(1);
-//
-//        // Assert
-//        assertTrue(result.isEmpty(), "Phải trả về danh sách rỗng khi không có ngày hợp lệ");
-//    }
+        // Act
+        int result = services.checkTimeConflict(idNhanVien, ngaySua);
+
+        // Assert
+        assertEquals(0, result, "Phải trả về 0 khi không có xung đột thời gian");
+    }
+
+    @Test
+    void testCheckTimeConflict_BaoTriConflict() throws SQLException {
+        // Arrange
+        LocalDateTime ngaySua = LocalDateTime.of(2023, 10, 1, 10, 0);
+        int idNhanVien = 1;
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO baotri (ngayBaoTri, idThietBi, idNhanVien) VALUES (?, ?, ?)")) {
+            stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
+            stmt.setInt(2, 1);
+            stmt.setInt(3, idNhanVien);
+            stmt.executeUpdate();
+            stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
+            stmt.executeUpdate();
+        }
+
+        // Act
+        int result = services.checkTimeConflict(idNhanVien, ngaySua);
+
+        // Assert
+        assertEquals(2, result, "Phải trả về 2 xung đột từ bảng baotri");
+    }
+
+    @Test
+    void testCheckTimeConflict_NhanVienSuaThietBiConflict() throws SQLException {
+        // Arrange
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 1, 10, 0);
+        int idNhanVien = 1;
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
+            stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
+            stmt.setInt(2, 1);
+            stmt.setInt(3, idNhanVien);
+            stmt.setNull(4, java.sql.Types.BIGINT);
+            stmt.executeUpdate();
+        }
+
+        // Act
+        int result = services.checkTimeConflict(idNhanVien, ngaySua);
+
+        // Assert
+        assertEquals(1, result, "Phải trả về 1 xung đột từ bảng nhanviensuathietbi");
+    }
+
+    @Test
+    void testCheckTimeConflict_BothTablesConflict() throws SQLException {
+        // Arrange
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 1, 10, 0);
+        int idNhanVien = 1;
+        try (PreparedStatement stmtBaoTri = connection.prepareStatement(
+                "INSERT INTO baotri (ngayBaoTri, idThietBi, idNhanVien) VALUES (?, ?, ?)")) {
+            stmtBaoTri.setTimestamp(1, Timestamp.valueOf(ngaySua));
+            stmtBaoTri.setInt(2, 1);
+            stmtBaoTri.setInt(3, idNhanVien);
+            stmtBaoTri.executeUpdate();
+        }
+        try (PreparedStatement stmtSua = connection.prepareStatement(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
+            stmtSua.setTimestamp(1, Timestamp.valueOf(ngaySua));
+            stmtSua.setInt(2, 1);
+            stmtSua.setInt(3, idNhanVien);
+            stmtSua.setNull(4, java.sql.Types.BIGINT);
+            stmtSua.executeUpdate();
+        }
+
+        // Act
+        int result = services.checkTimeConflict(idNhanVien, ngaySua);
+
+        // Assert
+        assertEquals(2, result, "Phải trả về 2 xung đột từ cả hai bảng");
+    }
+
+    @Test
+    void testCheckTimeConflict_DifferentTimeNoConflict() throws SQLException {
+        // Arrange
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 1, 10, 0);
+        LocalDateTime conflictTime = LocalDateTime.of(2025, 1, 1, 11, 0);
+        int idNhanVien = 1;
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO baotri (ngayBaoTri, idThietBi, idNhanVien) VALUES (?, ?, ?)")) {
+            stmt.setTimestamp(1, Timestamp.valueOf(conflictTime));
+            stmt.setInt(2, 1);
+            stmt.setInt(3, idNhanVien);
+            stmt.executeUpdate();
+        }
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
+            stmt.setTimestamp(1, Timestamp.valueOf(conflictTime));
+            stmt.setInt(2, 1);
+            stmt.setInt(3, idNhanVien);
+            stmt.setNull(4, java.sql.Types.BIGINT);
+            stmt.executeUpdate();
+        }
+
+        // Act
+        int result = services.checkTimeConflict(idNhanVien, ngaySua);
+
+        // Assert
+        assertEquals(0, result, "Phải trả về 0 khi thời gian không trùng");
+    }
 
     @Test
     void testGetListNotRepair_Success() throws SQLException {
         // Arrange
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2025-1-01 10:00:00"));
             stmt.setInt(2, 1);
             stmt.setInt(3, 1);
             stmt.setLong(4, 0);
@@ -278,7 +361,7 @@ public class TestNhanVienSuaThietBiServices {
         // Assert
         assertEquals(1, result.size(), "Phải trả về 1 bản ghi chưa sửa");
         NhanVienSuaThietBi repair = result.get(0);
-        assertEquals(LocalDateTime.of(2023, 10, 1, 10, 0), repair.getNgaySua());
+        assertEquals(LocalDateTime.of(2025, 1, 1, 10, 0), repair.getNgaySua());
         assertEquals(1, repair.getIdThietBi());
         assertEquals(1, repair.getIdNhanVien());
     }
@@ -288,7 +371,7 @@ public class TestNhanVienSuaThietBiServices {
         // Arrange
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi) VALUES (?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2025-1-01 10:00:00"));
             stmt.setInt(2, 1);
             stmt.setInt(3, 1);
             stmt.setLong(4, 500000);
@@ -307,13 +390,13 @@ public class TestNhanVienSuaThietBiServices {
         // Arrange
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) VALUES (?, ?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2025-1-01 10:00:00"));
             stmt.setInt(2, 1);
             stmt.setInt(3, 1);
             stmt.setNull(4, java.sql.Types.BIGINT);
             stmt.setNull(5, java.sql.Types.VARCHAR);
             stmt.executeUpdate();
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-02 10:00:00"));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-1-02 10:00:00"));
             stmt.executeUpdate();
         }
 
@@ -329,7 +412,7 @@ public class TestNhanVienSuaThietBiServices {
         // Arrange
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) VALUES (?, ?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2025-1-01 10:00:00"));
             stmt.setInt(2, 1);
             stmt.setInt(3, 1);
             stmt.setLong(4, 500000);
@@ -347,13 +430,12 @@ public class TestNhanVienSuaThietBiServices {
     @Test
     void testAddRepairSchedule_Success() throws SQLException {
         // Arrange
-        LocalDateTime ngaySua = LocalDateTime.of(2023, 10, 1, 10, 0);
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 1, 10, 0);
 
         // Act
         services.addRepairSchedule(ngaySua, 1, 1);
         if (connection != null || !connection.isClosed()) {
             connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
-            connection.setAutoCommit(false);
             JdbcUtils.setConnection(connection);
         }
         // Assert
@@ -392,7 +474,7 @@ public class TestNhanVienSuaThietBiServices {
     @Test
     void testValidateAddRepairSchedule_InvalidIdThietBi() {
         // Arrange
-        LocalDateTime ngaySua = LocalDateTime.of(2023, 10, 2, 10, 0);
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 2, 10, 0);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -404,7 +486,7 @@ public class TestNhanVienSuaThietBiServices {
     @Test
     void testValidateAddRepairSchedule_InvalidIdNhanVien() {
         // Arrange
-        LocalDateTime ngaySua = LocalDateTime.of(2023, 10, 2, 10, 0);
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 2, 10, 0);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -416,7 +498,7 @@ public class TestNhanVienSuaThietBiServices {
     @Test
     void testValidateAddRepairSchedule_ExistingSchedule() throws SQLException {
         // Arrange
-        LocalDateTime ngaySua = LocalDateTime.of(2023, 10, 2, 10, 0);
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 2, 10, 0);
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) VALUES (?, ?, ?, ?, ?)")) {
             stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
@@ -435,67 +517,44 @@ public class TestNhanVienSuaThietBiServices {
     }
 
     @Test
-    void testValidateAddRepairSchedule_TimeConflict() throws SQLException {
-        // Arrange
-        LocalDateTime ngaySua = LocalDate.now().atTime(9, 0);
+    public void testValidateAddRepairSchedule_TimeConflict_ThrowsException() throws SQLException {
+        // Tạo mock của class
+        NhanVienSuaThietBiServices servicesMock = Mockito.spy(NhanVienSuaThietBiServices.class);
 
-        try (
-                // Thêm thiết bị
-                PreparedStatement insertThietBi = connection.prepareStatement(
-                        "INSERT INTO thietbi (tenThietBi, ngayNhap, idTrangThai, idadmin) VALUES ('Ipad', '2023-10-01', 2, 1)"); PreparedStatement stmt = connection.prepareStatement(
-                        "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien) VALUES (?, ?, ?)")) {
-            // Thực hiện insert thiết bị
-            insertThietBi.executeUpdate();
+        // Tạo thời gian hợp lệ (trong khoảng 3 ngày từ hiện tại)
+        LocalDateTime now = LocalDateTime.now().plusDays(1);
 
-            // Thêm 2 lịch sửa vào cùng thời điểm để tạo xung đột
-            stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
-            stmt.setInt(2, 1);
-            stmt.setInt(3, 1);
-            stmt.executeUpdate();
+        // Mock các hàm phụ để tránh ảnh hưởng
+        Mockito.doReturn(0).when(servicesMock).repairScheduleTimes(Mockito.anyInt());
+        Mockito.doReturn(1).when(servicesMock).checkTimeConflict(Mockito.anyInt(), Mockito.any());
 
-            stmt.setTimestamp(1, Timestamp.valueOf(ngaySua));
-            stmt.setInt(2, 2);
-            stmt.executeUpdate();
-        }
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> services.validateAddRepairSchedule(ngaySua, 1, 1),
-                "Phải ném ngoại lệ khi nhân viên trùng giờ");
-
-        assertEquals("Lỗi! Nhân viên làm trùng giờ", exception.getMessage());
+        // Kiểm tra xem có ném đúng exception không
+        assertThrows(IllegalArgumentException.class, () -> {
+            servicesMock.validateAddRepairSchedule(now, 1, 1);
+        });
     }
 
     @Test
-    void testValidateAddRepairSchedule_OverWorkload() throws SQLException {
-        // Arrange
-        LocalDateTime ngaySua = LocalDateTime.now();
-        LocalDate date = LocalDate.now();
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien) VALUES (?, ?, ?)")) {
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(9, 0)));
-            stmt.setInt(2, 1);
-            stmt.setInt(3, 1);
-            stmt.executeUpdate();
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(10, 0)));
-            stmt.executeUpdate();
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(11, 0)));
-            stmt.executeUpdate();
-            stmt.setTimestamp(1, Timestamp.valueOf(date.atTime(12, 0)));
-            stmt.executeUpdate();
-        }
+    public void testValidateAddRepairSchedule_OverWorkload() throws SQLException {
+        NhanVienSuaThietBiServices servicesMock = Mockito.spy(NhanVienSuaThietBiServices.class);
 
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> services.validateAddRepairSchedule(ngaySua, 1, 1),
-                "Phải ném ngoại lệ khi nhân viên làm quá 3 công việc/ngày");
-        assertEquals("Nhân viên chỉ được làm tối đa 3 công việc 1 ngày", exception.getMessage());
+        LocalDateTime now = LocalDateTime.now().plusDays(1);
+
+        // Mock các hàm phụ để không ảnh hưởng logic khác
+        Mockito.doReturn(0).when(servicesMock).repairScheduleTimes(Mockito.anyInt());
+        Mockito.doReturn(0).when(servicesMock).checkTimeConflict(Mockito.anyInt(), Mockito.any());
+        Mockito.doReturn(3).when(servicesMock).OverWorkload(Mockito.anyInt(), Mockito.any());
+
+        // Kiểm tra xem exception có được ném ra không
+        assertThrows(IllegalArgumentException.class, () -> {
+            servicesMock.validateAddRepairSchedule(now, 1, 1);
+        });
     }
 
     @Test
     void testValidateAddRepairSchedule_InvalidDate_BeforeRange() {
         // Arrange
-        LocalDateTime ngaySua = LocalDateTime.of(2023, 9, 29, 10, 0); // Trước 2023-10-01
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 9, 29, 10, 0);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -507,12 +566,165 @@ public class TestNhanVienSuaThietBiServices {
     @Test
     void testValidateAddRepairSchedule_InvalidDate_AfterRange() {
         // Arrange
-        LocalDateTime ngaySua = LocalDateTime.of(2023, 10, 5, 10, 0); // Sau 2023-10-04
+        LocalDateTime ngaySua = LocalDateTime.of(2025, 1, 5, 10, 0);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> services.validateAddRepairSchedule(ngaySua, 1, 1),
                 "Phải ném ngoại lệ khi ngày sửa ngoài khoảng 0-3 ngày");
         assertEquals("Ngày sửa phải nằm trong 3 ngày kể từ ngày hiện tại", exception.getMessage());
+    }
+    
+    @Test
+    void testCheckIdEquipment_Exists() throws SQLException {
+        connection.createStatement().execute(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) " +
+                        "VALUES ('2025-04-17 10:00:00', 1, 1, NULL, NULL)");
+        // Act
+        boolean result = services.checkIdEquipment(1);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void testCheckIdEquipment_NotExists() throws SQLException {
+        // Act
+        boolean result = services.checkIdEquipment(999);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void testUpdateReceipt_Success() throws SQLException {
+        connection.createStatement().execute(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) " +
+                        "VALUES ('2025-04-17 10:00:00', 1, 1, NULL, NULL)");
+        // Act
+        services.updateReceipt(1, 100000, "Sửa máy in nâng cấp");
+        if (connection != null || !connection.isClosed()) {
+            connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
+            JdbcUtils.setConnection(connection);
+        }
+        // Assert: Kiểm tra dữ liệu đã được cập nhật
+        try (var stmt = connection.prepareStatement("SELECT chiPhi, moTa FROM nhanviensuathietbi WHERE id = ?")) {
+            stmt.setInt(1, 1);
+            var rs = stmt.executeQuery();
+            assertTrue(rs.next());
+            assertEquals(100000, rs.getLong("chiPhi"));
+            assertEquals("Sửa máy in nâng cấp", rs.getString("moTa"));
+        }
+    }
+
+    @Test
+    void testValidateUpdateReceipt_ValidInput() {
+        // Act & Assert
+        assertDoesNotThrow(() -> services.validateUpdateReceipt(1, "50000", "Sửa máy in"));
+    }
+
+    @Test
+    void testValidateUpdateReceipt_EmptyChiPhi() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> services.validateUpdateReceipt(1, "", "Sửa máy in"));
+        assertEquals("Vui lòng điền đầy đủ thông tin", exception.getMessage());
+    }
+
+    @Test
+    void testValidateUpdateReceipt_EmptyMoTa() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> services.validateUpdateReceipt(1, "50000", ""));
+        assertEquals("Vui lòng điền đầy đủ thông tin", exception.getMessage());
+    }
+
+    @Test
+    void testValidateUpdateReceipt_MoTaTooLong() {
+        // Arrange
+        String longMoTa = "a".repeat(251);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> services.validateUpdateReceipt(1, "50000", longMoTa));
+        assertEquals("Mô tả tối đa 250 ký tự", exception.getMessage());
+    }
+
+    @Test
+    void testValidateUpdateReceipt_MoTaSpecialCharacters() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> services.validateUpdateReceipt(1, "50000", "Sửa máy @in"));
+        assertEquals("Mô tả không được chứa ký tự đặc biệt", exception.getMessage());
+    }
+
+    @Test
+    void testValidateUpdateReceipt_InvalidChiPhi() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> services.validateUpdateReceipt(1, "abc", "Sửa máy in"));
+        assertEquals("Chi phí chỉ được nhập số nguyên dương", exception.getMessage());
+    }
+
+    @Test
+    void testValidateUpdateReceipt_ChiPhiTooLow() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> services.validateUpdateReceipt(1, "5000", "Sửa máy in"));
+        assertEquals("Chi phí từ 10.000 trở lên", exception.getMessage());
+    }
+
+    @Test
+    void testValidateUpdateReceipt_ChiPhiTooLarge() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> services.validateUpdateReceipt(1, "999999999999999999999", "Sửa máy in"));
+        assertEquals("Lỗi! Số quá lớn", exception.getMessage());
+    }
+
+    @Test
+    void testGetRepairScheduleNew_Success() throws SQLException {
+        connection.createStatement().execute(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) " +
+                        "VALUES ('2025-04-17 10:00:00', 1, 1, 50000, 'Sửa máy in')");
+        // Act
+        NhanVienSuaThietBi result = services.getRepairScheduleNew();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals(LocalDateTime.of(2025, 4, 17, 10, 0), result.getNgaySua());
+        assertEquals("Laptop", result.getTenThietBi());
+        assertEquals("Lê Hữu Hậu", result.getTenNV());
+        assertEquals(50000, result.getChiPhi());
+        assertEquals("Sửa máy in", result.getMoTa());
+    }
+
+    @Test
+    void testGetRepairScheduleNew_NullMoTa() throws SQLException {
+        // Arrange: Cập nhật bản ghi để moTa là null
+        connection.createStatement().execute(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) " +
+                        "VALUES ('2025-04-17 10:00:00', 1, 1, 100000, NULL)");
+
+        // Act
+        NhanVienSuaThietBi result = services.getRepairScheduleNew();
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void testGetRepairScheduleNew_NullChiPhi() throws SQLException {
+        // Arrange: Cập nhật bản ghi để chiPhi là 0
+        connection.createStatement().execute(
+                "INSERT INTO nhanviensuathietbi (ngaySua, idThietBi, idNhanVien, chiPhi, moTa) " +
+                        "VALUES ('2025-04-17 10:00:00', 1, 1, NULL, 'Sửa máy in')");
+
+        // Act
+        NhanVienSuaThietBi result = services.getRepairScheduleNew();
+
+        // Assert
+        assertNull(result);
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.qhuong.services.TestThietBiServices" time="0.873" tests="1" errors="1" skipped="0" failures="0">
+  <properties/>
+  <testcase name="testUpdateThietBi_WithoutThanhLy" classname="com.qhuong.services.TestThietBiServices" time="0.856">
+    <error message="Cannot invoke &quot;java.sql.Connection.prepareStatement(String)&quot; because &quot;this.mockConnection&quot; is null" type="java.lang.NullPointerException">java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "this.mockConnection" is null
+	at com.qhuong.services.TestThietBiServices.testUpdateThietBi_WithoutThanhLy(TestThietBiServices.java:414)
+</error>
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\lehuu\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.15\byte-buddy-agent-1.14.15.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+</testsuite>
