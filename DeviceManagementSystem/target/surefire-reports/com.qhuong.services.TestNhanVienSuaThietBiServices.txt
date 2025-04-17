@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.qhuong.services.TestNhanVienSuaThietBiservices
+-------------------------------------------------------------------------------
+Tests run: 37, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.713 s - in com.qhuong.services.TestNhanVienSuaThietBiservices

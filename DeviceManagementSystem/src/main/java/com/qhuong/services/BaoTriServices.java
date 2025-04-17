@@ -185,14 +185,13 @@ public class BaoTriServices {
     public int checkTimeConflict(int idNhanVien, LocalDateTime ngayBaoTri, int id) throws SQLException {
         int count = 0;
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ? AND TIME(ngayBaoTri) = ?";
+            String sql = "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND ngayBaoTri = ?";
             if (id > 0) {
                 sql += " AND id <> ?";
             }
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setInt(1, idNhanVien);
-            stm.setDate(2, Date.valueOf(ngayBaoTri.toLocalDate()));
-            stm.setTime(3, Time.valueOf(ngayBaoTri.toLocalTime()));
+            stm.setTimestamp(2, Timestamp.valueOf(ngayBaoTri));
             if (id > 0) {
                 stm.setInt(4, id);
             }
@@ -201,10 +200,9 @@ public class BaoTriServices {
                 count += rs.getInt(1);
             }
 
-            PreparedStatement stm1 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND TIME(ngaySua) = ? AND chiPhi IS NULL");
+            PreparedStatement stm1 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND ngaySua = ? AND chiPhi IS NULL");
             stm1.setInt(1, idNhanVien);
-            stm1.setDate(2, Date.valueOf(ngayBaoTri.toLocalDate()));
-            stm1.setTime(3, Time.valueOf(ngayBaoTri.toLocalTime()));
+            stm1.setTimestamp(2, Timestamp.valueOf(ngayBaoTri));
             ResultSet rs1 = stm1.executeQuery();
             if (rs1.next()) {
                 count += rs1.getInt(1);
