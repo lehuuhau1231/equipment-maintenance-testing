@@ -36,6 +36,7 @@ public class JdbcUtils {
             ex.printStackTrace();
         }
     }
+
     public static Connection getConn() throws SQLException {
         // Nếu đang trong môi trường test, dùng connection test
         if (testConnection != null && !testConnection.isClosed()) {
@@ -51,5 +52,5 @@ public class JdbcUtils {
     public static void setConnection(Connection conn) {
         testConnection = conn;
     }
-        
+
 }

@@ -1,15 +1,14 @@
 
-import com.qhuong.services.BaoTriServices;
-import com.qhuong.services.AdminServices;
+
 import com.qhuong.pojo.JdbcUtils;
 import com.qhuong.pojo.BaoTri;
+import com.qhuong.services.AdminServices;
+import com.qhuong.services.BaoTriServices;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,10 +27,9 @@ import org.junit.jupiter.api.Test;
  * @author lehuu
  */
 public class TestBaoTriServices {
-
     private static BaoTriServices baoTriServices;
     private static Connection connection;
-
+    
     @BeforeEach
     void setUpDatabase() throws SQLException {
         connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
@@ -96,10 +94,10 @@ public class TestBaoTriServices {
                     + "FOREIGN KEY (idTrangThai) REFERENCES trangthai(id), "
                     + "FOREIGN KEY (idadmin) REFERENCES admin(id))"
             );
-
+            
             stmt.executeUpdate(
-                    "INSERT INTO thietbi (tenThietBi, ngayNhap, idTrangThai, idadmin) VALUES "
-                    + "('Laptop', '2023-10-01', 2, 1)"
+                    "INSERT INTO thietbi (tenThietBi, ngayNhap, idTrangThai, idadmin) VALUES " +
+                    "('Laptop', '2023-10-01', 2, 1)"
             );
 
             // Tạo bảng nhanviensuachua
@@ -118,10 +116,10 @@ public class TestBaoTriServices {
                     + "UNIQUE (soDT), "
                     + "FOREIGN KEY (idadmin) REFERENCES admin(id))"
             );
-
+            
             stmt.executeUpdate(
-                    "INSERT INTO nhanviensuachua (tenNV, ngaySinh, CCCD, soDT, email, idadmin) VALUES "
-                    + "('Lê Hữu Hậu', '2004-01-01', '123456789012', '0123456789', 'lehuuhau1231@gmail.com', 1)"
+                    "INSERT INTO nhanviensuachua (tenNV, ngaySinh, CCCD, soDT, email, idadmin) VALUES " +
+                    "('Lê Hữu Hậu', '2004-01-01', '123456789012', '0123456789', 'lehuuhau1231@gmail.com', 1)"
             );
 
             // Tạo bảng baotri
@@ -138,12 +136,11 @@ public class TestBaoTriServices {
             );
         }
     }
-
+    
     @AfterEach
     void tearDown() throws SQLException {
         connection.close();
     }
-   
 
     @Test
     void testGetBaoTri_Success() throws SQLException {
@@ -325,6 +322,36 @@ public class TestBaoTriServices {
 
         // Assert
         assertTrue(result.isEmpty(), "Phải trả về danh sách rỗng khi email đã được gửi");
+    }
+
+    @Test
+    void testUpdateFieldSentEmailStatus_Success() throws SQLException {
+        // Arrange
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO baotri (ngayLapLich, ngayBaoTri, idThietBi, idNhanVien, sentEmail) VALUES (?, ?, ?, ?, ?)")) {
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf("2023-10-01 10:00:00"));
+            stmt.setTimestamp(2, java.sql.Timestamp.valueOf("2023-10-02 10:00:00"));
+            stmt.setInt(3, 1);
+            stmt.setInt(4, 1);
+            stmt.setBoolean(5, false);
+            stmt.executeUpdate();
+        }
+        connection.commit();
+
+        // Act
+        baoTriServices.updateFieldSentEmailStatus(1);
+        if (connection != null || !connection.isClosed()) {
+            connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
+            connection.setAutoCommit(false);
+            JdbcUtils.setConnection(connection);
+        }
+        // Assert
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT sentEmail FROM baotri WHERE id = ?")) {
+            stmt.setInt(1, 1);
+            ResultSet rs = stmt.executeQuery();
+            assertTrue(rs.next(), "Phải có lịch bảo trì với ID=1");
+            assertTrue(rs.getBoolean("sentEmail"), "Trạng thái sentEmail phải là TRUE");
+        }
     }
 
     @Test

@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------
+Test set: com.qhuong.services.TestThietBiServices
+-------------------------------------------------------------------------------
+Tests run: 42, Failures: 2, Errors: 2, Skipped: 0, Time elapsed: 2.274 s <<< FAILURE! - in com.qhuong.services.TestThietBiServices
+testUpdateThietBi_WithThanhLyAndDeleteSchedule  Time elapsed: 0.618 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "Object.getClass()" because "object" is null
+	at com.qhuong.services.TestThietBiServices.testUpdateThietBi_WithThanhLyAndDeleteSchedule(TestThietBiServices.java:383)
+
+testUpdateThietBi_WithoutThanhLy  Time elapsed: 0.152 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "this.mockConnection" is null
+	at com.qhuong.services.TestThietBiServices.testUpdateThietBi_WithoutThanhLy(TestThietBiServices.java:414)
+
+testValidateAddThietBi_NameExists  Time elapsed: 0.037 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+	at com.qhuong.services.TestThietBiServices.testValidateAddThietBi_NameExists(TestThietBiServices.java:369)
+
+testCheckStatusUpdateRules_HoatDongToDangSua  Time elapsed: 0.054 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+	at com.qhuong.services.TestThietBiServices.testCheckStatusUpdateRules_HoatDongToDangSua(TestThietBiServices.java:510)
+

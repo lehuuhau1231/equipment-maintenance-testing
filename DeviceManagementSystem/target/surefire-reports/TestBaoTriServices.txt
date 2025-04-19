@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: TestBaoTriServices
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.803 s <<< FAILURE! - in TestBaoTriServices
+testGetListMaintenanceCompleted_Success  Time elapsed: 0.391 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Phải trả về 1 thiết bị ==> expected: <1> but was: <0>
+	at TestBaoTriServices.testGetListMaintenanceCompleted_Success(TestBaoTriServices.java:247)
+
+testUpdateFieldSentEmailStatus_Success  Time elapsed: 0.014 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Trạng thái sentEmail phải là TRUE ==> expected: <true> but was: <false>
+	at TestBaoTriServices.testUpdateFieldSentEmailStatus_Success(TestBaoTriServices.java:353)
+

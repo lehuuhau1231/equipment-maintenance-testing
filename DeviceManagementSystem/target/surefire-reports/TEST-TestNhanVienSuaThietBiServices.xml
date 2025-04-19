@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="TestNhanVienSuaThietBiServices" time="2.165" tests="37" errors="0" skipped="0" failures="0">
+  <properties/>
+  <testcase name="testGetNhanVienSuaThietBi_FullData_NoMatches" classname="TestNhanVienSuaThietBiServices" time="0.245"/>
+  <testcase name="testValidateUpdateReceipt_ValidInput" classname="TestNhanVienSuaThietBiServices" time="0.018"/>
+  <testcase name="testCheckIdEquipment_NotExists" classname="TestNhanVienSuaThietBiServices" time="0.014"/>
+  <testcase name="testValidateUpdateReceipt_ChiPhiTooLarge" classname="TestNhanVienSuaThietBiServices" time="0.013"/>
+  <testcase name="testGetListNotRepair_NoMatches" classname="TestNhanVienSuaThietBiServices" time="0.013"/>
+  <testcase name="testValidateUpdateReceipt_EmptyChiPhi" classname="TestNhanVienSuaThietBiServices" time="0.014"/>
+  <testcase name="testValidateAddRepairSchedule_TimeConflict_ThrowsException" classname="TestNhanVienSuaThietBiServices" time="0.856"/>
+  <testcase name="testRepairScheduleTimes_NoMatches" classname="TestNhanVienSuaThietBiServices" time="0.039"/>
+  <testcase name="testValidateAddRepairSchedule_InvalidDate_BeforeRange" classname="TestNhanVienSuaThietBiServices" time="0.495"/>
+  <testcase name="testGetListNotRepair_Success" classname="TestNhanVienSuaThietBiServices" time="0.019"/>
+  <testcase name="testRepairScheduleTimes_Success" classname="TestNhanVienSuaThietBiServices" time="0.018"/>
+  <testcase name="testValidateUpdateReceipt_ChiPhiTooLow" classname="TestNhanVienSuaThietBiServices" time="0.014"/>
+  <testcase name="testValidateAddRepairSchedule_NullNgaySua" classname="TestNhanVienSuaThietBiServices" time="0.012"/>
+  <testcase name="testCheckTimeConflict_BaoTriConflict" classname="TestNhanVienSuaThietBiServices" time="0.015"/>
+  <testcase name="testGetRepairScheduleNew_NullMoTa" classname="TestNhanVienSuaThietBiServices" time="0.019"/>
+  <testcase name="testValidateUpdateReceipt_MoTaSpecialCharacters" classname="TestNhanVienSuaThietBiServices" time="0.013"/>
+  <testcase name="testValidateUpdateReceipt_EmptyMoTa" classname="TestNhanVienSuaThietBiServices" time="0.011"/>
+  <testcase name="testValidateAddRepairSchedule_ExistingSchedule" classname="TestNhanVienSuaThietBiServices" time="0.012"/>
+  <testcase name="testCheckIdEquipment_Exists" classname="TestNhanVienSuaThietBiServices" time="0.013"/>
+  <testcase name="testValidateUpdateReceipt_MoTaTooLong" classname="TestNhanVienSuaThietBiServices" time="0.012"/>
+  <testcase name="testAddRepairSchedule_Success" classname="TestNhanVienSuaThietBiServices" time="0.016"/>
+  <testcase name="testGetNhanVienSuaThietBi_NotFullData_NoMatches" classname="TestNhanVienSuaThietBiServices" time="0.01"/>
+  <testcase name="testValidateUpdateReceipt_InvalidChiPhi" classname="TestNhanVienSuaThietBiServices" time="0.012"/>
+  <testcase name="testCheckTimeConflict_NhanVienSuaThietBiConflict" classname="TestNhanVienSuaThietBiServices" time="0.011"/>
+  <testcase name="testCheckTimeConflict_BothTablesConflict" classname="TestNhanVienSuaThietBiServices" time="0.012"/>
+  <testcase name="testValidateAddRepairSchedule_InvalidIdNhanVien" classname="TestNhanVienSuaThietBiServices" time="0.011"/>
+  <testcase name="testCheckTimeConflict_DifferentTimeNoConflict" classname="TestNhanVienSuaThietBiServices" time="0.011"/>
+  <testcase name="testUpdateReceipt_Success" classname="TestNhanVienSuaThietBiServices" time="0.012"/>
+  <testcase name="testCheckTimeConflict_NoConflicts" classname="TestNhanVienSuaThietBiServices" time="0.01"/>
+  <testcase name="testValidateAddRepairSchedule_InvalidIdThietBi" classname="TestNhanVienSuaThietBiServices" time="0.008"/>
+  <testcase name="testGetRepairScheduleNew_NullChiPhi" classname="TestNhanVienSuaThietBiServices" time="0.008"/>
+  <testcase name="testGetRepairScheduleNew_Success" classname="TestNhanVienSuaThietBiServices" time="0.014"/>
+  <testcase name="testValidateAddRepairSchedule_OverWorkload" classname="TestNhanVienSuaThietBiServices" time="0.013"/>
+  <testcase name="testGetNhanVienSuaThietBi_NotFullData_Success" classname="TestNhanVienSuaThietBiServices" time="0.011"/>
+  <testcase name="testGetNhanVienSuaThietBi_FullData_Success" classname="TestNhanVienSuaThietBiServices" time="0.012"/>
+  <testcase name="testValidateAddRepairSchedule_Success" classname="TestNhanVienSuaThietBiServices" time="0.05"/>
+  <testcase name="testValidateAddRepairSchedule_InvalidDate_AfterRange" classname="TestNhanVienSuaThietBiServices" time="0.046"/>
+</testsuite>

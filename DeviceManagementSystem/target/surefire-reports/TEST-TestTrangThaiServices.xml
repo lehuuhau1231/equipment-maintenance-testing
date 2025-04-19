@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="TestTrangThaiServices" time="0.256" tests="7" errors="0" skipped="0" failures="0">
+  <properties/>
+  <testcase name="testGetIdStatus_TonTaiTrongDB" classname="TestTrangThaiServices" time="0.221"/>
+  <testcase name="testGetTrangThai_NotFull" classname="TestTrangThaiServices" time="0.004"/>
+  <testcase name="testGetTrangThai_Full_ExcludeDamage" classname="TestTrangThaiServices" time="0.003"/>
+  <testcase name="testGetTrangThai_DaThanhLy" classname="TestTrangThaiServices" time="0.005"/>
+  <testcase name="layDanhSachTrangThaiDangMap_TuDB" classname="TestTrangThaiServices" time="0.002"/>
+  <testcase name="testGetIdStatus_KhongTonTai" classname="TestTrangThaiServices" time="0.002"/>
+  <testcase name="testGetTrangThai_Full_IncludeDamage" classname="TestTrangThaiServices" time="0.003"/>
+</testsuite>

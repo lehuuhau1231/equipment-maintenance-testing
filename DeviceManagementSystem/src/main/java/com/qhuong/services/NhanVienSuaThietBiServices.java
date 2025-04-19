@@ -61,19 +61,18 @@ public class NhanVienSuaThietBiServices {
     public int checkTimeConflict(int idNhanVien, LocalDateTime ngaySua) throws SQLException {
         int count = 0;
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ? AND TIME(ngayBaoTri) = ?";
+            System.out.println(conn);
+            String sql = "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND ngayBaoTri = ?";
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setInt(1, idNhanVien);
-            stm.setDate(2, Date.valueOf(ngaySua.toLocalDate()));
-            stm.setTime(3, Time.valueOf(ngaySua.toLocalTime()));
+            stm.setTimestamp(2, Timestamp.valueOf(ngaySua));
             ResultSet rs = stm.executeQuery();
             if(rs.next())
                 count += rs.getInt(1);
             
-            PreparedStatement stm1 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND TIME(ngaySua) = ? AND chiPhi IS NULL");
+            PreparedStatement stm1 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND ngaySua = ? AND chiPhi IS NULL");
             stm1.setInt(1, idNhanVien);
-            stm1.setDate(2, Date.valueOf(ngaySua.toLocalDate()));
-            stm1.setTime(3, Time.valueOf(ngaySua.toLocalTime()));
+            stm1.setTimestamp(2, Timestamp.valueOf(ngaySua));
             ResultSet rs1 = stm1.executeQuery();
             if(rs1.next())
                 count += rs1.getInt(1);
@@ -98,6 +97,7 @@ public class NhanVienSuaThietBiServices {
 
     public int repairScheduleTimes(int idThietBi) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
+            System.out.println(conn);
             PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idThietBi=? AND chiPhi IS NULL AND moTa IS NULL");
             stm.setInt(1, idThietBi);
             ResultSet rs = stm.executeQuery();
@@ -222,13 +222,14 @@ public class NhanVienSuaThietBiServices {
 
     public NhanVienSuaThietBi getRepairScheduleNew() throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT b.ngaySua, t.tenThietBi, nv.tenNV, b.chiPhi, b.moTa"
+            PreparedStatement stm = conn.prepareCall("SELECT b.id, b.ngaySua, t.tenThietBi, nv.tenNV, b.chiPhi, b.moTa"
                     + " FROM nhanviensuathietbi b "
                     + "JOIN ThietBi t ON b.idThietBi = t.id "
-                    + "JOIN NhanVienSuaChua nv ON b.idNhanVien = nv.id");
+                    + "JOIN NhanVienSuaChua nv ON b.idNhanVien = nv.id "
+                    + "WHERE b.chiPhi IS NOT NULL AND b.moTa IS NOT NULL");
 
             ResultSet rs = stm.executeQuery();
-            if (rs.getString("moTa") != null && rs.getLong("chiPhi") != 0) {
+            if (rs.next()) {
                 NhanVienSuaThietBi r = new NhanVienSuaThietBi(rs.getInt("id"),
                         rs.getTimestamp("ngaySua").toLocalDateTime(),
                         rs.getString("tenThietbi"), rs.getString("tenNV"),

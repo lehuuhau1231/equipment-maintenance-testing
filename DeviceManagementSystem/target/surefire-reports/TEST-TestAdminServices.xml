@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="TestAdminServices" time="2.618" tests="22" errors="0" skipped="0" failures="0">
+  <properties/>
+  <testcase name="testCheckLogin_WrongUsername" classname="TestAdminServices" time="0.237"/>
+  <testcase name="testIsUsernameExistTrue" classname="TestAdminServices" time="0.095"/>
+  <testcase name="testUpdatePassword_Success" classname="TestAdminServices" time="0.28"/>
+  <testcase name="testGetAdminSuccess" classname="TestAdminServices" time="0.139"/>
+  <testcase name="testGetEmailSuccess" classname="TestAdminServices" time="0.072"/>
+  <testcase name="testAddAdmin_Success" classname="TestAdminServices" time="0.925"/>
+  <testcase name="testCheckLogin_WrongPassword" classname="TestAdminServices" time="0.595"/>
+  <testcase name="testGetAdminWrongPassword" classname="TestAdminServices" time="0.147"/>
+  <testcase name="testGetAdminUserNotFound" classname="TestAdminServices" time="0.002"/>
+  <testcase name="testInvalidPasswords{String, String, String}[1]" classname="TestAdminServices" time="0.02"/>
+  <testcase name="testInvalidPasswords{String, String, String}[2]" classname="TestAdminServices" time="0.003"/>
+  <testcase name="testInvalidPasswords{String, String, String}[3]" classname="TestAdminServices" time="0.001"/>
+  <testcase name="testInvalidPasswords{String, String, String}[4]" classname="TestAdminServices" time="0.004"/>
+  <testcase name="testInvalidPasswords{String, String, String}[5]" classname="TestAdminServices" time="0.004"/>
+  <testcase name="testInvalidPasswords{String, String, String}[6]" classname="TestAdminServices" time="0.004"/>
+  <testcase name="testInvalidPasswords{String, String, String}[7]" classname="TestAdminServices" time="0.002"/>
+  <testcase name="testInvalidPasswords{String, String, String}[8]" classname="TestAdminServices" time="0.002"/>
+  <testcase name="testInvalidPasswords{String, String, String}[9]" classname="TestAdminServices" time="0.004"/>
+  <testcase name="testCheckLogin_MissingCredentials{String, String}[1]" classname="TestAdminServices" time="0.006"/>
+  <testcase name="testCheckLogin_MissingCredentials{String, String}[2]" classname="TestAdminServices" time="0.002"/>
+  <testcase name="testGetEmailNotFound" classname="TestAdminServices" time="0.005"/>
+  <testcase name="testIsUsernameExistFalse" classname="TestAdminServices" time="0.002"/>
+</testsuite>

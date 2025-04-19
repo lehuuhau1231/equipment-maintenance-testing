@@ -9,6 +9,7 @@ module com.qhuong.devicemanagementsystem {
     opens com.qhuong.devicemanagementsystem to javafx.fxml;
     exports com.qhuong.devicemanagementsystem;
     exports com.qhuong.pojo;
+    exports com.qhuong.services;
     requires jbcrypt;
     requires jakarta.mail;
 }
