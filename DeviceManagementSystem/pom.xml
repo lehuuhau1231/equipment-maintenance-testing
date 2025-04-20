@@ -90,7 +90,7 @@
                         <include>**/Test*.java</include>
                         <include>**/*Tests.java</include>
                     </includes>
-                    Tắt fork để tránh vấn đề với JavaFX nếu cần 
+                    <!--Tắt fork để tránh vấn đề với JavaFX nếu cần--> 
                     <forkCount>0</forkCount>
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
