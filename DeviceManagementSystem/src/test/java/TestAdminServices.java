@@ -8,12 +8,10 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -26,7 +24,7 @@ class AdminServicesTest {
     private Connection conn;
 
     @Mock
-    private CallableStatement stm; // Sửa từ PreparedStatement thành CallableStatement
+    private PreparedStatement stm; // Sửa từ CallableStatement thành PreparedStatement
 
     @Mock
     private ResultSet rs;
@@ -36,8 +34,10 @@ class AdminServicesTest {
 
     @BeforeEach
     void setUp() throws SQLException {
+        // Mock JdbcUtils.getConn() to return mocked Connection
         when(JdbcUtils.getConn()).thenReturn(conn);
-        when(conn.prepareCall(anyString())).thenReturn(stm);
+        // Mock prepareStatement to return mocked PreparedStatement
+        when(conn.prepareStatement(anyString())).thenReturn(stm);
     }
 
     @Test
