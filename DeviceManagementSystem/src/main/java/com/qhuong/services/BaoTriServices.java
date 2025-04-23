@@ -23,6 +23,7 @@ import java.util.List;
  * @author lehuu
  */
 public class BaoTriServices {
+
     public List<BaoTri> getBaoTri() throws SQLException {
         List<BaoTri> maintenance = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
@@ -110,9 +111,24 @@ public class BaoTriServices {
         }
     }
 
+//    public void addMaintenanceSchedule(LocalDateTime ngayLapLich, LocalDateTime ngayBaoTri, int idThietBi, int idNhanVien) throws SQLException {
+//        try (Connection conn = JdbcUtils.getConn()) {
+//            PreparedStatement stm = conn.prepareCall("INSERT INTO baotri(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien) VALUES(?, ?, ?, ?)");
+//            stm.setTimestamp(1, Timestamp.valueOf(ngayLapLich));
+//            stm.setTimestamp(2, Timestamp.valueOf(ngayBaoTri));
+//            stm.setInt(3, idThietBi);
+//            stm.setInt(4, idNhanVien);
+//            stm.executeUpdate();
+//        }
+//    }
     public void addMaintenanceSchedule(LocalDateTime ngayLapLich, LocalDateTime ngayBaoTri, int idThietBi, int idNhanVien) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("INSERT INTO baotri(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien) VALUE(?, ?, ?, ?)");
+            addMaintenanceSchedule(conn, ngayLapLich, ngayBaoTri, idThietBi, idNhanVien);
+        }
+    }
+
+    public void addMaintenanceSchedule(Connection conn, LocalDateTime ngayLapLich, LocalDateTime ngayBaoTri, int idThietBi, int idNhanVien) throws SQLException {
+        try (PreparedStatement stm = conn.prepareCall("INSERT INTO baotri(ngayLapLich, ngayBaoTri, idThietBi, idNhanVien) VALUES(?, ?, ?, ?)")) {
             stm.setTimestamp(1, Timestamp.valueOf(ngayLapLich));
             stm.setTimestamp(2, Timestamp.valueOf(ngayBaoTri));
             stm.setInt(3, idThietBi);
@@ -184,7 +200,7 @@ public class BaoTriServices {
     public int checkTimeConflict(int idNhanVien, LocalDateTime ngayBaoTri, int id) throws SQLException {
         int count = 0;
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ? AND TIME(ngayBaoTri) = ?";
+            String sql =  "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND CAST(ngayBaoTri AS DATE) = ? AND CAST(ngayBaoTri AS TIME) = ?";
             if (id > 0) {
                 sql += " AND id <> ?";
             }
@@ -200,7 +216,7 @@ public class BaoTriServices {
                 count += rs.getInt(1);
             }
 
-            PreparedStatement stm1 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND TIME(ngaySua) = ? AND chiPhi IS NULL");
+            PreparedStatement stm1 = conn.prepareCall( "SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND CAST(ngaySua AS DATE) = ? AND CAST(ngaySua AS TIME) = ? AND chiPhi IS NULL");
             stm1.setInt(1, idNhanVien);
             stm1.setDate(2, Date.valueOf(ngayBaoTri.toLocalDate()));
             stm1.setTime(3, Time.valueOf(ngayBaoTri.toLocalTime()));
@@ -211,19 +227,20 @@ public class BaoTriServices {
         }
         return count;
     }
+   
 
     public int OverWorkload(int idNhanVien, LocalDateTime ngayBaoTri) throws SQLException {
         LocalDate date = ngayBaoTri.toLocalDate();
         int count = 0;
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND DATE(ngayBaoTri) = ?");
+            PreparedStatement stm = conn.prepareCall( "SELECT COUNT(*) FROM baotri WHERE idNhanVien=? AND CAST(ngayBaoTri AS DATE) = ?");
             stm.setInt(1, idNhanVien);
             stm.setDate(2, Date.valueOf(date));
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
                 count += rs.getInt(1);
             }
-            PreparedStatement stm2 = conn.prepareCall("SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND DATE(ngaySua) = ? AND chiPhi IS NULL");
+            PreparedStatement stm2 = conn.prepareCall( "SELECT COUNT(*) FROM nhanviensuathietbi WHERE idNhanVien=? AND CAST(ngaySua AS DATE) = ? AND chiPhi IS NULL");
             stm2.setInt(1, idNhanVien);
             stm2.setDate(2, Date.valueOf(date));
             ResultSet rs2 = stm2.executeQuery();
@@ -294,6 +311,7 @@ public class BaoTriServices {
             stm.executeUpdate();
         }
     }
+    
 
     public void validateUpdateScheduleMaintenance(int id, LocalDateTime ngayBaoTri, int idNhanVien) throws SQLException {
         // Ràng buộc 1: Kiểm tra dữ liệu đầu vào không null
