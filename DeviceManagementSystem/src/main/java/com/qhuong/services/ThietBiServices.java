@@ -155,7 +155,6 @@ public class ThietBiServices {
                 stm.setInt(4, AdminServices.idAdmin);
                 stm.setInt(5, id);
             }
-
             stm.executeUpdate();
         }
     }

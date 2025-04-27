@@ -54,7 +54,7 @@ DROP TABLE IF EXISTS `baotri`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `baotri` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `ngayLapLich` datetime NOT NULL,
+  `ngayLapLich` datetime DEFAULT CURRENT_TIMESTAMP,
   `ngayBaoTri` datetime NOT NULL,
   `sentEmail` boolean DEFAULT FALSE,
   `idThietBi` int NOT NULL,
