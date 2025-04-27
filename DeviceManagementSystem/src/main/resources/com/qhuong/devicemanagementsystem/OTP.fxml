@@ -9,9 +9,15 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.OTPController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+           prefHeight="500.0" prefWidth="900.0"
+           xmlns="http://javafx.com/javafx/23.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.qhuong.devicemanagementsystem.OTPController">
+
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="300.0" />
+
       <AnchorPane prefHeight="400.0" prefWidth="300.0">
          <children>
             <AnchorPane layoutY="-1.0" prefHeight="502.0" prefWidth="450.0" styleClass="left-form" stylesheets="@Styles.css">
@@ -28,6 +34,7 @@
                   </ImageView>
                </children>
             </AnchorPane>
+
             <AnchorPane layoutX="450.0" prefHeight="500.0" prefWidth="450.0">
                <children>
                   <Label layoutX="201.0" layoutY="121.0" text="OTP">
@@ -35,20 +42,24 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <Button layoutX="115.0" layoutY="257.0" mnemonicParsing="false" onAction="#checkOTPHandler" prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="SEND">
+                  <TextField fx:id="txtOTP" layoutX="151.0" layoutY="186.0" prefHeight="25.0" prefWidth="145.0" promptText="Enter OTP" />
+                  <Button layoutX="115.0" layoutY="257.0" mnemonicParsing="false" onAction="#checkOTPHandler"
+                          prefHeight="40.0" prefWidth="220.0" styleClass="login-btn" stylesheets="@Styles.css" text="SEND">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <TextField fx:id="txtOTP" layoutX="151.0" layoutY="186.0" prefHeight="25.0" prefWidth="145.0" />
                </children>
             </AnchorPane>
+
             <ImageView fitHeight="30.0" fitWidth="32.0" layoutX="43.0" layoutY="452.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../image/logout-box-line.png" />
                </image>
             </ImageView>
-            <Button layoutX="77.0" layoutY="454.0" mnemonicParsing="false" onAction="#switchTabLogin" styleClass="login-btn" stylesheets="@Styles.css" text="Home" />
+
+            <Button layoutX="77.0" layoutY="454.0" mnemonicParsing="false" onAction="#switchTabLogin"
+                    styleClass="login-btn" stylesheets="@Styles.css" text="Home" />
          </children>
       </AnchorPane>
    </children>

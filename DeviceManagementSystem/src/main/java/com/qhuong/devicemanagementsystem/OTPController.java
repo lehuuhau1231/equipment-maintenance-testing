@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qhuong.devicemanagementsystem;
 
 import com.qhuong.pojo.Email;
@@ -25,8 +21,9 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
- *
- * @author lehuu
+ * FXML Controller class for OTP verification
+ * 
+ * Author: lehuu
  */
 public class OTPController implements Initializable {
 
@@ -61,16 +58,14 @@ public class OTPController implements Initializable {
             return;
         }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("XacNhanMatKhau.fxml"));
-        Parent confirmPassword;
         try {
-            confirmPassword = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("XacNhanMatKhau.fxml"));
+            Parent confirmPassword = loader.load();
             XacNhanMatKhauController controller = loader.getController();
             controller.setDeviceData(username);
 
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            Scene confirmPasswordScene = new Scene(confirmPassword);
-            stage.setScene(confirmPasswordScene);
+            stage.setScene(new Scene(confirmPassword));
             stage.show();
         } catch (IOException ex) {
             Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
@@ -80,7 +75,7 @@ public class OTPController implements Initializable {
     private void sendOTPAsync() {
         Random random = new Random();
         int code = 100000 + random.nextInt(900000);
-        this.otp = code; // Lưu OTP ngay để sử dụng sau
+        this.otp = code;
 
         Task<Void> sendEmailTask = new Task<>() {
             @Override

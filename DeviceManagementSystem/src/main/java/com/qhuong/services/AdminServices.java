@@ -17,8 +17,24 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class AdminServices {
 
-    public static int idAdmin;
-    
+    public static int idAdmin = 1;
+
+//    public int getAdmin(String username, String password) throws SQLException {
+//        try (Connection conn = JdbcUtils.getConn()) {
+//            PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=?");
+//            stm.setString(1, username);
+//            ResultSet rs = stm.executeQuery();
+//            if (rs.next()) {
+//                if (password.equals("") == false && BCrypt.checkpw(password, rs.getString("password")) == true) {
+//                    this.idAdmin = rs.getInt("id");
+//                    return 1;
+//                }
+//            } else {
+//                return -1;
+//            }
+//        }
+//        return 0;
+//    }
     public int getAdmin(String username, String password) throws SQLException {
     try (Connection conn = JdbcUtils.getConn()) {
         PreparedStatement stm = conn.prepareCall("SELECT * FROM admin WHERE username=?");

@@ -46,6 +46,7 @@ public class PrimaryController implements Initializable {
 //        AdminServices admin = new AdminServices();
 //        try {
 //            admin.addAdmin("lehuuhau", "Lehuuhau1231@", "Le", "Hau", "lehuuhau1231@gmail.com");
+////              admin.addAdmin("qhuong", "@Huong123", "Tran", "Huong", "quynhhuongtran314@gmail.com");
 //        } catch (SQLException ex) {
 //            Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
 //        }
@@ -54,7 +55,6 @@ public class PrimaryController implements Initializable {
     public void loginHandler(ActionEvent e) throws IOException {
         AdminServices admin = new AdminServices();
         try {
-
             admin.checkLogin(txtUsername.getText(), txtPassword.getText());
 
             Parent listEquipment = FXMLLoader.load(getClass().getResource("DanhSachThietBi.fxml"));
@@ -69,12 +69,11 @@ public class PrimaryController implements Initializable {
         }
         countPassError++;
         if (countPassError >= 2) {
-//                alert.getAlert("Vui lòng chờ sau 5 phút để đăng nhập").show();
-//                btnLogin.setDisable(true);
+//            alert.getAlert("Vui lòng chờ sau 5 phút để đăng nhập").show();
+//            btnLogin.setDisable(true);
             countPassError = 0;
-//                    delay();
+//            delay();
         }
-
     }
 
     public void delay() {

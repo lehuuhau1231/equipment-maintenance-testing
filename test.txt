@@ -9,3 +9,4 @@ Các ràng buộc:
 7. Không thể cập nhật khi trạng thái "đang hoạt động" chuyển sang "đang sửa"
 8. Không thể cập nhật khi trạng thái "hỏng hóc" chuyển sang "đang hoạt động" 
 9. Cho phép cập nhật trạng thái bảo trì / đang sửa sang đang hoạt động sau 1 ngày 
+

@@ -13,11 +13,11 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.DanhSachNhanVienController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qhuong.devicemanagementsystem.DanhSachNhanVienController">
    <children>
-      <AnchorPane prefHeight="522.0" prefWidth="914.0">
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <AnchorPane layoutX="-6.0" prefHeight="575.0" prefWidth="215.0" styleClass="left-form" stylesheets="@Styles.css">
+            <AnchorPane layoutY="14.0" prefHeight="500.0" prefWidth="214.0" styleClass="left-form" stylesheets="@Styles.css">
                <children>
                   <ImageView fitHeight="86.0" fitWidth="66.0" layoutX="82.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -30,96 +30,96 @@
                      </font>
                   </Label>
                   <Line endX="91.39999389648438" layoutX="111.0" layoutY="140.0" startX="-85.39999389648438" stroke="WHITE" />
-                  <Button layoutX="15.0" layoutY="180.0" mnemonicParsing="false" onAction="#switchTabEquipment" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách thiết bị">
+                  <Button layoutX="8.0" layoutY="178.0" mnemonicParsing="false" onAction="#switchTabEquipment" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách thiết bị">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="232.0" mnemonicParsing="false" onAction="#switchTabMaintenance" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch bảo trì">
+                  <Button layoutX="8.0" layoutY="232.0" mnemonicParsing="false" onAction="#switchTabMaintenance" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch bảo trì">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="288.0" mnemonicParsing="false" onAction="#switchTabFix" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch sửa chữa">
+                  <Button layoutX="8.0" layoutY="286.0" mnemonicParsing="false" onAction="#switchTabFix" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Lịch sửa chữa">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="15.0" layoutY="340.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách nhân viên">
+                  <Button layoutX="8.0" layoutY="339.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Danh sách nhân viên">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <ImageView fitHeight="30.0" fitWidth="32.0" layoutX="15.0" layoutY="460.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="30.0" fitWidth="32.0" layoutX="9.0" layoutY="460.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/logout-box-line.png" />
                      </image></ImageView>
-                  <Button layoutX="49.0" layoutY="462.0" mnemonicParsing="false" onAction="#switchTabLogin" styleClass="login-btn" stylesheets="@Styles.css" text="LogOut" />
-                  <Button layoutX="14.0" layoutY="388.0" mnemonicParsing="false" onAction="#switchTabReceipt" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Hóa đơn">
+                  <Button layoutX="40.0" layoutY="462.0" mnemonicParsing="false" onAction="#switchTabLogin" styleClass="login-btn" stylesheets="@Styles.css" text="LogOut" />
+                  <Button layoutX="8.0" layoutY="385.0" mnemonicParsing="false" onAction="#switchTabReceipt" prefHeight="35.0" prefWidth="200.0" styleClass="login-btn" stylesheets="@Styles.css" text="Hóa đơn">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="217.0" prefHeight="575.0" prefWidth="697.0" styleClass="right-form" stylesheets="@Styles.css">
+            <AnchorPane layoutX="216.0" layoutY="14.0" prefHeight="500.0" prefWidth="450.0" styleClass="right-form" stylesheets="@Styles.css">
                <children>
-                  <Line endX="561.2000732421875" endY="-8.000007629394531" layoutX="122.0" layoutY="48.0" startX="-129.0" startY="-8.000007629394531" />
-                  <Label layoutX="22.0" layoutY="14.0" text="Danh sách nhân viên">
+                  <Line endX="561.2000732421875" endY="-8.000007629394531" layoutX="120.0" layoutY="56.0" startX="-129.0" startY="-8.000007629394531" />
+                  <Label layoutX="14.0" layoutY="14.0" text="Danh sách nhân viên">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label layoutX="349.0" layoutY="61.0" text="CCCD :">
+                  <Label layoutX="350.0" layoutY="61.0" text="CCCD :">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="19.0" layoutY="62.0" text="Họ tên :">
+                  <Label layoutX="26.0" layoutY="61.0" text="Họ tên :">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="19.0" layoutY="118.0" text="SĐT :">
+                  <Label layoutX="28.0" layoutY="99.0" text="SĐT :">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="txtName" layoutX="127.0" layoutY="59.0" prefHeight="26.0" prefWidth="178.0">
+                  <TextField fx:id="txtName" layoutX="128.0" layoutY="58.0" prefHeight="26.0" prefWidth="178.0">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets></TextField>
-                  <TableView fx:id="tbEmployee" layoutX="26.0" layoutY="252.0" prefHeight="241.0" prefWidth="646.0" />
-                  <Button fx:id="btnAddEmployee" layoutX="444.0" layoutY="513.0" mnemonicParsing="false" onAction="#addEmployee" text="Thêm nhân viên">
+                  <TableView fx:id="tbEmployee" layoutX="27.0" layoutY="205.0" prefHeight="241.0" prefWidth="646.0" />
+                  <Button fx:id="btnAddEmployee" layoutX="454.0" layoutY="454.0" mnemonicParsing="false" onAction="#addEmployee" text="Thêm nhân viên">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <TextField fx:id="txtID" layoutX="454.0" layoutY="59.0" prefHeight="26.0" prefWidth="178.0" />
-                  <TextField fx:id="txtPhoneNumber" layoutX="127.0" layoutY="115.0" prefHeight="26.0" prefWidth="178.0" />
-                  <Button fx:id="btnUpdateEmployee" layoutX="593.0" layoutY="513.0" mnemonicParsing="false" onAction="#updateEmployee" text="Cập nhật">
+                  <TextField fx:id="txtID" layoutX="454.0" layoutY="58.0" prefHeight="26.0" prefWidth="178.0" />
+                  <TextField fx:id="txtPhoneNumber" layoutX="128.0" layoutY="96.0" prefHeight="26.0" prefWidth="178.0" />
+                  <Button fx:id="btnUpdateEmployee" layoutX="596.0" layoutY="454.0" mnemonicParsing="false" onAction="#updateEmployee" text="Cập nhật">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Label layoutX="22.0" layoutY="166.0" text="Địa chỉ:">
+                  <Label layoutX="28.0" layoutY="137.0" text="Địa chỉ:">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="txtAddress" layoutX="130.0" layoutY="163.0" prefHeight="26.0" prefWidth="506.0" />
-                  <Label layoutX="22.0" layoutY="210.0" text="Email:">
+                  <TextField fx:id="txtAddress" layoutX="129.0" layoutY="134.0" prefHeight="26.0" prefWidth="506.0" />
+                  <Label layoutX="32.0" layoutY="173.0" text="Email:">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="txtEmail" layoutX="130.0" layoutY="207.0" prefHeight="26.0" prefWidth="506.0" />
-                  <Label layoutX="349.0" layoutY="118.0" text="Ngày sinh:">
+                  <TextField fx:id="txtEmail" layoutX="129.0" layoutY="170.0" prefHeight="26.0" prefWidth="200.0" />
+                  <Label layoutX="350.0" layoutY="99.0" text="Ngày sinh:">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <DatePicker fx:id="birthDate" editable="false" layoutX="457.0" layoutY="116.0" prefHeight="25.0" prefWidth="178.0" />
+                  <DatePicker fx:id="birthDate" editable="false" layoutX="454.0" layoutY="96.0" prefHeight="25.0" prefWidth="178.0" />
                </children>
             </AnchorPane>
          </children>

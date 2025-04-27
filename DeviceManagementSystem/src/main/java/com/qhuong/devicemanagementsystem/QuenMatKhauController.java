@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qhuong.devicemanagementsystem;
 
 import com.qhuong.services.AdminServices;
@@ -19,8 +15,9 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
- *
- * @author lehuu
+ * Controller class for forgot password functionality
+ * 
+ * Author: lehuu
  */
 public class QuenMatKhauController {
 
@@ -33,27 +30,23 @@ public class QuenMatKhauController {
             alert.getAlert("Vui lòng điền đủ thông tin!").show();
             return;
         }
+
         AdminServices adminService = new AdminServices();
         try {
             if (adminService.isUsernameExist(txtUsername.getText())) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("OTP.fxml"));
-                Parent otp;
-                try {
-                    otp = loader.load();
-                    OTPController controller = loader.getController();
-                    controller.setDeviceData(txtUsername.getText());
+                Parent otp = loader.load();
 
-                    Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-                    Scene otpScene = new Scene(otp);
-                    stage.setScene(otpScene);
-                    stage.show();
-                } catch (IOException ex) {
-                    Logger.getLogger(PrimaryController.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                OTPController controller = loader.getController();
+                controller.setDeviceData(txtUsername.getText());
+
+                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(otp));
+                stage.show();
             } else {
                 alert.getAlert("Tài khoản không tồn tại!").show();
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | IOException ex) {
             Logger.getLogger(QuenMatKhauController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
