@@ -38,7 +38,7 @@ public class NhanVienSuaChuaServices {
     public int getIdEmployee(String name) throws SQLException {
         if (name.trim().isEmpty()) {
             return -1;
-        }else {
+        } else {
             try (Connection conn = JdbcUtils.getConn()) {
                 PreparedStatement stm = conn.prepareCall("SELECT id FROM nhanviensuachua WHERE tenNV=?");
                 stm.setString(1, name);
@@ -50,7 +50,6 @@ public class NhanVienSuaChuaServices {
         }
         return -1;
     }
-    
 
     public String getEmail(int idNhanVien) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
@@ -64,33 +63,72 @@ public class NhanVienSuaChuaServices {
         return null;
     }
 
+//    public void addEmployee(String tenNV, LocalDate ngaySinh, String CCCD, String soDT, String diaChi, String email) throws SQLException {
+//        try (Connection conn = JdbcUtils.getConn()) {
+//            PreparedStatement stm = conn.prepareCall("INSERT INTO nhanviensuachua(tenNV, ngaySinh, CCCD, soDT, diaChi, email, idadmin) VALUES(?, ?, ?, ?, ?, ?, ?)");
+//            stm.setString(1, tenNV);
+//            stm.setDate(2, Date.valueOf(ngaySinh));
+//            stm.setString(3, CCCD);
+//            stm.setString(4, soDT);
+//            stm.setString(5, diaChi);
+//            stm.setString(6, email);
+//            stm.setInt(7, AdminServices.idAdmin);
+//            stm.executeUpdate();
+//        }
+//    }
+    public void addEmployee(Connection conn, String tenNV, LocalDate ngaySinh, String CCCD, String soDT, String diaChi, String email) throws SQLException {
+        PreparedStatement stm = conn.prepareCall(
+                "INSERT INTO nhanviensuachua(tenNV, ngaySinh, CCCD, soDT, diaChi, email, idadmin) VALUES(?, ?, ?, ?, ?, ?, ?)"
+        );
+        stm.setString(1, tenNV);
+        stm.setDate(2, Date.valueOf(ngaySinh));
+        stm.setString(3, CCCD);
+        stm.setString(4, soDT);
+        stm.setString(5, diaChi);
+        stm.setString(6, email);
+        stm.setInt(7, AdminServices.idAdmin);
+        stm.executeUpdate();
+    }
+
     public void addEmployee(String tenNV, LocalDate ngaySinh, String CCCD, String soDT, String diaChi, String email) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            PreparedStatement stm = conn.prepareCall("INSERT INTO nhanviensuachua(tenNV, ngaySinh, CCCD, soDT, diaChi, email, idadmin) VALUE(?, ?, ?, ?, ?, ?, ?)");
-            stm.setString(1, tenNV);
-            stm.setDate(2, Date.valueOf(ngaySinh));
-            stm.setString(3, CCCD);
-            stm.setString(4, soDT);
-            stm.setString(5, diaChi);
-            stm.setString(6, email);
-            stm.setInt(7, AdminServices.idAdmin);
-            stm.executeUpdate();
+            addEmployee(conn, tenNV, ngaySinh, CCCD, soDT, diaChi, email);
         }
+    }
+
+//    public void updateEmployee(NhanVienSuaChua nv) throws SQLException {
+//        try (Connection conn = JdbcUtils.getConn()) {
+//            System.out.println(nv.getNgaySinh());
+//            PreparedStatement stm = conn.prepareCall("UPDATE nhanviensuachua SET tenNV=?, ngaySinh=?, CCCD=?, soDT=?, diaChi=?, email=?, idadmin=? WHERE id=?");
+//            stm.setString(1, nv.getTenNV());
+//            stm.setDate(2, Date.valueOf(nv.getNgaySinh()));
+//            stm.setString(3, nv.getCCCD());
+//            stm.setString(4, nv.getSoDT());
+//            stm.setString(5, nv.getDiaChi());
+//            stm.setString(6, nv.getEmail());
+//            stm.setInt(7, AdminServices.idAdmin);
+//            stm.setInt(8, nv.getId());
+//            stm.executeUpdate();
+//        }
+//    }
+    public void updateEmployeeWithConnection(Connection conn, NhanVienSuaChua nv) throws SQLException {
+        PreparedStatement stm = conn.prepareCall(
+                "UPDATE nhanviensuachua SET tenNV=?, ngaySinh=?, CCCD=?, soDT=?, diaChi=?, email=?, idadmin=? WHERE id=?"
+        );
+        stm.setString(1, nv.getTenNV());
+        stm.setDate(2, Date.valueOf(nv.getNgaySinh()));
+        stm.setString(3, nv.getCCCD());
+        stm.setString(4, nv.getSoDT());
+        stm.setString(5, nv.getDiaChi());
+        stm.setString(6, nv.getEmail());
+        stm.setInt(7, AdminServices.idAdmin);
+        stm.setInt(8, nv.getId());
+        stm.executeUpdate();
     }
 
     public void updateEmployee(NhanVienSuaChua nv) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
-            System.out.println(nv.getNgaySinh());
-            PreparedStatement stm = conn.prepareCall("UPDATE nhanviensuachua SET tenNV=?, ngaySinh=?, CCCD=?, soDT=?, diaChi=?, email=?, idadmin=? WHERE id=?");
-            stm.setString(1, nv.getTenNV());
-            stm.setDate(2, Date.valueOf(nv.getNgaySinh()));
-            stm.setString(3, nv.getCCCD());
-            stm.setString(4, nv.getSoDT());
-            stm.setString(5, nv.getDiaChi());
-            stm.setString(6, nv.getEmail());
-            stm.setInt(7, AdminServices.idAdmin);
-            stm.setInt(8, nv.getId());
-            stm.executeUpdate();
+            updateEmployeeWithConnection(conn, nv);
         }
     }
 
