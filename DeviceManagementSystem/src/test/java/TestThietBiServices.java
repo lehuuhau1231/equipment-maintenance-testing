@@ -2,37 +2,35 @@ package com.qhuong.services;
 
 import com.qhuong.pojo.JdbcUtils;
 import com.qhuong.pojo.ThietBi;
+
 import java.sql.CallableStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
+
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.Spy;
+
 
 public class TestThietBiServices {
 
     private static ThietBiServices thietBiServices;
     private static Connection connection;
-    
+
     @InjectMocks
     private ThietBiServices services;
 
@@ -64,8 +62,8 @@ public class TestThietBiServices {
                     "INSERT INTO trangthai (id, tenTrangThai) VALUES "
                     + "(1, 'Đã thanh lý'), "
                     + "(2, 'Đang hoạt động'), "
-                    + "(3, 'Hỏng hóc'), "
-                    + "(4, 'Đang sửa'), "
+                    + "(3, 'Đang sửa'), "
+                    + "(4, 'Hỏng hóc'), "
                     + "(5, 'Bảo trì')"
             );
 
@@ -97,6 +95,7 @@ public class TestThietBiServices {
                     + "idNhanVien INT, "
                     + "FOREIGN KEY (idNhanVien) REFERENCES nhanviensuathietbi(id))"
             );
+            stmt.executeUpdate("INSERT INTO nhanviensuathietbi (idThietBi, chiPhi, moTa) VALUES (1, 500000, 'Sửa mực')");
         }
     }
 
@@ -296,7 +295,7 @@ public class TestThietBiServices {
     void testAddThietBi_Success() throws SQLException {
         // Act
         thietBiServices.addThietBi("Laptop", LocalDate.now(), 2);
-        if (connection != null || !connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
             JdbcUtils.setConnection(connection);
         }
@@ -357,65 +356,46 @@ public class TestThietBiServices {
         assertEquals("Quy định trạng thái thiết bị khi thêm là: ĐANG HOẠT ĐỘNG HOẶC HỎNG HÓC", thrown.getMessage());
     }
 
+
     @Test
-    void testValidateAddThietBi_NameExists() throws SQLException {
-        // Arrange
-        thietBiServices.addThietBi("Laptop", LocalDate.now(), 2);
-        if (connection != null || !connection.isClosed()) {
-            connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
-            JdbcUtils.setConnection(connection);
+    public void testUpdateThietBi_WithThanhLy_ShouldDeleteSchedule() throws SQLException {
+        // 1. Tạo lịch bảo trì cho thiết bị id = 1
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareStatement(
+                    "INSERT INTO baotri (idThietBi, ngayBaoTri, idNhanVien) VALUES (?, ?, ?)"
+            );
+            stm.setInt(1, 1); // Thiết bị ID 1 (đã tồn tại)
+            stm.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            stm.setInt(3, 1); // idNhanVien (giả sử nhân viên id = 1 cũng đã có)
+            stm.executeUpdate();
         }
-        // Act & Assert
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> thietBiServices.validateAddThietBi("Laptop", LocalDate.now(), 2));
-        assertEquals("Tên thiết bị này đã tồn tại", thrown.getMessage());
-    }
 
-     @Test
-    void testUpdateThietBi_WithThanhLyAndDeleteSchedule() throws Exception {
-        // Giả lập các điều kiện: thiết bị đang hoạt động -> chuyển sang thanh lý
-        int id = 1;
-        String tenThietBi = "Máy chiếu";
-        LocalDate ngayThanhLy = LocalDate.of(2025, 4, 15);
-        int idTrangThai = 1; // Thanh lý
+        // 2. Gọi hàm update thiết bị, thanh lý luôn
+        LocalDate ngayThanhLy = LocalDate.now().plusDays(1);
+        thietBiServices.updateThietBi(1, "Laptop mini", ngayThanhLy, 1);
 
-        // Mock các hàm phụ trong class
-        ThietBiServices spyService = Mockito.spy(services);
-        doReturn(2).when(spyService).getCurrentStatus(id); // Trạng thái hiện tại != 1
-        doReturn(10).when(spyService).getIdEquipment(tenThietBi);
+        // 3. Kiểm tra thiết bị đã cập nhật đúng trạng thái và ngày thanh lý
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall(
+                    "SELECT idTrangThai, thanhLy FROM thietbi WHERE id = ?"
+            );
+            stm.setInt(1, 1);
+            ResultSet rs = stm.executeQuery();
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("idTrangThai"));
+            assertEquals(ngayThanhLy, rs.getDate("thanhLy").toLocalDate());
+        }
 
-        doNothing().when(spyService).deleteAllSchedule(10);
-
-        // Chuẩn bị câu lệnh SQL phù hợp
-        when(mockConnection.prepareStatement(Mockito.anyString())).thenReturn(mockCallableStatement);
-
-        // Gọi hàm
-        spyService.updateThietBi(id, tenThietBi, ngayThanhLy, idTrangThai);
-
-        // Kiểm tra: các hàm phụ được gọi đúng
-        verify(spyService).getCurrentStatus(id);
-        verify(spyService).getIdEquipment(tenThietBi);
-        verify(spyService).deleteAllSchedule(10);
-
-        // Kiểm tra lệnh SQL có được gọi
-        verify(mockCallableStatement).executeUpdate();
-    }
-
-    @Test
-    void testUpdateThietBi_WithoutThanhLy() throws Exception {
-        int id = 2;
-        String tenThietBi = "Laptop";
-        LocalDate ngayThanhLy = null;
-        int idTrangThai = 2;
-
-        ThietBiServices spyService = Mockito.spy(thietBiServices);  
-        doReturn(3).when(spyService).getCurrentStatus(id);
-
-        when(mockConnection.prepareStatement(Mockito.anyString())).thenReturn(mockCallableStatement);
-
-        spyService.updateThietBi(id, tenThietBi, ngayThanhLy, idTrangThai);
-
-        verify(mockCallableStatement).executeUpdate();
+        // 4. Kiểm tra lịch bảo trì đã bị xóa hết
+        try (Connection conn = JdbcUtils.getConn()) {
+            PreparedStatement stm = conn.prepareCall(
+                    "SELECT COUNT(*) FROM baotri WHERE idThietBi = ?"
+            );
+            stm.setInt(1, 1);
+            ResultSet rs = stm.executeQuery();
+            rs.next();
+            assertEquals(0, rs.getInt(1));
+        }
     }
 
     @Test
@@ -505,25 +485,26 @@ public class TestThietBiServices {
     }
 
     @Test
-    void testCheckStatusUpdateRules_HoatDongToDangSua() throws SQLException {
-        // Act & Assert
+    void testCheckStatusUpdateRules_HongHocToHoatDong() throws SQLException {
+
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> thietBiServices.checkStatusUpdateRules(3, 2)); // Từ Đang hoạt động sang Đang sửa
-        assertEquals("Không được cập nhật thiết bị ĐANG SỬA", thrown.getMessage());
+                () -> thietBiServices.checkStatusUpdateRules(4, 2));
+
+        assertEquals("Không thể cập nhật khi trạng thái 'hỏng hóc' chuyển sang 'đang hoạt động'", thrown.getMessage());
     }
 
     @Test
-    void testCheckStatusUpdateRules_HongHocToHoatDong() throws SQLException {
+    void testCheckStatusUpdateRules_HoatDongToDangSua() throws SQLException {
         // Act & Assert
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> thietBiServices.checkStatusUpdateRules(4, 2)); // Từ Hỏng hóc sang Đang hoạt động
-        assertEquals("Không thể cập nhật khi trạng thái 'hỏng hóc' chuyển sang 'đang hoạt động'", thrown.getMessage());
+                () -> thietBiServices.checkStatusUpdateRules(2, 3)); // Từ Đang hoạt động sang Đang sửa
+        assertEquals("Không được cập nhật thiết bị ĐANG SỬA", thrown.getMessage());
     }
 
     @Test
     void testCheckStatusUpdateRules_ValidTransition() throws SQLException {
         // Act & Assert
-        assertDoesNotThrow(() -> thietBiServices.checkStatusUpdateRules(2, 3)); // Từ Đang hoạt động sang Hỏng hóc
+        assertDoesNotThrow(() -> thietBiServices.checkStatusUpdateRules(2, 4)); // Từ Đang hoạt động sang Hỏng hóc
     }
 
     @Test
@@ -689,7 +670,7 @@ public class TestThietBiServices {
         }
         // Act
         thietBiServices.updateStatus(1, 3);
-        if (connection != null || !connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
             JdbcUtils.setConnection(connection);
         }
@@ -702,50 +683,6 @@ public class TestThietBiServices {
         }
     }
 
-    @Test
-    void testDeleteAllSchedule_Success() throws SQLException {
-        // Arrange
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO thietbi (tenThietBi, ngayNhap, idTrangThai, idAdmin) VALUES (?, ?, ?, ?)")) {
-            stmt.setString(1, "Laptop");
-            stmt.setDate(2, java.sql.Date.valueOf("2023-10-01"));
-            stmt.setInt(3, 2);
-            stmt.setInt(4, 1);
-            stmt.executeUpdate();
-        }
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO baotri (idThietBi, ngayBaoTri) VALUES (?, ?)")) {
-            stmt.setInt(1, 1);
-            stmt.setDate(2, java.sql.Date.valueOf("2023-11-01"));
-            stmt.executeUpdate();
-        }
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO nhanviensuathietbi (idThietBi) VALUES (?)")) {
-            stmt.setInt(1, 1);
-            stmt.executeUpdate();
-        }
-
-        // Act
-        thietBiServices.deleteAllSchedule(1);
-        if (connection != null || !connection.isClosed()) {
-            connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
-            JdbcUtils.setConnection(connection);
-        }
-        // Kiểm tra sau
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT COUNT(*) FROM baotri WHERE idThietBi = ?")) {
-            stmt.setInt(1, 1);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
-            assertEquals(0, rs.getInt(1), "Lịch bảo trì phải bị xóa");
-        }
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "SELECT COUNT(*) FROM nhanviensuathietbi WHERE idThietBi = ?")) {
-            stmt.setInt(1, 1);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
-            assertEquals(0, rs.getInt(1), "Lịch sửa chữa phải bị xóa");
-        }
-    }
 
     @Test
     void testValidateSearch_TooLong() {

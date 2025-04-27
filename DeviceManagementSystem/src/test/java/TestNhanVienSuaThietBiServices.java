@@ -1,11 +1,10 @@
-package com.qhuong.services;
 
 import com.qhuong.pojo.JdbcUtils;
 import com.qhuong.pojo.NhanVienSuaThietBi;
 import com.qhuong.services.NhanVienSuaThietBiServices;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import com.qhuong.services.AdminServices;
 import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,7 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mockito;
 
-public class TestNhanVienSuaThietBiservices {
+public class TestNhanVienSuaThietBiServices {
 
     private static NhanVienSuaThietBiServices services;
     private static Connection connection;
@@ -434,7 +433,7 @@ public class TestNhanVienSuaThietBiservices {
 
         // Act
         services.addRepairSchedule(ngaySua, 1, 1);
-        if (connection != null || !connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
             JdbcUtils.setConnection(connection);
         }
@@ -603,7 +602,7 @@ public class TestNhanVienSuaThietBiservices {
                         "VALUES ('2025-04-17 10:00:00', 1, 1, NULL, NULL)");
         // Act
         services.updateReceipt(1, 100000, "Sửa máy in nâng cấp");
-        if (connection != null || !connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "");
             JdbcUtils.setConnection(connection);
         }
