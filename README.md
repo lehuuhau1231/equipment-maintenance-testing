@@ -34,9 +34,9 @@ Các test case được viết nhằm:
 + Đảm bảo hoạt động chính xác của các chức năng.
 
 🧰 Công nghệ sử dụng
-Ngôn ngữ: Java
-UI: JavaFX
-IDE: NetBeans
-CSDL: MySQL
-Unit test: JUnit
++ Ngôn ngữ: Java
++ UI: JavaFX
++ IDE: NetBeans
++ CSDL: MySQL
++ Unit test: JUnit
 
