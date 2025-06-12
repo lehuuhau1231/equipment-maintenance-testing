@@ -1,9 +1,9 @@
 🛠️ Đề tài: Quản lý, Bảo trì Thiết bị
 
-🎯 Mục tiêu
+🎯 Mục tiêu :
 Xây dựng hệ thống quản lý và bảo trì thiết bị sử dụng JavaFX trên môi trường NetBeans, đồng thời thiết kế các test case đảm bảo hệ thống hoạt động đúng theo các yêu cầu và ràng buộc nghiệp vụ.
 
-📚 Chức năng chính
+📚 Chức năng chính :
 1. Theo dõi tình trạng thiết bị
 + Không cho phép cập nhật thiết bị đã thanh lý.
 + Hiển thị đúng trạng thái: Đang hoạt động, Hỏng hóc, Đang sửa.
@@ -17,7 +17,7 @@ Xây dựng hệ thống quản lý và bảo trì thiết bị sử dụng Java
 + Không cho phép sửa đổi lịch sử sau khi lưu.
 + Tính chính xác chi phí sửa chữa.
 
-🔐 Ràng buộc nghiệp vụ cần kiểm thử
+🔐 Ràng buộc nghiệp vụ cần kiểm thử :
 1. Bảo trì lần 1 phải cách ngày nhập thiết bị từ 3–6 tháng. Lần 2 cách lần 1 từ 3–6 tháng.
 2. Ngày sửa chữa không được lệch quá 3 ngày so với lịch sửa.
 3. Chỉ được cập nhật lịch bảo trì trước ngày bảo trì ít nhất 2 ngày.
@@ -28,12 +28,12 @@ Xây dựng hệ thống quản lý và bảo trì thiết bị sử dụng Java
 8. Không được chuyển từ “hỏng hóc” → “đang hoạt động” trực tiếp.
 9. Chỉ được chuyển trạng thái từ “bảo trì” hoặc “đang sửa” → “đang hoạt động” sau ít nhất 1 ngày.
 
-🧪 Test Case
+🧪 Test Case :
 Các test case được viết nhằm:
 + Đảm bảo đúng logic ràng buộc nghiệp vụ.
 + Đảm bảo hoạt động chính xác của các chức năng.
 
-🧰 Công nghệ sử dụng
+🧰 Công nghệ sử dụng :
 + Ngôn ngữ: Java
 + UI: JavaFX
 + IDE: NetBeans
