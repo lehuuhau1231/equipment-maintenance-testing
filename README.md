@@ -18,15 +18,15 @@ Tính chính xác chi phí sửa chữa.
 
 🔐 Ràng buộc nghiệp vụ cần kiểm thử
 #	Ràng buộc
-1	Bảo trì lần 1 phải cách ngày nhập thiết bị từ 3–6 tháng. Lần 2 cách lần 1 từ 3–6 tháng.
-2	Ngày sửa chữa không được lệch quá 3 ngày so với lịch sửa.
-3	Chỉ được cập nhật lịch bảo trì trước ngày bảo trì ít nhất 2 ngày.
-4	Khi chuyển thiết bị sang “đã thanh lý”, phải hủy toàn bộ lịch bảo trì/sửa chữa.
-5	Mỗi thiết bị chỉ được lập tối đa 2 lần bảo trì.
-6	Không nhập ký tự đặc biệt vào các ô nhập.
-7	Không cho phép cập nhật trạng thái từ “đang hoạt động” → “đang sửa” trực tiếp.
-8	Không được chuyển từ “hỏng hóc” → “đang hoạt động” trực tiếp.
-9	Chỉ được chuyển trạng thái từ “bảo trì” hoặc “đang sửa” → “đang hoạt động” sau ít nhất 1 ngày.
+1. Bảo trì lần 1 phải cách ngày nhập thiết bị từ 3–6 tháng. Lần 2 cách lần 1 từ 3–6 tháng.
+2. Ngày sửa chữa không được lệch quá 3 ngày so với lịch sửa.
+3. Chỉ được cập nhật lịch bảo trì trước ngày bảo trì ít nhất 2 ngày.
+4. Khi chuyển thiết bị sang “đã thanh lý”, phải hủy toàn bộ lịch bảo trì/sửa chữa.
+5. Mỗi thiết bị chỉ được lập tối đa 2 lần bảo trì.
+6. Không nhập ký tự đặc biệt vào các ô nhập.
+7. Không cho phép cập nhật trạng thái từ “đang hoạt động” → “đang sửa” trực tiếp.
+8. Không được chuyển từ “hỏng hóc” → “đang hoạt động” trực tiếp.
+9. Chỉ được chuyển trạng thái từ “bảo trì” hoặc “đang sửa” → “đang hoạt động” sau ít nhất 1 ngày.
 
 🧪 Test Case
 Các test case được viết nhằm:
