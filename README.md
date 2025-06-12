@@ -5,20 +5,19 @@ Xây dựng hệ thống quản lý và bảo trì thiết bị sử dụng Java
 
 📚 Chức năng chính
 1. Theo dõi tình trạng thiết bị
-Không cho phép cập nhật thiết bị đã thanh lý.
-Hiển thị đúng trạng thái: Đang hoạt động, Hỏng hóc, Đang sửa.
-Gửi thông báo khi thiết bị cần bảo trì định kỳ.
++ Không cho phép cập nhật thiết bị đã thanh lý.
++ Hiển thị đúng trạng thái: Đang hoạt động, Hỏng hóc, Đang sửa.
++ Gửi thông báo khi thiết bị cần bảo trì định kỳ.
 2. Lập kế hoạch bảo trì
-Không cho phép lập lịch trùng giờ.
-Chỉ cho phép lập lịch cho thiết bị đang hoạt động.
-Gửi email nhắc kỹ thuật viên trước 24h.
++ Không cho phép lập lịch trùng giờ.
++ Chỉ cho phép lập lịch cho thiết bị đang hoạt động.
++ Gửi email nhắc kỹ thuật viên trước 24h.
 3. Quản lý lịch sử sửa chữa
-Ghi đầy đủ thời gian, người thực hiện mỗi lần sửa chữa.
-Không cho phép sửa đổi lịch sử sau khi lưu.
-Tính chính xác chi phí sửa chữa.
++ Ghi đầy đủ thời gian, người thực hiện mỗi lần sửa chữa.
++ Không cho phép sửa đổi lịch sử sau khi lưu.
++ Tính chính xác chi phí sửa chữa.
 
 🔐 Ràng buộc nghiệp vụ cần kiểm thử
-#	Ràng buộc
 1. Bảo trì lần 1 phải cách ngày nhập thiết bị từ 3–6 tháng. Lần 2 cách lần 1 từ 3–6 tháng.
 2. Ngày sửa chữa không được lệch quá 3 ngày so với lịch sửa.
 3. Chỉ được cập nhật lịch bảo trì trước ngày bảo trì ít nhất 2 ngày.
