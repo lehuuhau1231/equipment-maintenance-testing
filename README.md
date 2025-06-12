@@ -30,8 +30,8 @@ Tính chính xác chi phí sửa chữa.
 
 🧪 Test Case
 Các test case được viết nhằm:
-Đảm bảo đúng logic ràng buộc nghiệp vụ.
-Đảm bảo hoạt động chính xác của các chức năng.
++ Đảm bảo đúng logic ràng buộc nghiệp vụ.
++ Đảm bảo hoạt động chính xác của các chức năng.
 
 🧰 Công nghệ sử dụng
 Ngôn ngữ: Java
