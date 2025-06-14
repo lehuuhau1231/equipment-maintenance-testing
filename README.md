@@ -29,6 +29,7 @@ Xây dựng hệ thống quản lý và bảo trì thiết bị sử dụng Java
 9. Chỉ được chuyển trạng thái từ “bảo trì” hoặc “đang sửa” → “đang hoạt động” sau ít nhất 1 ngày.
 
 🧪 Test Case :
++ Đầu tiên là thực hiện thiết kế các test case 📄[Tải test_case_desgin (pdf)](https://github.com/lehuuhau1231/equipment-maintenance-testing/blob/main/test_design.pdf)
 Các test case được viết nhằm:
 + Đảm bảo đúng logic ràng buộc nghiệp vụ.
 + Đảm bảo hoạt động chính xác của các chức năng.
