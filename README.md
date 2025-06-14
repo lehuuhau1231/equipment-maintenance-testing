@@ -32,6 +32,9 @@ Xây dựng hệ thống quản lý và bảo trì thiết bị sử dụng Java
 Các test case được viết nhằm:
 + Đảm bảo đúng logic ràng buộc nghiệp vụ.
 + Đảm bảo hoạt động chính xác của các chức năng.
+  
+[Tải báo cáo đầy đủ (Excel)](https://github.com/lehuuhau1231/equipment-maintenance-testing/blob/main/TestCase_Nhom10.xlsx)
+
 
 🧰 Công nghệ sử dụng :
 + Ngôn ngữ: Java
